@@ -1,0 +1,50 @@
+# Build outputs
+build/
+dist/
+out/
+
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+*.unitypackage
+*.apk
+*.aab
+
+# Godot
+.godot/
+*.import
+export_presets.cfg
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+
+# Node / JS
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.idea/
+.vscode/settings.json
+*.suo
+*.user
+*.sln.docstates
+
+# Secrets
+*.env
+*.env.local
+secrets.*

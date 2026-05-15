@@ -27,3 +27,4 @@ Składnia nazwy brancha: `NNN-short-english-description`
 - Numer porządkowy (3 cyfry), myślnik, opis w języku angielskim, słowa rozdzielone myślnikami
 - Przykłady: `001-project-setup`, `005-adding-levels`, `012-bluetooth-multiplayer`
 - Nazwy branchy zawsze po **angielsku**
+- Po zmergowaniu PR **nie usuwamy** brancha — zostawiamy go w repozytorium

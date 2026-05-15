@@ -1,36 +1,73 @@
 # Life & Death — Roadmap i Plan Realizacji
 
+> Ten dokument jest aktualizowany po każdej sesji. Status: ✅ Zrobione | 🔄 W toku | ⬜ Do zrobienia
+
+---
+
+## STATUS PROJEKTU — 2026-05-15
+
+| Faza | Status | Opis |
+|------|--------|------|
+| Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
+| Faza 1 — Setup | 🔄 W toku | Projekt Godot gotowy, PR #1 otwarty |
+| Faza 2 — Core Gameplay | ⬜ Nie rozpoczęta | — |
+| Faza 3 — Treść i poziomy | ⬜ Nie rozpoczęta | — |
+| Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | — |
+| Faza 5 — Polish i testy | ⬜ Nie rozpoczęta | — |
+| Faza 6 — iOS Port | ⬜ Nie rozpoczęta | — |
+
+### Ostatnio zrobione
+- ✅ Repozytorium GitHub: [github.com/mionsek/life-death](https://github.com/mionsek/life-death)
+- ✅ GDD, OPEN_QUESTIONS, ROADMAP — wszystkie OQ zamknięte
+- ✅ Godot 4.6.2 zainstalowany
+- ✅ Projekt Godot skonfigurowany (360×640, GL Compatibility, GDScript)
+- ✅ GUT v9.6.0 (testy jednostkowe)
+- ✅ Scena `MainMenu.tscn` + skrypt + 4 testy jednostkowe
+- ✅ PR #1 otwarty: `001-project-setup`
+
+### Do zrobienia — następny krok
+- ⬜ Przejrzeć i zmergować PR #1
+- ⬜ Mechanika ruchu gracza (branch `002-player-movement`)
+- ⬜ Sterowanie dotykowe (D-pad)
+- ⬜ Połączenie WiFi Direct / Bluetooth (branch `003-multiplayer-connection`)
+
+---
+
 > **WAŻNE:** Żadna implementacja nie jest uruchamiana dopóki nie zostaną zamknięte kwestie blokujące (🔴) z OPEN_QUESTIONS.md  
 > Ten dokument będzie aktualizowany po każdej sesji planowania.
 
 ---
 
-## Faza 0 — Decyzje Architektoniczne (TERAZ)
-**Cel:** Zamknąć wszystkie blokujące pytania zanim napisze się choć linię kodu.
+## Faza 0 — Decyzje Architektoniczne
+**Status: ✅ ZAKOŃCZONA**
 
-### 0.1 Decyzje do podjęcia (kolejność ważności)
-- [ ] **OQ-02** — Wybór silnika / stosu technologicznego
-- [ ] **OQ-01** — Protokół komunikacji offline (Bluetooth / WiFi Direct)
-- [ ] **OQ-04** — Mechanika śmierci i respawnu
-- [ ] **OQ-09** — System synchronizacji zapisu
-- [ ] **OQ-11** — Widok kamery (wspólny vs osobny per gracz)
+### 0.1 Decyzje podjęte
+- [x] **OQ-02** — Silnik: **Godot 4** (GDScript)
+- [x] **OQ-01** — Protokół: WiFi Direct + Bluetooth fallback
+- [x] **OQ-04** — Śmierć: freeze + reset poziomu, bez limitu żyć
+- [x] **OQ-09** — Zapis: system Pair ID
+- [x] **OQ-11** — Kamera per gracz (~50% mapy)
+- [x] OQ-03, 05, 06, 07, 08, 10, 12, 13, 14, 15 — patrz OPEN_QUESTIONS.md
 
-### 0.2 Deliverables fazy 0
-- [ ] Uzupełniony `OPEN_QUESTIONS.md` (zamknięte kwestie 🔴)
-- [ ] Decyzja o stosie tech zapisana w `TECH_STACK.md`
-- [ ] Szkic mapy poziomów (nawet ołówkiem/zdjęcie)
-- [ ] Lista 15+ zagadek do puli
+### 0.2 Deliverables
+- [x] `OPEN_QUESTIONS.md` — wszystkie kwestie zamknięte
+- [x] Decyzje tech zapisane w GDD i OQ
+- [ ] Szkic mapy poziomów (drzewo) — do zrobienia
+- [ ] Baza zagadek (`docs/PUZZLES.md`) — do zrobienia
 
 ---
 
 ## Faza 1 — Prototyp Proof of Concept
-**Cel:** Minimalny działający prototyp z core mechaniką (2 tygodnie–1 miesiąc)
+**Status: 🔄 W TOKU** (PR #1 otwarty)
 
 ### 1.1 Setup projektu
-- [ ] Instalacja wybranego silnika
-- [ ] Konfiguracja projektu (Android target)
-- [ ] Repozytorium git (GitHub/GitLab)
-- [ ] Podstawowa struktura katalogów projektu
+- [x] Instalacja Godot 4.6.2
+- [x] Konfiguracja projektu (360×640, GL Compatibility, GDScript)
+- [x] Repozytorium git + GitHub
+- [x] Struktura katalogów projektu
+- [x] GUT v9.6.0 (testy jednostkowe)
+- [x] Scena `MainMenu.tscn` + testy
+- [ ] **Merge PR #1** do `master`
 
 ### 1.2 Mechanika podstawowa (jeden gracz, jeden poziom testowy)
 - [ ] Gracz może się poruszać (lewo/prawo)
@@ -40,15 +77,14 @@
 - [ ] Sterowanie dotykowe (wirtualny D-pad)
 
 ### 1.3 Mechanika 2 graczy (offline)
-- [ ] Implementacja połączenia Bluetooth/WiFi Direct
+- [ ] Implementacja połączenia WiFi Direct / Bluetooth
 - [ ] Synchronizacja pozycji obu graczy w czasie rzeczywistym
-- [ ] Test latencji — czy gra jest "grywalna" z tym opóźnieniem?
-- [ ] Screen: Gracz 1 widzi Gracza 2, Gracz 2 widzi Gracza 1
+- [ ] Test latencji — cel: < 100ms
+- [ ] Gracz 1 widzi Gracza 2 na swoim ekranie i odwrotnie
 
 ### 1.4 Testowanie kluczowe
 - [ ] Test na 2 fizycznych telefonach Android
-- [ ] Zmierzone opóźnienie (cel: < 100ms)
-- [ ] Test w trybie lotniczym (WiFi/komórkowe OFF, tylko Bluetooth)
+- [ ] Test w trybie lotniczym (WiFi/komórkowe OFF)
 
 **Milestone:** Dwóch graczy chodzi po platformie w tym samym czasie offline ✅
 

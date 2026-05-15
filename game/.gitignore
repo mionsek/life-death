@@ -1,0 +1,8 @@
+# Godot-specific ignores
+.godot/
+*.import
+export_presets.cfg
+export_credentials.cfg
+
+# Android build files
+android/build/

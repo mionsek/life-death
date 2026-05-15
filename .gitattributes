@@ -1,0 +1,21 @@
+# Handle line endings automatically for all files
+* text=auto
+
+# Godot-specific files — force LF
+*.gd text eol=lf
+*.tscn text eol=lf
+*.tres text eol=lf
+*.godot text eol=lf
+*.cfg text eol=lf
+*.uid text eol=lf
+
+# Binary assets — no line ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary

@@ -1,7 +1,7 @@
 # Life & Death — Game Design Document (GDD)
 
-> **Status:** Draft v0.1 — iteracyjne uzupełnianie  
-> **Ostatnia aktualizacja:** 2026-05-14  
+> **Status:** Draft v0.2 — iteracyjne uzupełnianie  
+> **Ostatnia aktualizacja:** 2026-05-15  
 > **Język dokumentu:** Polski (treści w grze: Angielski + Polski do wyboru)
 
 ---
@@ -13,7 +13,9 @@
 | Tytuł roboczy | **Life & Death** |
 | Gatunek | 2D Platformer / Kooperacyjna układanka |
 | Platformy | Android (priorytet), iOS |
-| Tryb gry | 2 graczy — lokalny offline (Bluetooth / WiFi Direct) |
+| Tryb gry | 2 graczy — lokalny offline (WiFi Direct + Bluetooth fallback) |
+| Silnik | **Godot 4** (GDScript) |
+| Monetyzacja | Darmowa + reklamy; opcja bez reklam za 20 zł |
 | Inspiracja | Fireboy and Watergirl, It Takes Two |
 | Styl graficzny | 2D Pixel Art |
 | Języki | Angielski (domyślny), Polski |
@@ -53,19 +55,24 @@ Gra opiera się na odwiecznym kontraście: **Życia i Śmierci**. Dwoje graczy w
 | Zdolność | Opis |
 |----------|------|
 | Odporność na ogień / lawę | Może chodzić po ławie i przez ogień bez obrażeń |
-| Przejście przez Mroczne Drzwi | Specjalne bramy otwierane tylko przez Kostuchę |
-| Niewidzialność w cieniu | W ciemnych strefach staje się niewidoczna dla pułapek (do potwierdzenia) |
-| Podatność | Światło święte, woda święcona, kwiaty/natura |
+| Widoczność w mroku | W ciemnych strefach widzi normalnie |
+| Podatność | Kwiaty / natura (spowalniają), chmury (śmiertelną przepaść) |
 
-### 3.3 Zdolności unikalne — Strażniczka Życia
+### 3.4 Zdolności unikalne — Strażniczka Życia
 | Zdolność | Opis |
 |----------|------|
 | Chodzenie po chmurach | Może stąpać po chmurach jak po ziemi |
-| Uzdrawianie platform | Może przywracać zniszczone/rozpadające się platformy |
-| Odporność na wodę / lód | Może pływać i chodzić po lodzie |
-| Podatność | Ogień, lawa, mrok, trucizna |
+| Bezpieczna w kwiatach / naturze | Kwiaty i rośliny jej nie spowalniają |
+| Podatność | Ogień / lawa (śmiertelne), ciemne strefy (brak widoczności = śmierć) |
 
-> ⚠️ **Do rozwinięcia:** Lista przeszkód specyficznych dla każdej postaci — patrz OPEN_QUESTIONS.md #OQ-03
+### 3.5 Przeszkody wspólne (niebezpieczne dla obu)
+| Przeszkoda | Opis mechaniki |
+|-----------|----------------|
+| Zamknięta brama / drzwi | Jeden gracz ciągnie dźwignię, drugi przechodzi |
+| Ruchome kolce | Śmiertelne dla obu, wymagają synchronizacji |
+| Spadające platformy | Uruchamiają się po wejściu — oboje muszą zdążyć |
+
+> 📄 Pełna lista rozwijana w OPEN_QUESTIONS.md #OQ-03
 
 ---
 
@@ -98,6 +105,12 @@ ZIEMIA: L1 → L2 → L3 → [rozwidlenie]
                               └── PIEKŁO: P1 → P2 → P3 → BOSS_PIEKŁO
 ```
 
+### 4.3 Liczba poziomów
+- **Ziemia:** 20 poziomów (trudność równa dla obu postaci)
+- **Niebo:** 20 poziomów (trudniejsze dla Kostuchy)
+- **Piekło:** 20 poziomów (trudniejsze dla Strażniczki)
+- **Łącznie: 60 poziomów**
+
 ### 4.4 Poziomy Klucza (wymagane do ukończenia gry)
 Specjalne poziomy, w których **oboje gracze muszą zebrać klucze**:
 - Klucz Nieba: zbiera Strażniczka (Aureola-klucz) → otwiera Bramę Nieba
@@ -125,7 +138,7 @@ Dostępny między poziomami. Ulepszenia są **nieznacznie** wpływające na rozg
 |-----------|------|---------|
 | Szybkość | Zwiększa prędkość poruszania | 1–3 |
 | Wyskok | Wyższy / dalszy skok | 1–3 |
-| ❓ Trzecia zdolność | Do ustalenia — patrz OQ-07 | 1–3 |
+| Czasowa nieśmiertelność | 10 sekund odporności na śmiertelne przeszkody (nawet te specyficzne dla postaci); raz na poziom | 1–3 |
 
 ---
 
@@ -146,27 +159,28 @@ Dostępny między poziomami. Ulepszenia są **nieznacznie** wpływające na rozg
 | Zatruty grunt | Kostucha (?) |
 
 ### 6.3 Zagadki
-Zagadki blokują przejście do następnego obszaru. Typy:
+Zagadki blokują przejście do następnego obszaru. **Nie występują w początkowych poziomach** — wprowadzane stopniowo. Nie każdy poziom je zawiera.
 
-#### Typ A — Pytania / Zagadki słowne
-- Pytanie wyświetlone na ekranie
-- Gracz wpisuje odpowiedź (klawiatura wirtualna) LUB wybiera z opcji
-- Przykład: *"Co żyje gdy jesz, a umiera gdy pijesz? → OGIEŃ"*
+**Mechanika:**
+- Format: **4 opcje do wyboru** (A/B/C/D) — kliknięcie odpowiedzi
+- **Limit czasu: 5–10 sekund** — po upływie brama zamyka się bezpowrotnie (konieczny reset poziomu)
+- Dostępne w języku **EN i PL** (zależnie od ustawionego języka)
+
+#### Typ A — Zagadki słowne (riddles)
+- Przykład: *"What lives when fed, dies when given drink?"* → A) Water B) **Fire** C) Air D) Earth
+- Głównie w strefie Nieba
 
 #### Typ B — Działania matematyczne
-- Na drzwiach/tablicy pojawia się równanie
-- Gracz wpisuje wynik
-- Przykład: `6 × 7 = ?` → gracz wpisuje `42` → drzwi się otwierają
+- Na drzwiach/tablicy pojawia się równanie — gracz wybiera wynik z 4 opcji
+- Przykład: `6 × 7 = ?` → A) 36 B) 48 C) **42** D) 56
+- Głównie w strefie Piekła
 
 #### Typ C — Zagadki kooperacyjne
-- Oboje gracze muszą stać na przyciskach/płytach jednocześnie
-- Czas synchronizacji: np. oboje muszą nacisnąć przycisk w ciągu 3 sekund od siebie
-- Jeden gracz przytrzymuje dźwignię, drugi przechodzi przez otwarte drzwi
+- Oboje gracze muszą stać na płytach / nacisnąć przyciski jednocześnie
+- Jeden przytrzymuje dźwignię, drugi przechodzi przez otwarte drzwi
+- Występują we wszystkich strefach
 
-#### Typ D — Zagadki środowiskowe
-- Znalezienie właściwej kolejności uruchamiania mechanizmów
-- Odbijanie wiązek światła lusterkami
-- Budowanie mostu z dostępnych elementów
+> 📄 Pełna baza zagadek: `docs/PUZZLES.md` (do stworzenia)
 
 ---
 
@@ -177,14 +191,13 @@ Zagadki blokują przejście do następnego obszaru. Typy:
 - Oboje gracze na swoich telefonach
 - Minimalne opóźnienie
 
-### 7.2 Opcje techniczne (do decyzji)
-| Technologia | Zalety | Wady |
-|------------|--------|------|
-| **Bluetooth Classic / BLE** | Prosty w konfiguracji, ~10m zasięg | Wolniejszy, latencja do 50ms |
-| **WiFi Direct (P2P)** | Szybszy, ~200Mbps | Bardziej skomplikowana konfiguracja |
-| **Hotspot lokalny** | Bardzo szybki | Jedno urządzenie musi stworzyć hotspot |
+### 7.2 Architektura
+| Platforma | Technologia |
+|-----------|-------------|
+| Android | WiFi Direct (Wi-Fi P2P API) + Bluetooth fallback |
+| iOS | Multipeer Connectivity Framework (WiFi Direct / BT / lokalny WiFi) |
 
-> ⚠️ **Do decyzji:** patrz OQ-01
+**Działa w trybie lotniczym:** Bluetooth w trybie lotniczym jest aktywny — oboje mogą grać na pokładzie samolotu.
 
 ### 7.3 Flow połączenia (wstępny)
 1. Jeden gracz wybiera "Hostuj grę" → generuje kod/QR
@@ -200,12 +213,15 @@ Zagadki blokują przejście do następnego obszaru. Typy:
 - Oboje gracze muszą mieć możliwość wznowienia tej samej sesji
 - Działanie offline
 
-### 8.2 Koncepcja zapisu
-- **Slot zapisu** zawiera: ukończone poziomy, zebrane monety, zakupione ulepszenia, bieżący poziom
-- Zapis lokalny na urządzeniu + opcjonalny eksport (kod/plik)
-- Mechanizm synchronizacji przy ponownym połączeniu: jedno urządzenie jest "host" zapisu
+### 8.2 System Pair ID
+- Przy pierwszym połączeniu dwóch urządzeń generowany jest unikalny **Pair ID** (UUID)
+- Pair ID zapisywany na obu telefonach lokalnie
+- Zapis przypisany do Pair ID — para A+B ma swój zapis, A+C zaczyna od nowa
+- Host przechowuje dane zapisu, synchronizuje z gościem przy połączeniu
 
-> ⚠️ **Do decyzji:** patrz OQ-09
+**Co jest zapisywane:** ukończone poziomy, monety, zakupy w sklepie, bieżący poziom
+
+> 📄 Szczegóły techniczne: OPEN_QUESTIONS.md #OQ-09
 
 ---
 
@@ -263,13 +279,14 @@ Zagadki blokują przejście do następnego obszaru. Typy:
 
 ---
 
-## 11. Monetyzacja (opcjonalnie, do decyzji)
+## 11. Monetyzacja
 
-- Gra bezpłatna z opcjonalnym sklepem kosmetycznym?
-- Jednorazowy zakup?
-- Reklamy między poziomami?
-
-> ⚠️ patrz OQ-10
+| Model | Szczegóły |
+|-------|----------|
+| Cena bazowa | **Darmowa** |
+| Reklamy | Po ukończeniu każdego poziomu LUB po każdej śmierci (Google AdMob / App Store Ads) |
+| Zakup premium | **20 zł** jednorazowo — usuwa wszystkie reklamy na stałe |
+| Sklep in-game | Monety zdobywane wyłącznie grą, brak mikropłatności |
 
 ---
 

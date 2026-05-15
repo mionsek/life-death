@@ -7,155 +7,167 @@
 
 ## TECHNOLOGIA
 
-### OQ-01 🔴 Protokół komunikacji offline (Bluetooth vs WiFi Direct)
-**Pytanie:** Jakiego protokołu użyć do połączenia 2 graczy bez internetu?
+### OQ-01 ✅ Protokół komunikacji offline (Bluetooth vs WiFi Direct)
+**Decyzja:** WiFi Direct (priorytet) + Bluetooth jako fallback.
 
-**Opcje:**
-- **Bluetooth Classic** — prosty UX ("znajdź urządzenia"), ~10m zasięgu, latencja ~20-50ms
-- **BLE (Bluetooth Low Energy)** — energooszczędny, ale ograniczona przepustowość
-- **WiFi Direct** — szybszy, ale trudniejszy do sparowania, ~100m zasięgu
-- **Lokalny hotspot** — najszybszy, ale wymaga od jednego gracza wyłączenia internetu
+**Implementacja per platforma:**
+| Platforma | Technologia |
+|-----------|-------------|
+| Android | WiFi Direct (Wi-Fi P2P) — natywne API |
+| iOS | Multipeer Connectivity Framework — Apple's odpowiednik, automatycznie używa WiFi Direct / Bluetooth / lokalnego WiFi zależnie od dostępności |
 
-**Kontekst:** Gra musi działać na pokładzie samolotu (tryb lotniczy). Bluetooth działa w trybie lotniczym — WiFi Direct na Androidzie też działa bez połączenia z internetem.
+> ⚠️ **Uwaga iOS:** Nie ma bezpośredniego WiFi Direct API na iOS — Multipeer Connectivity działa offline i jest dostępne w trybie lotniczym (używa Bluetooth gdy WiFi niedostępne). Działa między dwoma iPhone'ami bez internetu. ✅
 
-**Rekomendacja do dyskusji:** WiFi Direct (szybszy, niższe opóźnienia) z fallbackiem na Bluetooth.
-
-**Status:** ❓ Otwarte
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-02 🔴 Silnik / Stos technologiczny
-**Pytanie:** Którą technologię wybrać do budowy gry?
+### OQ-02 ✅ Silnik / Stos technologiczny
+**Decyzja:** **Godot 4** (język: GDScript)
 
-| Opcja | Zalety | Wady | Trudność |
-|-------|--------|------|---------|
-| Unity (C#) | Ogromna społeczność, świetne 2D, pluginy Bluetooth | Cięższy, licencja | ⭐⭐⭐ |
-| Godot 4 (GDScript) | Darmowy, lekki, pixel art-friendly | Mniejsza społeczność, Bluetooth = plugin | ⭐⭐ |
-| Flutter + Flame | Dobry dla mobile, jeden język (Dart) | Mniej zasobów dla gier | ⭐⭐ |
-| React Native + Phaser | JS/TS, web-based game | Słabsza wydajność dla gier | ⭐ |
+**Uzasadnienie wyboru dla osoby bez doświadczenia:**
+- GDScript to język podobny do Pythona — czytelny, prosty, łatwy do nauki
+- Godot jest darmowy i otwartoźródłowy (żadnych opłat licencyjnych)
+- Natywne wsparcie dla 2D pixel art (wbudowany tilemap, animacje, kamera)
+- Lżejszy edytor niż Unity — mniej przytłaczający na start
+- Export do Android i iOS wbudowany w edytor
+- Pluginy do WiFi Direct / Bluetooth (np. `godot-multiplayer-p2p`)
 
-**Pytanie pomocnicze:** Czy masz doświadczenie z którymkolwiek z tych środowisk?
+> ℹ️ Copilot będzie pomagać na każdym etapie — od instalacji Godot po pisanie każdej sceny.
 
-**Status:** ❓ Otwarte
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-03 🟡 Pełna lista przeszkód specyficznych dla postaci
-**Pytanie:** Jakie konkretnie elementy planszy są bezpieczne dla jednej postaci, a śmiertelne dla drugiej?
-
-**Propozycja bazowa:**
+### OQ-03 � Pełna lista przeszkód specyficznych dla postaci
+**Aktualna lista (zatwierdzona):**
 | Element | Kostucha | Strażniczka |
 |---------|----------|-------------|
 | Ogień / Lawa | ✅ Bezpieczne | ☠️ Śmiertelne |
 | Chmury | ☠️ Przepada | ✅ Chodzi po nich |
-| Woda święcona / Blask | ☠️ Śmiertelne | ✅ Bezpieczne |
-| Ciemne strefy (mrok) | ✅ Bezpieczne | ☠️ Widoczność |
-| Kwiaty / natura | ☠️ Spowalnia? | ✅ Bezpieczne |
-| Trucizna | ? | ? |
-| Lód / Zimno | ? | ? |
-| Elektryczność | ? | ? |
+| Ciemne strefy (mrok) | ✅ Bezpieczne | ☠️ Brak widoczności (śmiertelne) |
+| Kwiaty / natura | ☠️ Spowalnia | ✅ Bezpieczne |
 
-**Status:** ❓ Otwarte — potrzeba minimum 5-6 typów przeszkód
+**Przeszkody wspólne (niebezpieczne dla obu):**
+| Element | Opis |
+|---------|------|
+| Zamknięta brama / drzwi | Jeden gracz musi pociągnąć dźwignię, żeby drugi przeszedł |
+| Ruchome kolce | Śmiertelne dla obu, wymagają synchronizacji |
+| Spadające platformy | Uruchamiają się po wejściu — oboje muszą zdążyć |
 
----
+**Propozycje do rozważenia (nie zatwierdzone):**
+- Woda święcona / Blask — śmiertelne dla Kostuchy (element Nieba)
+- Lód — spowalnia Strażniczkę (element Piekła?)
+- Elektryczność — śmiertelna dla obu, ale Kostucha może ją zablokować?
 
-### OQ-04 🟡 Mechanika śmierci i respawnu
-**Pytanie:** Co się dzieje gdy postać trafi na śmiertelną przeszkodę?
-
-**Opcje:**
-- A) Checkpoint: wraca do ostatniego punktu kontrolnego, druga osoba czeka
-- B) Wspólny reset: oboje cofają się do checkpointu
-- C) System żyć (np. 3 życia na poziom)
-- D) Brak lives — możesz próbować ile razy chcesz
-
-**Status:** ❓ Otwarte
+**Status:** 🔄 W toku — lista bazowa zatwierdzona, do rozbudowania przy projektowaniu poziomów
 
 ---
 
-### OQ-05 🟡 Ile poziomów łącznie?
-**Pytanie:** Jaka jest planowana liczba poziomów?
+### OQ-04 ✅ Mechanika śmierci i respawnu
+**Decyzja:**
+- Gdy jedna postać ginie → gra zatrzymuje się (freeze)
+- Ekran: opcja **Reset poziomu** lub **Wyjdź do menu głównego**
+- Brak systemu żyć — nieograniczona liczba prób
+- Brak checkpointów wewnątrz poziomu — reset zawsze od początku poziomu
 
-**Propozycja:**
-- Ziemia: 5-7 poziomów
-- Niebo: 5 poziomów + 1 boss
-- Piekło: 5 poziomów + 1 boss
-- Łącznie: ~17-19 poziomów + 2 bossów
-
-**Status:** ❓ Otwarte
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-06 🟡 Walki z bossem (Boss Fight)
-**Pytanie:** Czy będą bossowie na końcu każdej strefy?
+### OQ-05 ✅ Ile poziomów łącznie?
+**Decyzja:** **60 poziomów** — po 20 na każdą strefę:
+- Ziemia (Earth): 20 poziomów — równa trudność
+- Niebo (Heaven): 20 poziomów — trudniejsze dla Kostuchy
+- Piekło (Hell): 20 poziomów — trudniejsze dla Strażniczki
 
-**Propozycja:**
-- Boss Nieba: "Archanioł" — trudniejszy dla Kostuchy
-- Boss Piekła: "Arcydemon" — trudniejszy dla Strażniczki
-- Finałowy boss (ziemia?): wymaga idealnej kooperacji obu postaci
-
-**Status:** ❓ Otwarte
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-07 🟢 Trzecia zdolność w sklepie
-**Pytanie:** Co byłoby trzecią dostępną opcją w sklepie obok szybkości i wyskoku?
+### OQ-06 � Walki z bossem (Boss Fight)
+**Decyzja:** Brak bossów w obecnym planie — odkładamy do późniejszej decyzji.
 
-**Propozycje:**
-- Czasowy nieśmiertelność / tarcza (np. 5 sekund na poziom)
-- Dodatkowe życie
-- Podgląd trasy (mapa poziomu na chwilę)
-- Teleportacja krótka (dash)
-- Magnetyzm monet (zbieranie z większej odległości)
+> Można rozważyć specjalny "poziom finałowy" (nie boss fight, ale szczególnie wymagający poziom kooperacyjny) po ukończeniu wszystkich 60 poziomów — do decyzji w przyszłości.
 
-**Status:** ❓ Otwarte
+**Status:** 🔄 Odłożone
+
+---
+
+### OQ-07 ✅ Trzecia zdolność w sklepie
+**Decyzja:** **Czasowa nieśmiertelność (10 sekund)**
+- Pozwala przejść przez przeszkodę normalnie śmiertelną dla danej postaci
+- Przykład: Kostucha przez 10 sekund może chodzić po chmurach; Strażniczka przez ogień
+- Używalne raz per poziom (po zakupie)
+- Aktywowane przyciskiem — gracz decyduje kiedy użyć
+
+**Status:** ✅ Zamknięte
 
 ---
 
 ## ROZGRYWKA
 
-### OQ-08 🟡 Liczba i typy zagadek na poziom
-**Pytanie:** Ile zagadek planujemy per poziom i jakiego typu?
+### OQ-08 ✅ Zagadki — zasady i mechanika
+**Decyzja:**
+- Zagadki **nie** pojawiają się w pierwszych poziomach — wprowadzane stopniowo od późniejszych etapów
+- Rozmieszczenie losowe — nie każdy poziom ma zagadkę
+- Format: **4 opcje do wyboru** (A/B/C/D) — gracz klika poprawną odpowiedź
+- **Limit czasu: 5–10 sekund** — po upływie czasu brama/portal zamykają się bezpowrotnie (blokada do końca poziomu lub konieczność resetu)
+- Każda zagadka ma wersję **EN i PL** (zależnie od wybranego języka)
 
-**Propozycja:** 1-2 zagadki per poziom, rotacja typów:
-- Typ A (słowne): głównie w Niebie (filozoficzne, duchowe)
-- Typ B (matematyczne): głównie w Piekle (zimne, logiczne)
-- Typ C (kooperacyjne): wszędzie
-- Typ D (środowiskowe): głównie w Ziemi
+**Typy zagadek per strefa:**
+| Typ | Strefa | Opis |
+|-----|--------|------|
+| Słowne (riddles) | Niebo | Filozoficzne, duchowe, o życiu |
+| Matematyczne | Piekło | Działania, logika, liczby |
+| Kooperacyjne (obaj gracze) | Wszędzie | Oboje stoją na przyciskach, odpowiadają jednocześnie |
 
-**Baza zagadek słownych do rozbudowania:**
-1. "Co żyje gdy jesz, umiera gdy pijesz?" → Ogień
-2. "Jestem przed tobą, za tobą, ale nie możesz mnie dotknąć" → Przyszłość
-3. "Im więcej oddajesz, tym więcej masz" → Miłość / Wiedza
-4. *(dodaj więcej)*
+**Baza zagadek słownych (do rozbudowania w osobnym pliku):**
+1. PL: "Co żyje gdy jesz, umiera gdy pijesz?" / EN: "What lives when fed, dies when given drink?" → Ogień / Fire
+2. PL: "Im więcej oddajesz, tym więcej masz" / EN: "The more you give, the more you have" → Miłość / Love
+3. PL: "Jestem zawsze przed tobą, nigdy za tobą" / EN: "Always in front of you, never behind" → Przyszłość / Future
 
-**Status:** ❓ Otwarte
+> 📄 Pełna baza zagadek zostanie zapisana w `docs/PUZZLES.md`
 
----
-
-### OQ-09 🔴 System zapisu progresu — synchronizacja
-**Pytanie:** Jak synchronizować zapis między dwoma urządzeniami?
-
-**Problem:** Gracze rozchodzą się, każdy ma swój telefon. Jak wznowić tę samą sesję?
-
-**Opcje:**
-- A) Jedno urządzenie jest "masterem" zapisu — drugie pobiera przy połączeniu
-- B) Oboje eksportują kod sesji (ciąg znaków) i porównują przy starcie
-- C) Zapis QR-code — jeden skanuje od drugiego
-- D) Plik zapisu przez share (AirDrop, Bluetooth Share)
-
-**Status:** ❓ Otwarte
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-10 🟢 Model monetyzacji
-**Pytanie:** Czy gra będzie płatna, darmowa, czy freemium?
+### OQ-09 � System zapisu progresu — synchronizacja
+**Wymaganie kluczowe:** Zapis jest przypisany do konkretnej **pary urządzeń** — A+B mają swój zapis, A+C zaczynają od nowa.
 
-**Opcje:**
-- Free z opcjonalnymi skórkami kosmetycznymi (nie wpływają na gameplay)
-- One-time purchase (~$2-5)
-- Free z reklamami między poziomami (opt-out za opłatą)
+**Proponowane rozwiązanie — System Pair ID:**
+1. Przy **pierwszym połączeniu** dwóch urządzeń → generowany jest unikalny **Pair ID** (UUID na podstawie ID obu urządzeń)
+2. Pair ID zapisywany lokalnie na **obu** telefonach
+3. Każdy slot zapisu jest powiązany z Pair ID
+4. Przy kolejnym połączeniu: urządzenia wymieniają Pair ID
+   - Zgodne → wczytanie wspólnego zapisu ✅
+   - Niezgodne (inna para) → nowa gra, brak dostępu do cudzego zapisu ✅
+5. Dane zapisu trzyma **host** (gracz który hostuje sesję), synchronizuje z gościem przy połączeniu
 
-**Status:** ❓ Otwarte
+**Co jest zapisywane:**
+- Ukończone poziomy (per strefa)
+- Zebrane monety (osobno per gracz)
+- Zakupione ulepszenia (osobno per gracz)
+- Bieżący poziom (jeśli przerwano w trakcie)
+
+**Status:** 🔄 Propozycja gotowa — czeka na akceptację
+
+---
+
+### OQ-10 ✅ Model monetyzacji
+**Decyzja:** **Darmowa z reklamami + opcja usunięcia reklam**
+
+| Element | Szczegóły |
+|---------|----------|
+| Cena bazowa | Darmowa |
+| Reklamy | Po ukończeniu każdego poziomu LUB po każdej śmierci |
+| Opcja premium | Jednorazowy zakup: **20 zł** — usuwa wszystkie reklamy |
+| Sklep in-game | Bez zmian — monety zdobywane grą, brak mikropłatności |
+
+> ℹ️ Reklamy: Google AdMob (Android) + App Tracking Transparency (iOS). Zakup "bez reklam" przez Google Play Billing / App Store In-App Purchase.
+
+**Status:** ✅ Zamknięte
 
 ---
 

@@ -151,7 +151,7 @@
 - Zakupione ulepszenia (osobno per gracz)
 - Bieżący poziom (jeśli przerwano w trakcie)
 
-**Status:** 🔄 Propozycja gotowa — czeka na akceptację
+**Status:** ✅ Zamknięte
 
 ---
 
@@ -173,75 +173,102 @@
 
 ## UX / INTERFEJS
 
-### OQ-11 🟡 Widok kamery — podział ekranu czy osobny?
-**Pytanie:** Skoro każdy ma swój telefon — co widzi każdy gracz?
+### OQ-11 ✅ Widok kamery
+**Decyzja:** Każdy gracz śledzi **swoją postać** na własnym ekranie.
+- Widoczny obszar: duży (~50% mapy poziomu) — gracz widzi otoczenie, może obserwować teren przed sobą
+- Kamera: płynnie podąża za postacią gracza
+- Oba telefony renderują ten sam stan gry, każdy z własnym centrum kamery
+- Synchronizacja: pozycje obu postaci przesyłane między urządzeniami w czasie rzeczywistym
 
-**Opcje:**
-- A) Każdy widzi cały poziom (wspólna kamera, prosta)
-- B) Każdy śledzi swoją postać (osobna kamera per gracz) — potrzeba synchronizacji stanu
-- C) Hybryda: podzielony widok tylko gdy gracze są daleko od siebie
-
-**Status:** ❓ Otwarte
-
----
-
-### OQ-12 🟢 Komunikacja w grze między graczami
-**Pytanie:** Czy gracze mogą się komunikować w grze?
-
-**Opcje:**
-- Emotes / ikony (serce, kciuk, alert)
-- Ping na mapie ("idź tu")
-- Brak komunikacji in-game (używają własnego telefonu do rozmowy)
-
-**Status:** ❓ Otwarte
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-13 🟡 Sterowanie
-**Pytanie:** Jak będzie wyglądać sterowanie na telefonie?
+### OQ-12 ✅ Komunikacja w grze między graczami
+**Decyzja:** Brak jakiejkolwiek komunikacji in-game.
+- Gracze komunikują się poza grą (rozmowa, telefon)
+- Upraszcza implementację i UI
 
-**Propozycja:**
-- Lewy kciuk: D-pad / joystick do poruszania
-- Prawy kciuk: przycisk skoku + akcja
-- Ewentualnie: swipe gestures dla specjalnych zdolności
+**Status:** ✅ Zamknięte
 
-**Status:** ❓ Otwarte
+---
+
+### OQ-13 ✅ Sterowanie
+**Decyzja:** Wirtualny D-pad + przyciski akcji.
+- Lewy kciuk: D-pad (lewo/prawo) lub analogowy joystick
+- Prawy kciuk: przycisk **Skok** + przycisk **Akcja** (interakcja z dźwignią, aktywacja nieśmiertelności itp.)
+- Swipe gestures: opcjonalnie do rozważenia w późniejszym etapie
+
+**Status:** ✅ Zamknięte
 
 ---
 
 ## GRAFIKA / DŹWIĘK
 
-### OQ-14 🟢 Kto tworzy grafikę?
-**Pytanie:** Czy grafikę tworzymy sami, zlecamy, czy używamy AI + ręczne poprawki?
+### OQ-14 ✅ Kto tworzy grafikę?
+**Decyzja:** Grafika tworzona samodzielnie z pomocą AI.
 
-**Workflow propozycja:**
-1. Generuj koncepty przez Midjourney/DALL-E (prompt: "pixel art 16-bit [temat], game asset, transparent background")
-2. Importuj do Aseprite, dopracuj piksele ręcznie
-3. Stwórz spójny tileset
+**Workflow:**
+1. Generuj koncepty przez Midjourney / DALL-E 3 (prompt: `"pixel art 16-bit [temat], game asset, transparent background"`)
+2. Importuj do **Aseprite**, dopracuj piksele ręcznie, dostosuj paletę
+3. Stwórz spójny tileset per strefa (Ziemia / Niebo / Piekło)
 4. Animuj klatka po klatce w Aseprite
 
-**Status:** ❓ Otwarte
+**Narzędzia:**
+| Narzędzie | Rola | Koszt |
+|-----------|------|-------|
+| Midjourney / DALL-E 3 | Generowanie konceptów i bazy grafik | Płatne (subskrypcja) |
+| Aseprite | Edycja, tileset, animacje pixel art | ~$20 |
+| Libresprite | Alternatywa dla Aseprite | Darmowy |
+| Leonardo.ai | Alternatywa z darmowymi kredytami | Darmowy (limit) |
+
+**Status:** ✅ Zamknięte
 
 ---
 
-### OQ-15 🟢 Muzyka i efekty dźwiękowe
-**Pytanie:** Skąd pochodzi muzyka i SFX?
+### OQ-15 ✅ Muzyka i efekty dźwiękowe
+**Decyzja:** Tylko źródła pozwalające na **komercyjne użycie** — lub muzyka zrobiona samodzielnie.
 
-**Darmowe zasoby:**
-- [OpenGameArt.org](https://opengameart.org) — darmowe assety CC
-- [Freesound.org](https://freesound.org) — darmowe SFX
-- [itch.io](https://itch.io/game-assets/free) — paczki game assets
-- **AI:** Suno, Udio (generowanie muzyki), ElevenLabs (głos/narracja)
+**Opcje z licencją komercyjną:**
+| Źródło | Typ | Licencja komercyjna | Uwagi |
+|--------|-----|--------------------|---------|
+| [OpenGameArt.org](https://opengameart.org) | Muzyka + SFX | ✅ CC0 / CC-BY | Sprawdzaj licencję per utwór — tylko CC0 lub CC-BY |
+| [Freesound.org](https://freesound.org) | SFX | ✅ CC0 wymagane | Filtruj: `License: Creative Commons 0` |
+| [itch.io — asset packs](https://itch.io/game-assets) | Muzyka + SFX | ✅ (płatne paczki) | Wiele paczek z jawną licencją komercyjną |
+| **Suno** (AI muzyka) | Muzyka | ✅ Plan Pro/Premier | Plan darmowy NIE pozwala na komercję; płatny — tak |
+| **Udio** (AI muzyka) | Muzyka | ✅ Plan płatny | Sprawdź TOS przy użyciu komercyjnym |
+| **FamiStudio / BeepBox** | Tworzenie chiptune | ✅ Własna muzyka | Darmowe narzędzia do tworzenia muzyki 8-bit |
+| **LMMS** | DAW do tworzenia muzyki | ✅ Własna muzyka | Darmowy, dobry dla retro brzmień |
 
-**Status:** ❓ Otwarte
+> ⚠️ **Zasada:** Jeśli nie masz 100% pewności co do licencji komercyjnej — nie używamy. Bezpieczniej stworzyć własną muzykę w FamiStudio/LMMS lub kupić licencjonowaną paczkę.
+
+**Rekomendacja:** Chiptune/pixel muzyka pasuje do stylu gry — **FamiStudio** (darmowy, specjalnie do muzyki NES/chiptune) + SFX z OpenGameArt CC0.
+
+**Status:** ✅ Zamknięte
 
 ---
 
 ## UWAGI DO PRZYSZŁYCH SESJI
 
-- [ ] Zdecydować stos technologiczny (OQ-02) przed jakimkolwiek prototypowaniem
-- [ ] Zdecydować protokół offline (OQ-01) — zależy od stosu tech
-- [ ] Stworzyć listę 15+ zagadek słownych
-- [ ] Narysować szkic mapy poziomów (drzewo)
-- [ ] Zdecydować ile przeszkód specyficznych (minimum 5-6 par)
-- [ ] Przemyśleć fabułę/lore: czy jest cutscenka startowa? Dlaczego kostucha i strażniczka razem?
+### Zamknięte kwestie blokujące ✅
+- OQ-01 WiFi Direct + BT fallback
+- OQ-02 Godot 4 (GDScript)
+- OQ-04 Śmierć = reset poziomu, bez żyć
+- OQ-05 60 poziomów (20 per strefa)
+- OQ-07 Sklep: szybkość / wyskok / nieśmiertelność 10s
+- OQ-08 Zagadki: 4 opcje, limit czasu, EN+PL
+- OQ-09 Pair ID save
+- OQ-10 Free + reklamy + 20 zł premium
+- OQ-11 Kamera per gracz, ~50% mapy
+- OQ-12 Brak komunikacji in-game
+- OQ-13 D-pad + Skok + Akcja
+- OQ-14 Grafika własna + AI (Aseprite + Midjourney)
+- OQ-15 Muzyka CC0 / własna (FamiStudio)
+
+### Jeszcze do omówienia
+- [ ] OQ-03 — rozbudowa listy przeszkód specyficznych przy projektowaniu poziomów
+- [ ] OQ-06 — poziom finałowy (zamiast bossa)?
+- [ ] Fabuła / lore: cutscenka startowa? Dlaczego kostucha i strażniczka razem?
+- [ ] Szkic drzewa poziomów (mapa świata)
+- [ ] Baza zagadek — `docs/PUZZLES.md`
+- [ ] Instalacja Godot 4 i setup projektu (Faza 1)

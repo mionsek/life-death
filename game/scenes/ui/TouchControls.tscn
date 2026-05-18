@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3 uid="uid://touch_controls"]
+
+[ext_resource type="Script" path="res://scripts/ui/touch_controls.gd" id="1"]
+
+[node name="TouchControls" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="BtnLeft" type="Button" parent="HUD"]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -90.0
+offset_right = 96.0
+offset_bottom = -16.0
+text = "◀"
+theme_override_font_sizes/font_size = 24
+
+[node name="BtnRight" type="Button" parent="HUD"]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 104.0
+offset_top = -90.0
+offset_right = 184.0
+offset_bottom = -16.0
+text = "▶"
+theme_override_font_sizes/font_size = 24
+
+[node name="BtnJump" type="Button" parent="HUD"]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -96.0
+offset_top = -90.0
+offset_right = -16.0
+offset_bottom = -16.0
+text = "▲"
+theme_override_font_sizes/font_size = 24

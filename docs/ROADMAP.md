@@ -4,12 +4,12 @@
 
 ---
 
-## STATUS PROJEKTU — 2026-05-15
+## STATUS PROJEKTU — 2026-05-18
 
 | Faza | Status | Opis |
 |------|--------|------|
 | Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
-| Faza 1 — Setup | 🔄 W toku | Projekt Godot gotowy, PR #1 otwarty |
+| Faza 1 — Setup | 🔄 W toku | PR #1 otwarty, branch `002-player-movement` w toku |
 | Faza 2 — Core Gameplay | ⬜ Nie rozpoczęta | — |
 | Faza 3 — Treść i poziomy | ⬜ Nie rozpoczęta | — |
 | Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | — |
@@ -24,11 +24,11 @@
 - ✅ GUT v9.6.0 (testy jednostkowe)
 - ✅ Scena `MainMenu.tscn` + skrypt + 4 testy jednostkowe
 - ✅ PR #1 otwarty: `001-project-setup`
+- 🔄 Branch `002-player-movement` — `player.gd`, `Player.tscn`, `TouchControls.tscn`, `TestLevel.tscn`, `test_player.gd`
 
 ### Do zrobienia — następny krok
 - ⬜ Przejrzeć i zmergować PR #1
-- ⬜ Mechanika ruchu gracza (branch `002-player-movement`)
-- ⬜ Sterowanie dotykowe (D-pad)
+- ⬜ Otworzyć PR `002-player-movement` po weryfikacji
 - ⬜ Połączenie WiFi Direct / Bluetooth (branch `003-multiplayer-connection`)
 
 ---

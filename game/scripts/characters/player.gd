@@ -55,3 +55,8 @@ func set_touch_direction(direction: float) -> void:
 # Requests a jump to be applied on the next physics frame.
 func request_jump() -> void:
 	_jump_requested = true
+
+
+# Triggers the death sequence via DeathManager.
+func die() -> void:
+	DeathManager.trigger_death()

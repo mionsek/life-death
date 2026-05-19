@@ -9,7 +9,7 @@
 | Faza | Status | Opis |
 |------|--------|------|
 | Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
-| Faza 1 — Setup | 🔄 W toku | PR #1 otwarty, `002` zmergowany, `003` w toku |
+| Faza 1 — Setup | 🔄 W toku | `001`–`003` zmergowane, `004` w toku |
 | Faza 2 — Core Gameplay | ⬜ Nie rozpoczęta | — |
 | Faza 3 — Treść i poziomy | ⬜ Nie rozpoczęta | — |
 | Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | — |
@@ -24,11 +24,11 @@
 - ✅ `MainMenu.tscn` + 4 testy
 - ✅ PR #1 (`001-project-setup`) zmergowany
 - ✅ PR #2 (`002-player-movement`) — Player, TouchControls, TestLevel, 6 testów
-- 🔄 Branch `003-second-player` — Guardian, TouchControlsP2, dwa D-pady
+- ✅ PR #3 (`003-second-player`) — Guardian, TouchControlsP2, dwa D-pady, 4 testy
+- 🔄 Branch `004-death-and-reset` — DeathManager, KillZone, DeathScreen, 3 testy
 
 ### Do zrobienia — następne kroki
-- ⬜ Otworzyć PR `003-second-player` po weryfikacji testów
-- ⬜ `004-death-and-reset` — mechanika śmierci (freeze + reset poziomu)
+- ⬜ Otworzyć PR `004-death-and-reset` po weryfikacji testów
 - ⬜ `005-character-abilities` — unikalne zdolności (lawa, chmury, mrok, kwiaty)
 - ⬜ `006-multiplayer-connection` — WiFi Direct + Bluetooth
 

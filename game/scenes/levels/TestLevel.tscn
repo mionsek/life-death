@@ -1,10 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://test_level"]
+[gd_scene load_steps=12 format=3 uid="uid://test_level"]
 
 [ext_resource type="Script" path="res://scripts/levels/test_level.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://touch_controls" path="res://scenes/ui/TouchControls.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://guardian" path="res://scenes/characters/Guardian.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="5"]
+[ext_resource type="Script" path="res://scripts/systems/killzone.gd" id="6"]
+[ext_resource type="PackedScene" uid="uid://death_screen" path="res://scenes/ui/DeathScreen.tscn" id="7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(700, 40)
@@ -14,6 +16,9 @@ size = Vector2(120, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_plat2"]
 size = Vector2(120, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_killzone"]
+size = Vector2(1000, 40)
 
 [node name="TestLevel" type="Node2D"]
 script = ExtResource("1")
@@ -57,3 +62,12 @@ position = Vector2(460, 288)
 [node name="TouchControls" parent="." instance=ExtResource("3")]
 
 [node name="TouchControlsP2" parent="." instance=ExtResource("5")]
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(320, 420)
+script = ExtResource("6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("RectangleShape2D_killzone")
+
+[node name="DeathScreen" parent="." instance=ExtResource("7")]

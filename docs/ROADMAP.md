@@ -4,12 +4,12 @@
 
 ---
 
-## STATUS PROJEKTU — 2026-05-18
+## STATUS PROJEKTU — 2026-05-19
 
 | Faza | Status | Opis |
 |------|--------|------|
 | Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
-| Faza 1 — Setup | 🔄 W toku | PR #1 otwarty, branch `002-player-movement` w toku |
+| Faza 1 — Setup | 🔄 W toku | PR #1 otwarty, `002` zmergowany, `003` w toku |
 | Faza 2 — Core Gameplay | ⬜ Nie rozpoczęta | — |
 | Faza 3 — Treść i poziomy | ⬜ Nie rozpoczęta | — |
 | Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | — |
@@ -19,17 +19,18 @@
 ### Ostatnio zrobione
 - ✅ Repozytorium GitHub: [github.com/mionsek/life-death](https://github.com/mionsek/life-death)
 - ✅ GDD, OPEN_QUESTIONS, ROADMAP — wszystkie OQ zamknięte
-- ✅ Godot 4.6.2 zainstalowany
-- ✅ Projekt Godot skonfigurowany (360×640, GL Compatibility, GDScript)
-- ✅ GUT v9.6.0 (testy jednostkowe)
-- ✅ Scena `MainMenu.tscn` + skrypt + 4 testy jednostkowe
-- ✅ PR #1 otwarty: `001-project-setup`
-- 🔄 Branch `002-player-movement` — `player.gd`, `Player.tscn`, `TouchControls.tscn`, `TestLevel.tscn`, `test_player.gd`
+- ✅ Godot 4.6.2 zainstalowany, projekt 640×360 landscape
+- ✅ GUT v9.6.0 (testy jednostkowe) + `.gutconfig.json`
+- ✅ `MainMenu.tscn` + 4 testy
+- ✅ PR #1 (`001-project-setup`) zmergowany
+- ✅ PR #2 (`002-player-movement`) — Player, TouchControls, TestLevel, 6 testów
+- 🔄 Branch `003-second-player` — Guardian, TouchControlsP2, dwa D-pady
 
-### Do zrobienia — następny krok
-- ⬜ Przejrzeć i zmergować PR #1
-- ⬜ Otworzyć PR `002-player-movement` po weryfikacji
-- ⬜ Połączenie WiFi Direct / Bluetooth (branch `003-multiplayer-connection`)
+### Do zrobienia — następne kroki
+- ⬜ Otworzyć PR `003-second-player` po weryfikacji testów
+- ⬜ `004-death-and-reset` — mechanika śmierci (freeze + reset poziomu)
+- ⬜ `005-character-abilities` — unikalne zdolności (lawa, chmury, mrok, kwiaty)
+- ⬜ `006-multiplayer-connection` — WiFi Direct + Bluetooth
 
 ---
 

@@ -25,12 +25,13 @@
 - ✅ PR #1 (`001-project-setup`) zmergowany
 - ✅ PR #2 (`002-player-movement`) — Player, TouchControls, TestLevel, 6 testów
 - ✅ PR #3 (`003-second-player`) — Guardian, TouchControlsP2, dwa D-pady, 4 testy
-- 🔄 Branch `004-death-and-reset` — DeathManager, KillZone, DeathScreen, 3 testy
+- ✅ PR #2 (`004-death-and-reset`) — DeathManager, KillZone, DeathScreen, 3 testy
+- ✅ PR #3 (`005-kostucha-sprite`) — Sprite'y grim-reaper i life-guard
+- 🔄 Branch `006-character-abilities` — warstwy kolizji, FireZone, CloudPlatform, 3 testy
 
 ### Do zrobienia — następne kroki
-- ⬜ Otworzyć PR `004-death-and-reset` po weryfikacji testów
-- ⬜ `005-character-abilities` — unikalne zdolności (lawa, chmury, mrok, kwiaty)
-- ⬜ `006-multiplayer-connection` — WiFi Direct + Bluetooth
+- ⬜ Otworzyć PR `006-character-abilities` po weryfikacji testów
+- ⬜ `007-multiplayer-connection` — WiFi Direct + Bluetooth
 
 ---
 

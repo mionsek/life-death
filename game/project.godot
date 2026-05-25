@@ -19,6 +19,7 @@ config/icon="res://assets/sprites/icon.svg"
 [autoload]
 
 DeathManager="*res://scripts/systems/death_manager.gd"
+NetworkManager="*res://scripts/systems/network_manager.gd"
 
 [display]
 

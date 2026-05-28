@@ -11,7 +11,7 @@ func _ready() -> void:
 
 # Navigates to the level selection screen.
 func _on_start_pressed() -> void:
-	pass  # TODO: get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
 
 
 # Opens the multiplayer lobby.

@@ -24,9 +24,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -100.0
-offset_top = -120.0
+offset_top = -140.0
 offset_right = 100.0
-offset_bottom = 120.0
+offset_bottom = 140.0
 theme_override_constants/separation = 24
 
 [node name="Title" type="Label" parent="VBox"]
@@ -38,6 +38,10 @@ theme_override_font_sizes/font_size = 28
 [node name="BtnStart" type="Button" parent="VBox"]
 layout_mode = 2
 text = "Start Game"
+
+[node name="BtnMultiplayer" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Multiplayer"
 
 [node name="BtnSettings" type="Button" parent="VBox"]
 layout_mode = 2

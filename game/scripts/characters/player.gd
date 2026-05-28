@@ -17,11 +17,15 @@ var _jump_requested: bool = false
 
 
 func _physics_process(delta: float) -> void:
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+		return
 	_apply_gravity(delta)
 	_apply_horizontal_movement()
 	_apply_jump()
 	move_and_slide()
 	_jump_requested = false
+	if multiplayer.has_multiplayer_peer():
+		_rpc_sync_state.rpc(position, velocity)
 
 
 # Increases downward velocity when the character is not on the floor.
@@ -60,3 +64,11 @@ func request_jump() -> void:
 # Triggers the death sequence via DeathManager.
 func die() -> void:
 	DeathManager.trigger_death()
+
+
+# Syncs position and velocity from the authoritative peer to all others.
+@rpc("any_peer", "unreliable_ordered")
+func _rpc_sync_state(pos: Vector2, vel: Vector2) -> void:
+	if not is_multiplayer_authority():
+		position = pos
+		velocity = vel

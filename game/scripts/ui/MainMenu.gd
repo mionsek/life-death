@@ -4,6 +4,7 @@ extends Control
 
 func _ready() -> void:
 	$VBox/BtnStart.pressed.connect(_on_start_pressed)
+	$VBox/BtnMultiplayer.pressed.connect(_on_multiplayer_pressed)
 	$VBox/BtnSettings.pressed.connect(_on_settings_pressed)
 	$VBox/BtnQuit.pressed.connect(_on_quit_pressed)
 
@@ -11,6 +12,11 @@ func _ready() -> void:
 # Navigates to the level selection screen.
 func _on_start_pressed() -> void:
 	pass  # TODO: get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
+
+
+# Opens the multiplayer lobby.
+func _on_multiplayer_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/ui/Lobby.tscn")
 
 
 # Opens the settings screen.

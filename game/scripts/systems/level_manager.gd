@@ -36,6 +36,7 @@ var current_level_id: int = 0
 
 func _ready() -> void:
 	_build_level_registry()
+	SaveManager.load_progress()
 
 
 # Populates the level registry with all 60 level definitions.
@@ -66,7 +67,7 @@ func load_level(level_id: int) -> void:
 	get_tree().change_scene_to_file(_levels[level_id].scene_path)
 
 
-# Marks the level as completed, unlocks the next one, and emits the signal.
+# Marks the level as completed, unlocks the next one, auto-saves and emits the signal.
 func complete_level(level_id: int) -> void:
 	if not _levels.has(level_id):
 		push_error("LevelManager: unknown level id %d" % level_id)
@@ -75,6 +76,7 @@ func complete_level(level_id: int) -> void:
 	var next_id := level_id + 1
 	if _levels.has(next_id) and _levels[next_id].zone == _levels[level_id].zone:
 		_levels[next_id].unlocked = true
+	SaveManager.save_progress()
 	level_completed.emit(level_id)
 
 

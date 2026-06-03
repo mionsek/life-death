@@ -44,7 +44,7 @@ func _show_zone(zone: String) -> void:
 			"locked":
 				btn.disabled = true
 		if not btn.disabled:
-			var level_id := data.id
+			var level_id: int = data.id
 			btn.pressed.connect(func(): _on_level_selected(level_id))
 		grid.add_child(btn)
 

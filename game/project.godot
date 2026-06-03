@@ -20,6 +20,7 @@ config/icon="res://assets/sprites/icon.svg"
 
 DeathManager="*res://scripts/systems/death_manager.gd"
 NetworkManager="*res://scripts/systems/network_manager.gd"
+LevelManager="*res://scripts/systems/level_manager.gd"
 
 [display]
 

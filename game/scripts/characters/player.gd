@@ -17,14 +17,14 @@ var _jump_requested: bool = false
 
 
 func _physics_process(delta: float) -> void:
-	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+	if NetworkManager.state == NetworkManager.State.CONNECTED and not is_multiplayer_authority():
 		return
 	_apply_gravity(delta)
 	_apply_horizontal_movement()
 	_apply_jump()
 	move_and_slide()
 	_jump_requested = false
-	if multiplayer.has_multiplayer_peer():
+	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		_rpc_sync_state.rpc(position, velocity)
 
 

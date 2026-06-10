@@ -16,7 +16,7 @@ func _on_player_died() -> void:
 
 # Reloads the current level from the beginning (synced across peers in multiplayer).
 func _on_try_again() -> void:
-	if multiplayer.has_multiplayer_peer():
+	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		_sync_try_again.rpc()
 	else:
 		get_tree().paused = false
@@ -31,7 +31,7 @@ func _sync_try_again() -> void:
 
 # Returns to the main menu (synced across peers in multiplayer).
 func _on_main_menu() -> void:
-	if multiplayer.has_multiplayer_peer():
+	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		_sync_main_menu.rpc()
 	else:
 		_do_main_menu()

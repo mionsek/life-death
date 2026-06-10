@@ -7,7 +7,7 @@ signal player_died
 # Triggers the death sequence: broadcasts via RPC in multiplayer, runs locally in single-player.
 # Ignores repeated calls if the game is already paused.
 func trigger_death() -> void:
-	if multiplayer.has_multiplayer_peer():
+	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		_broadcast_death.rpc()
 	else:
 		_execute_death()

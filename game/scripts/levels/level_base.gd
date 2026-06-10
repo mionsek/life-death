@@ -8,7 +8,7 @@ func _ready() -> void:
 	$TouchControls.set_player($Player)
 	$TouchControlsP2.set_player($Guardian)
 	_setup_multiplayer_authority()
-	if multiplayer.has_multiplayer_peer():
+	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		NetworkManager.peer_disconnected_in_game.connect(_on_peer_disconnected)
 
 
@@ -40,7 +40,7 @@ func _complete_level() -> void:
 
 # Assigns physics authority so each device controls its own character.
 func _setup_multiplayer_authority() -> void:
-	if not multiplayer.has_multiplayer_peer():
+	if NetworkManager.state != NetworkManager.State.CONNECTED:
 		return
 	$Player.set_multiplayer_authority(1)
 	var guardian_authority: int

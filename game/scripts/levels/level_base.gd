@@ -27,6 +27,11 @@ func on_exit_exited(body: Node) -> void:
 	_players_at_exit.erase(body.name)
 
 
+# Wrapper for hazard Area2D body_entered signal — discards the body argument.
+func _on_hazard_entered(_body: Node) -> void:
+	DeathManager.trigger_death()
+
+
 # Marks the current level complete and returns to level select.
 func _complete_level() -> void:
 	LevelManager.complete_level(LevelManager.current_level_id)

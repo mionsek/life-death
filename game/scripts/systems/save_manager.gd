@@ -27,11 +27,11 @@ func load_progress() -> void:
 		return
 	var raw := file.get_as_text()
 	file.close()
-	var parsed := JSON.parse_string(raw)
+	var parsed: Variant = JSON.parse_string(raw)
 	if parsed == null or not parsed is Dictionary:
 		push_error("SaveManager: save file is corrupt, ignoring")
 		return
-	_apply_save_data(parsed)
+	_apply_save_data(parsed as Dictionary)
 
 
 # Deletes the save file and resets LevelManager to its default state.
@@ -48,9 +48,9 @@ func get_or_create_pair_id() -> String:
 		if file != null:
 			var raw := file.get_as_text()
 			file.close()
-			var parsed := JSON.parse_string(raw)
-			if parsed is Dictionary and parsed.has("pair_id"):
-				return parsed["pair_id"]
+			var parsed: Variant = JSON.parse_string(raw)
+			if parsed is Dictionary and (parsed as Dictionary).has("pair_id"):
+				return (parsed as Dictionary)["pair_id"]
 	var new_id := _generate_uuid()
 	var data := _build_save_data()
 	data["pair_id"] = new_id
@@ -77,9 +77,9 @@ func _build_save_data() -> Dictionary:
 		if file != null:
 			var raw := file.get_as_text()
 			file.close()
-			var parsed := JSON.parse_string(raw)
-			if parsed is Dictionary and parsed.has("pair_id"):
-				pair_id = parsed["pair_id"]
+			var parsed: Variant = JSON.parse_string(raw)
+			if parsed is Dictionary and (parsed as Dictionary).has("pair_id"):
+				pair_id = (parsed as Dictionary)["pair_id"]
 	if pair_id.is_empty():
 		pair_id = _generate_uuid()
 	return {"pair_id": pair_id, "levels": levels_data}

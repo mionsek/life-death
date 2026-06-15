@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3 uid="uid://seesaw"]
+
+[ext_resource type="Script" path="res://scripts/obstacles/seesaw.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="plank_shape"]
+size = Vector2(160, 12)
+
+[sub_resource type="RectangleShape2D" id="left_area_shape"]
+size = Vector2(80, 20)
+
+[sub_resource type="RectangleShape2D" id="right_area_shape"]
+size = Vector2(80, 20)
+
+[node name="Seesaw" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Pivot" type="ColorRect" parent="."]
+z_index = 3
+offset_left = -6.0
+offset_top = 0.0
+offset_right = 6.0
+offset_bottom = 14.0
+color = Color(0.3, 0.3, 0.3, 1.0)
+
+[node name="Plank" type="AnimatableBody2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="PlankShape" type="CollisionShape2D" parent="Plank"]
+shape = SubResource("plank_shape")
+
+[node name="PlankVis" type="ColorRect" parent="Plank"]
+z_index = 2
+offset_left = -80.0
+offset_top = -6.0
+offset_right = 80.0
+offset_bottom = 6.0
+color = Color(0.55, 0.35, 0.1, 1.0)
+
+[node name="LeftArea" type="Area2D" parent="Plank"]
+collision_layer = 0
+collision_mask = 3
+
+[node name="LeftAreaShape" type="CollisionShape2D" parent="Plank/LeftArea"]
+position = Vector2(-40, -16)
+shape = SubResource("left_area_shape")
+
+[node name="RightArea" type="Area2D" parent="Plank"]
+collision_layer = 0
+collision_mask = 3
+
+[node name="RightAreaShape" type="CollisionShape2D" parent="Plank/RightArea"]
+position = Vector2(40, -16)
+shape = SubResource("right_area_shape")
+
+[connection signal="body_entered" from="Plank/LeftArea" to="." method="_on_left_entered"]
+[connection signal="body_exited" from="Plank/LeftArea" to="." method="_on_left_exited"]
+[connection signal="body_entered" from="Plank/RightArea" to="." method="_on_right_entered"]
+[connection signal="body_exited" from="Plank/RightArea" to="." method="_on_right_exited"]

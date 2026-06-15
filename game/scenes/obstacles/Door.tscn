@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://door"]
+
+[ext_resource type="Script" path="res://scripts/obstacles/door.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="shape"]
+size = Vector2(24, 80)
+
+[node name="Door" type="StaticBody2D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -40)
+shape = SubResource("shape")
+
+[node name="Vis" type="ColorRect" parent="."]
+z_index = 2
+offset_left = -12.0
+offset_top = -80.0
+offset_right = 12.0
+offset_bottom = 0.0
+color = Color(0.55, 0.35, 0.1, 1.0)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -50.0
+offset_right = 20.0
+offset_bottom = -34.0
+text = "DOOR"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 8

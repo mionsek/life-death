@@ -10,6 +10,7 @@ signal character_exited_portal(body: Node)
 
 
 func _ready() -> void:
+	add_to_group("exit_portal")
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	_update_label()

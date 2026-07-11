@@ -26,9 +26,13 @@
 - ✅ `012-obstacles` — ExitPortal, Door, Lever, PuzzlePanel, Seesaw + wspólna baza `DoorTrigger`
 - ✅ **CI**: `.github/workflows/tests.yml` uruchamia GUT headless; runner `run_tests.ps1`
 - ✅ `013-worldmap-heaven-hell`:
-  - **Mapa świata jako graf** (LevelSelect): centralny hub Ziemi poziomo, ramię Nieba
-    w górę (im wyżej, tym trudniej dla Kostuchy), ramię Piekła w dół (analogicznie
-    dla Strażniczki); poziom odblokowuje następców w grafie (`LEVEL_GRAPH`)
+  - **Mapa świata jako drzewo binarne obrócone o 90°** (LevelSelect): korzeń (start)
+    z lewej, gałęzie rozdzielają się w prawo — górne dziecko wspina się ku Niebu
+    (im wyżej, tym trudniej dla Kostuchy), dolne schodzi ku Piekłu (analogicznie
+    dla Strażniczki); wiersze 0/±1 = Ziemia; poziom odblokowuje dzieci w grafie
+    (`LEVEL_GRAPH`)
+  - **Zagadki wycofane z poziomów** (decyzja 2026-07-12): wszystkie `PuzzlePanel`
+    w scenach zastąpione dźwigniami; mechanika i testy pozostają w kodzie
   - **Fix crash rejestru**: rejestr zawiera tylko poziomy z istniejącą sceną;
     `load_level` odmawia z ostrzeżeniem zamiast crashować
   - **Niebo 01–04** (pionowe 640×720, chmury + święte światło `LightZone` zabijające

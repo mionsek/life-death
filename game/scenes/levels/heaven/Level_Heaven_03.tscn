@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://level_heaven_03"]
+[gd_scene load_steps=23 format=3 uid="uid://level_heaven_03"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://door" path="res://scenes/obstacles/Door.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://lever" path="res://scenes/obstacles/Lever.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://puzzle_panel" path="res://scenes/obstacles/PuzzlePanel.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://touch_controls" path="res://scenes/ui/TouchControls.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="10"]
 [ext_resource type="PackedScene" uid="uid://death_screen" path="res://scenes/ui/DeathScreen.tscn" id="11"]
@@ -279,13 +278,9 @@ door_id = "h3_gate_reaper"
 position = Vector2(130, 440)
 door_id = "h3_gate_guard"
 
-[node name="MathPanel" parent="." instance=ExtResource("7")]
+[node name="MathLever" parent="." instance=ExtResource("6")]
 position = Vector2(90, 322)
 target_door_id = "h3_gate_reaper"
-question = "12 × 4 = ?"
-options = PackedStringArray("44", "48", "52", "36")
-correct_index = 1
-time_limit = 8.0
 
 [node name="GateLever" parent="." instance=ExtResource("6")]
 position = Vector2(270, 470)

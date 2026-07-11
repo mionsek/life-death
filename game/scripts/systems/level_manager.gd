@@ -42,26 +42,29 @@ const HEAVEN_ID_OFFSET: int = 20
 const HELL_ID_OFFSET: int = 40
 
 # The world-map graph. Only levels listed here exist in the game.
-# Format: zone, index, map position (map units, y up = heaven), successor ids.
-# Map shape mirrors the reference: central hub with radiating arms.
+# Shaped like a binary tree rotated 90° — the root (start) sits on the left and
+# branches split rightward: the upper child climbs toward Heaven, the lower one
+# descends toward Hell. pos = (tree depth, vertical row); row 0/±1 = Earth,
+# higher rows = Heaven (harder for the Reaper), lower rows = Hell (harder for
+# the Guardian). y is screen-down, so Heaven rows are negative.
 const LEVEL_GRAPH: Array[Dictionary] = [
-	# --- Earth: horizontal spine through the hub (equal difficulty) ---
-	{"zone": "earth", "index": 1, "pos": Vector2(0.0, 0.0), "next": [2, 5]},     # hub / start
-	{"zone": "earth", "index": 2, "pos": Vector2(1.0, 0.0), "next": [3]},
-	{"zone": "earth", "index": 3, "pos": Vector2(2.0, 0.0), "next": [4, 21]},    # gateway to Heaven
-	{"zone": "earth", "index": 4, "pos": Vector2(3.0, 0.0), "next": []},
-	{"zone": "earth", "index": 5, "pos": Vector2(-1.0, 0.0), "next": [6, 41]},   # gateway to Hell
-	{"zone": "earth", "index": 6, "pos": Vector2(-2.0, 0.0), "next": []},
-	# --- Heaven: zig-zag arm climbing up; the higher, the harder for the Reaper ---
-	{"zone": "heaven", "index": 1, "pos": Vector2(2.35, -0.9), "next": [22]},
-	{"zone": "heaven", "index": 2, "pos": Vector2(1.75, -1.7), "next": [23]},
-	{"zone": "heaven", "index": 3, "pos": Vector2(2.45, -2.5), "next": [24]},
-	{"zone": "heaven", "index": 4, "pos": Vector2(1.9, -3.3), "next": []},       # summit diamond
-	# --- Hell: zig-zag arm descending; the deeper, the harder for the Guardian ---
-	{"zone": "hell", "index": 1, "pos": Vector2(-1.35, 0.9), "next": [42]},
-	{"zone": "hell", "index": 2, "pos": Vector2(-0.75, 1.7), "next": [43]},
-	{"zone": "hell", "index": 3, "pos": Vector2(-1.45, 2.5), "next": [44]},
-	{"zone": "hell", "index": 4, "pos": Vector2(-0.9, 3.3), "next": []},         # abyss diamond
+	# --- Earth: the root and the first two branches (equal difficulty) ---
+	{"zone": "earth", "index": 1, "pos": Vector2(0.0, 0.0), "next": [2, 3]},      # root / start
+	{"zone": "earth", "index": 2, "pos": Vector2(1.0, -1.0), "next": [21, 4]},    # upper branch → Heaven
+	{"zone": "earth", "index": 3, "pos": Vector2(1.0, 1.0), "next": [5, 41]},     # lower branch → Hell
+	{"zone": "earth", "index": 4, "pos": Vector2(2.0, -0.7), "next": [6]},
+	{"zone": "earth", "index": 5, "pos": Vector2(2.0, 0.7), "next": []},          # earth leaf
+	{"zone": "earth", "index": 6, "pos": Vector2(3.0, -0.7), "next": []},         # earth leaf
+	# --- Heaven: the higher the row, the harder for the Reaper ---
+	{"zone": "heaven", "index": 1, "pos": Vector2(2.0, -1.9), "next": [22, 23]},  # heaven split
+	{"zone": "heaven", "index": 2, "pos": Vector2(3.0, -2.6), "next": []},        # heaven leaf
+	{"zone": "heaven", "index": 3, "pos": Vector2(3.2, -3.4), "next": [24]},
+	{"zone": "heaven", "index": 4, "pos": Vector2(4.0, -4.0), "next": []},        # summit diamond
+	# --- Hell: mirror of Heaven, the deeper the harder for the Guardian ---
+	{"zone": "hell", "index": 1, "pos": Vector2(2.0, 1.9), "next": [42, 43]},     # hell split
+	{"zone": "hell", "index": 2, "pos": Vector2(3.0, 2.6), "next": []},           # hell leaf
+	{"zone": "hell", "index": 3, "pos": Vector2(3.2, 3.4), "next": [44]},
+	{"zone": "hell", "index": 4, "pos": Vector2(4.0, 4.0), "next": []},           # abyss diamond
 ]
 
 # All levels indexed by their id.

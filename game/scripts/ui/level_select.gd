@@ -1,17 +1,17 @@
 extends Control
 
-# World map drawn as a graph (inspired by classic co-op platformer maps):
-# the Earth spine runs horizontally through the central hub, the Heaven arm
-# climbs toward the top of the screen and the Hell arm descends to the bottom.
-# Golden paths connect the level gems; completing a level lights up the next.
+# World map drawn as a binary tree rotated 90°: the root level sits on the
+# left and every branch splits rightward — the upper child climbs toward
+# Heaven, the lower one descends toward Hell. Golden paths connect the level
+# gems; completing a level lights up its children.
 
 const MAP_BG := preload("res://assets/gen/ui/map_bg.png")
 const GEM := preload("res://assets/gen/ui/gem.png")
 const GEM_BIG := preload("res://assets/gen/ui/gem_big.png")
 
-# Screen-space mapping of LevelManager map units.
-const CENTER := Vector2(320, 180)
-const SPACING := Vector2(72, 44)
+# Screen-space mapping of LevelManager map units (x = tree depth, y = row).
+const ORIGIN := Vector2(80, 180)
+const SPACING := Vector2(115, 38)
 
 const ZONE_COLORS := {
 	"earth": Color(0.45, 0.85, 0.35),
@@ -33,7 +33,7 @@ func _ready() -> void:
 
 # Converts LevelManager map units to screen pixels.
 func _map_to_screen(map_pos: Vector2) -> Vector2:
-	return CENTER + map_pos * SPACING
+	return ORIGIN + map_pos * SPACING
 
 
 # Creates one gem button per level in the world graph.
@@ -103,7 +103,7 @@ func _draw() -> void:
 	var font := ThemeDB.fallback_font
 	draw_string(font, Vector2(14, 26), "NIEBO", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.92, 0.6, 0.9))
 	draw_string(font, Vector2(14, 186), "ZIEMIA", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.7, 0.9, 0.5, 0.9))
-	draw_string(font, Vector2(14, 346), "PIEKŁO", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.5, 0.35, 0.9))
+	draw_string(font, Vector2(14, 310), "PIEKŁO", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.5, 0.35, 0.9))
 
 
 # Starts loading the selected level.

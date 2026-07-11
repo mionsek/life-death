@@ -3,6 +3,12 @@
 > Referowany w `ROADMAP.md` i `GAME_DESIGN.md`.
 > Zagadki są prezentowane w grze przez `PuzzlePanel` (`game/scripts/obstacles/puzzle_panel.gd`).
 
+> ⚠️ **STATUS (2026-07-12): zagadki wycofane z poziomów.** Decyzja projektowa —
+> obecna forma (4 opcje + limit czasu) nie spodobała się w testach. Wszystkie
+> `PuzzlePanel` w scenach zostały zastąpione dźwigniami (interlock kooperacyjny
+> bez zmian). Mechanika `PuzzlePanel` + testy pozostają w kodzie; tabela niżej
+> to baza treści na wypadek powrotu zagadek w innej formie.
+
 ## Mechanika (zgodna z GDD 6.3 / OQ-08)
 
 - **4 opcje A/B/C/D** — gracz klika poprawną odpowiedź (`@export options: PackedStringArray`, `correct_index`).

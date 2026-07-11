@@ -24,50 +24,49 @@ func test_complete_level_marks_it_completed() -> void:
 	assert_eq(LevelManager.get_level_status(1), "completed")
 
 
-# The hub unlocks both of its graph successors (east and west earth arms).
-func test_complete_hub_unlocks_both_arms() -> void:
+# The root splits like a binary tree: upper and lower earth branches unlock.
+func test_complete_root_unlocks_both_branches() -> void:
 	LevelManager.complete_level(1)
 	assert_eq(LevelManager.get_level_status(2), "unlocked")
-	assert_eq(LevelManager.get_level_status(5), "unlocked")
+	assert_eq(LevelManager.get_level_status(3), "unlocked")
 
 
-# Earth 3 is the gateway to Heaven: completing it unlocks Earth 4 AND Heaven 1.
-func test_earth_3_unlocks_heaven_entry() -> void:
-	LevelManager.complete_level(3)
-	assert_eq(LevelManager.get_level_status(4), "unlocked")
+# Earth 2 (upper branch) is the gateway to Heaven: unlocks Heaven 1 AND Earth 4.
+func test_earth_2_unlocks_heaven_entry() -> void:
+	LevelManager.complete_level(2)
 	assert_eq(LevelManager.get_level_status(21), "unlocked")
+	assert_eq(LevelManager.get_level_status(4), "unlocked")
 
 
-# Earth 5 is the gateway to Hell: completing it unlocks Earth 6 AND Hell 1.
-func test_earth_5_unlocks_hell_entry() -> void:
-	LevelManager.complete_level(5)
-	assert_eq(LevelManager.get_level_status(6), "unlocked")
+# Earth 3 (lower branch) is the gateway to Hell: unlocks Earth 5 AND Hell 1.
+func test_earth_3_unlocks_hell_entry() -> void:
+	LevelManager.complete_level(3)
+	assert_eq(LevelManager.get_level_status(5), "unlocked")
 	assert_eq(LevelManager.get_level_status(41), "unlocked")
 
 
-# Heaven levels chain upward: each unlocks the next until the summit diamond.
-func test_heaven_chain_unlocks_in_order() -> void:
+# Heaven 1 splits into two branches; Heaven 3 leads on to the summit diamond.
+func test_heaven_tree_unlocks() -> void:
 	LevelManager.complete_level(21)
 	assert_eq(LevelManager.get_level_status(22), "unlocked")
-	LevelManager.complete_level(22)
 	assert_eq(LevelManager.get_level_status(23), "unlocked")
 	LevelManager.complete_level(23)
 	assert_eq(LevelManager.get_level_status(24), "unlocked")
 
 
-# Arm-end levels (diamonds) have no successors — completing them unlocks nothing new.
-func test_arm_ends_have_no_successors() -> void:
+# Leaf levels (diamonds) have no successors — completing them unlocks nothing new.
+func test_leaves_have_no_successors() -> void:
 	var before := 0
 	for data in LevelManager.get_all_levels():
 		if data.unlocked:
 			before += 1
-	LevelManager.complete_level(24)
-	LevelManager.complete_level(44)
+	for leaf_id in [5, 6, 22, 24, 42, 44]:
+		LevelManager.complete_level(leaf_id)
 	var after := 0
 	for data in LevelManager.get_all_levels():
 		if data.unlocked:
 			after += 1
-	assert_eq(after, before, "diamond levels must not unlock anything")
+	assert_eq(after, before, "leaf levels must not unlock anything")
 
 
 # Zone listings return exactly the levels defined in the world graph.

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="2_g4pfj"]
 [ext_resource type="PackedScene" uid="uid://door" path="res://scenes/obstacles/Door.tscn" id="2_door02"]
-[ext_resource type="PackedScene" uid="uid://puzzle_panel" path="res://scenes/obstacles/PuzzlePanel.tscn" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://lever" path="res://scenes/obstacles/Lever.tscn" id="2_lever02"]
 [ext_resource type="PackedScene" uid="uid://touch_controls" path="res://scenes/ui/TouchControls.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://guardian" path="res://scenes/characters/Guardian.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="5"]
@@ -170,13 +170,9 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 120, 16)
 
-[node name="RiddlePanel" parent="." instance=ExtResource("2_panel")]
+[node name="RiddleLever" parent="." instance=ExtResource("2_lever02")]
 position = Vector2(110, 329)
 target_door_id = "riddle_gate"
-question = "Co żyje, gdy je, a ginie, gdy pije?"
-options = PackedStringArray("Woda", "Ogień", "Wiatr", "Ziemia")
-correct_index = 1
-time_limit = 8.0
 
 [node name="RiddleDoor" parent="." instance=ExtResource("2_door02")]
 position = Vector2(360, 340)

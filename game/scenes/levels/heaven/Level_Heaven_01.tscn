@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://level_heaven_01"]
+[gd_scene load_steps=24 format=3 uid="uid://level_heaven_01"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://door" path="res://scenes/obstacles/Door.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://lever" path="res://scenes/obstacles/Lever.tscn" id="6"]
-[ext_resource type="PackedScene" uid="uid://puzzle_panel" path="res://scenes/obstacles/PuzzlePanel.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://seesaw" path="res://scenes/obstacles/Seesaw.tscn" id="8"]
 [ext_resource type="PackedScene" uid="uid://touch_controls" path="res://scenes/ui/TouchControls.tscn" id="9"]
 [ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="10"]
@@ -280,13 +279,9 @@ door_id = "h1_gate_reaper"
 position = Vector2(180, 300)
 door_id = "h1_gate_guard"
 
-[node name="RiddlePanel" parent="." instance=ExtResource("7")]
+[node name="RiddleLever" parent="." instance=ExtResource("6")]
 position = Vector2(80, 388)
 target_door_id = "h1_gate_reaper"
-question = "Im więcej oddajesz, tym więcej masz"
-options = PackedStringArray("Złoto", "Miłość", "Czas", "Woda")
-correct_index = 1
-time_limit = 10.0
 
 [node name="GateLever" parent="." instance=ExtResource("6")]
 position = Vector2(600, 368)

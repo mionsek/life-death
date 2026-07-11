@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://level_earth_05"]
+[gd_scene load_steps=23 format=3 uid="uid://level_earth_05"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -6,6 +6,12 @@
 [ext_resource type="PackedScene" uid="uid://guardian" path="res://scenes/characters/Guardian.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://death_screen" path="res://scenes/ui/DeathScreen.tscn" id="6"]
+[ext_resource type="Texture2D" path="res://assets/gen/bg/earth_bg.png" id="tex_bg"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/grass.png" id="tex_grass"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/wood.png" id="tex_wood"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="tex_lava"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/cloud.png" id="tex_cloud"]
+[ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="exit_portal"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(640, 20)
@@ -59,13 +65,15 @@ collision_mask = 0
 position = Vector2(320, 350)
 shape = SubResource("ground_shape")
 
-[node name="GroundVis" type="ColorRect" parent="Platforms/Ground"]
+[node name="GroundVis" type="Sprite2D" parent="Platforms/Ground"]
 z_index = 1
-offset_left = 0.0
-offset_top = 340.0
-offset_right = 640.0
-offset_bottom = 360.0
-color = Color(0.3, 0.2, 0.1, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 340.0)
+texture = ExtResource("tex_grass")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 640, 20)
 
 [node name="PlatformA" type="StaticBody2D" parent="Platforms"]
 position = Vector2(50, 210)
@@ -76,13 +84,15 @@ collision_mask = 0
 position = Vector2(50, 8)
 shape = SubResource("platform_a_shape")
 
-[node name="PlatformAVis" type="ColorRect" parent="Platforms/PlatformA"]
+[node name="PlatformAVis" type="Sprite2D" parent="Platforms/PlatformA"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 100.0
-offset_bottom = 16.0
-color = Color(0.3, 0.2, 0.1, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_wood")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 100, 16)
 
 [node name="PlatformB" type="StaticBody2D" parent="Platforms"]
 position = Vector2(200, 175)
@@ -93,13 +103,15 @@ collision_mask = 0
 position = Vector2(50, 8)
 shape = SubResource("platform_b_shape")
 
-[node name="PlatformBVis" type="ColorRect" parent="Platforms/PlatformB"]
+[node name="PlatformBVis" type="Sprite2D" parent="Platforms/PlatformB"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 100.0
-offset_bottom = 16.0
-color = Color(0.3, 0.2, 0.1, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_wood")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 100, 16)
 
 [node name="PlatformC" type="StaticBody2D" parent="Platforms"]
 position = Vector2(360, 175)
@@ -110,13 +122,15 @@ collision_mask = 0
 position = Vector2(50, 8)
 shape = SubResource("platform_c_shape")
 
-[node name="PlatformCVis" type="ColorRect" parent="Platforms/PlatformC"]
+[node name="PlatformCVis" type="Sprite2D" parent="Platforms/PlatformC"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 100.0
-offset_bottom = 16.0
-color = Color(0.3, 0.2, 0.1, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_wood")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 100, 16)
 
 [node name="PlatformD" type="StaticBody2D" parent="Platforms"]
 position = Vector2(500, 210)
@@ -127,13 +141,15 @@ collision_mask = 0
 position = Vector2(50, 8)
 shape = SubResource("platform_d_shape")
 
-[node name="PlatformDVis" type="ColorRect" parent="Platforms/PlatformD"]
+[node name="PlatformDVis" type="Sprite2D" parent="Platforms/PlatformD"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 100.0
-offset_bottom = 16.0
-color = Color(0.3, 0.2, 0.1, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_wood")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 100, 16)
 
 [node name="Hazards" type="Node2D" parent="."]
 
@@ -145,13 +161,15 @@ collision_mask = 2
 position = Vector2(320, 345)
 shape = SubResource("lava_shape")
 
-[node name="LavaVis" type="ColorRect" parent="Hazards/LavaPool"]
+[node name="LavaVis" type="Sprite2D" parent="Hazards/LavaPool"]
 z_index = 1
-offset_left = 140.0
-offset_top = 330.0
-offset_right = 500.0
-offset_bottom = 360.0
-color = Color(0.9, 0.3, 0.05, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(140.0, 330.0)
+texture = ExtResource("tex_lava")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 360, 30)
 
 [node name="CloudPlatform" type="StaticBody2D" parent="."]
 position = Vector2(150, 115)
@@ -162,38 +180,24 @@ collision_mask = 0
 position = Vector2(60, 8)
 shape = SubResource("cloud_shape")
 
-[node name="CloudVis" type="ColorRect" parent="CloudPlatform"]
+[node name="CloudVis" type="Sprite2D" parent="CloudPlatform"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 120.0
-offset_bottom = 16.0
-color = Color(0.9, 0.9, 1.0, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_cloud")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 120, 16)
 
-[node name="ExitPortal" type="Area2D" parent="."]
-position = Vector2(564, 316)
-collision_layer = 0
-collision_mask = 3
 
-[node name="ExitShape" type="CollisionShape2D" parent="ExitPortal"]
-shape = SubResource("exit_shape")
+[node name="ExitPortalGuardian" parent="." instance=ExtResource("exit_portal")]
+position = Vector2(535, 316)
+target_character = "Guardian"
 
-[node name="ExitVis" type="ColorRect" parent="ExitPortal"]
-z_index = 2
-offset_left = -24.0
-offset_top = -40.0
-offset_right = 24.0
-offset_bottom = 0.0
-color = Color(0.5, 1.0, 0.5, 0.8)
-
-[node name="ExitLabel" type="Label" parent="ExitPortal"]
-offset_left = -30.0
-offset_top = -60.0
-offset_right = 30.0
-offset_bottom = -42.0
-text = "EXIT"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 10
+[node name="ExitPortalPlayer" parent="." instance=ExtResource("exit_portal")]
+position = Vector2(598, 316)
+target_character = "Player"
 
 [node name="KillZone" type="Area2D" parent="."]
 collision_layer = 0
@@ -231,7 +235,5 @@ shape = SubResource("wall_shape")
 
 [node name="DeathScreen" parent="." instance=ExtResource("6")]
 
-[connection signal="body_entered" from="ExitPortal" to="." method="on_exit_entered"]
-[connection signal="body_exited" from="ExitPortal" to="." method="on_exit_exited"]
 [connection signal="body_entered" from="KillZone" to="." method="_on_hazard_entered"]
 [connection signal="body_entered" from="Hazards/LavaPool" to="." method="_on_hazard_entered"]

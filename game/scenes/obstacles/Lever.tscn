@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://lever"]
+[gd_scene load_steps=5 format=3 uid="uid://lever"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/lever.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/gen/obstacles/lever_idle.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/gen/obstacles/lever_active.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(24, 32)
@@ -14,22 +16,18 @@ script = ExtResource("1")
 position = Vector2(0, -16)
 shape = SubResource("shape")
 
-[node name="VisIdle" type="ColorRect" parent="."]
+[node name="VisIdle" type="Sprite2D" parent="."]
 z_index = 2
-offset_left = -8.0
-offset_top = -32.0
-offset_right = 8.0
-offset_bottom = 0.0
-color = Color(0.8, 0.6, 0.1, 1.0)
+texture_filter = 1
+position = Vector2(0, -16)
+texture = ExtResource("2")
 
-[node name="VisActivated" type="ColorRect" parent="."]
+[node name="VisActivated" type="Sprite2D" parent="."]
 z_index = 2
+texture_filter = 1
 visible = false
-offset_left = -8.0
-offset_top = -32.0
-offset_right = 8.0
-offset_bottom = 0.0
-color = Color(0.2, 0.9, 0.2, 1.0)
+position = Vector2(0, -16)
+texture = ExtResource("3")
 
 [node name="Label" type="Label" parent="."]
 offset_left = -20.0

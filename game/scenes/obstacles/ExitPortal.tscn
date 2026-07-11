@@ -1,9 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://exit_portal"]
+[gd_scene load_steps=6 format=3 uid="uid://exit_portal"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/exit_portal.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/gen/obstacles/portal_0.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/gen/obstacles/portal_1.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(48, 40)
+
+[sub_resource type="SpriteFrames" id="portal_frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [node name="ExitPortal" type="Area2D"]
 collision_layer = 0
@@ -14,13 +30,12 @@ script = ExtResource("1")
 position = Vector2(0, -20)
 shape = SubResource("shape")
 
-[node name="Vis" type="ColorRect" parent="."]
+[node name="Vis" type="AnimatedSprite2D" parent="."]
 z_index = 2
-offset_left = -24.0
-offset_top = -40.0
-offset_right = 24.0
-offset_bottom = 0.0
-color = Color(0.5, 1.0, 0.5, 0.8)
+texture_filter = 1
+position = Vector2(0, -20)
+sprite_frames = SubResource("portal_frames")
+autoplay = "default"
 
 [node name="Label" type="Label" parent="."]
 offset_left = -30.0

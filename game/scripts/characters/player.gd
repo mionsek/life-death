@@ -16,6 +16,27 @@ var _touch_direction: float = 0.0
 var _jump_requested: bool = false
 
 
+# Runs every frame (also for remote peers — velocity is synced over the network).
+func _process(_delta: float) -> void:
+	_update_animation()
+
+
+# Picks idle/walk/jump animation from the current physics state and flips the
+# sprite to face the movement direction. Safe without the Anim node (unit tests).
+func _update_animation() -> void:
+	if not has_node("Anim"):
+		return
+	var anim: AnimatedSprite2D = $Anim
+	if absf(velocity.x) > 1.0:
+		anim.flip_h = velocity.x < 0.0
+	if not is_on_floor():
+		anim.play("jump")
+	elif absf(velocity.x) > 5.0:
+		anim.play("walk")
+	else:
+		anim.play("idle")
+
+
 func _physics_process(delta: float) -> void:
 	if NetworkManager.state == NetworkManager.State.CONNECTED and not is_multiplayer_authority():
 		return

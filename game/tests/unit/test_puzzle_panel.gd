@@ -1,86 +1,66 @@
 extends GutTest
 
-var _panel: Area2D
-var _door: StaticBody2D
-
-
-func _make_door() -> StaticBody2D:
-	var door: StaticBody2D = preload("res://scripts/obstacles/door.gd").new()
-	door.door_id = "puzzle_door"
-	var shape := CollisionShape2D.new()
-	shape.name = "Shape"
-	door.add_child(shape)
-	var vis := ColorRect.new()
-	vis.name = "Vis"
-	door.add_child(vis)
-	return door
-
-
-func _make_panel() -> Area2D:
-	var panel: Area2D = preload("res://scripts/obstacles/puzzle_panel.gd").new()
-	panel.target_door_id = "puzzle_door"
-	panel.question = "2 + 3 = ?"
-	panel.answer = "5"
-	# Build minimal UI tree expected by puzzle_panel.gd
-	var ui := Control.new()
-	ui.name = "UI"
-	var pc := PanelContainer.new()
-	pc.name = "Panel"
-	ui.add_child(pc)
-	var vbox := VBoxContainer.new()
-	vbox.name = "VBox"
-	pc.add_child(vbox)
-	var question_lbl := Label.new()
-	question_lbl.name = "Question"
-	vbox.add_child(question_lbl)
-	var input_field := LineEdit.new()
-	input_field.name = "Input"
-	vbox.add_child(input_field)
-	var btn := Button.new()
-	btn.name = "SubmitBtn"
-	vbox.add_child(btn)
-	var feedback := Label.new()
-	feedback.name = "Feedback"
-	vbox.add_child(feedback)
-	panel.add_child(ui)
-	return panel
+var _panel: PuzzlePanel
+var _door: Door
+var _panel_scene := preload("res://scenes/obstacles/PuzzlePanel.tscn")
+var _door_scene := preload("res://scenes/obstacles/Door.tscn")
 
 
 func before_each() -> void:
-	_door = _make_door()
+	_door = _door_scene.instantiate()
+	_door.door_id = "quiz_door"
 	add_child_autofree(_door)
-	_panel = _make_panel()
+
+	_panel = _panel_scene.instantiate()
+	_panel.target_door_id = "quiz_door"
+	_panel.question = "2 + 2 = ?"
+	_panel.options = PackedStringArray(["3", "4", "5", "6"])
+	_panel.correct_index = 1
+	_panel.time_limit = 5.0
 	add_child_autofree(_panel)
+	# Deterministic timing: disable the engine tick and drive _process() manually.
+	_panel.set_process(false)
 
 
-# Panel starts unsolved.
-func test_panel_starts_unsolved() -> void:
+# Panel starts unsolved and unlocked.
+func test_panel_starts_unsolved_and_unlocked() -> void:
 	assert_false(_panel.is_solved())
+	assert_false(_panel.is_locked())
 
 
-# Correct answer marks panel as solved.
-func test_correct_answer_solves_panel() -> void:
-	_panel.get_node("UI/Panel/VBox/Input").text = "5"
-	_panel._on_submit_pressed()
+# Choosing the correct option solves the panel and opens the door.
+func test_correct_option_opens_door() -> void:
+	var body: Node = autofree(Node.new())
+	_panel._on_body_entered(body)
+	_panel._on_option_pressed(1)
 	assert_true(_panel.is_solved())
-
-
-# Correct answer opens the linked door.
-func test_correct_answer_opens_door() -> void:
-	_panel.get_node("UI/Panel/VBox/Input").text = "5"
-	_panel._on_submit_pressed()
 	assert_true(_door.is_open())
 
 
-# Wrong answer leaves panel unsolved.
-func test_wrong_answer_does_not_solve_panel() -> void:
-	_panel.get_node("UI/Panel/VBox/Input").text = "99"
-	_panel._on_submit_pressed()
+# Choosing a wrong option leaves the panel unsolved and the door shut.
+func test_wrong_option_keeps_door_closed() -> void:
+	var body: Node = autofree(Node.new())
+	_panel._on_body_entered(body)
+	_panel._on_option_pressed(0)
 	assert_false(_panel.is_solved())
+	assert_false(_door.is_open())
 
 
-# Wrong answer shows feedback text.
-func test_wrong_answer_shows_feedback() -> void:
-	_panel.get_node("UI/Panel/VBox/Input").text = "99"
-	_panel._on_submit_pressed()
-	assert_ne(_panel.get_node("UI/Panel/VBox/Feedback").text, "")
+# The countdown locks the panel when it runs out, and the door stays shut.
+func test_timeout_locks_panel() -> void:
+	var body: Node = autofree(Node.new())
+	_panel._on_body_entered(body)
+	_panel._process(_panel.time_limit + 1.0)
+	assert_true(_panel.is_locked())
+	assert_false(_panel.is_solved())
+	assert_false(_door.is_open())
+
+
+# A correct answer after the panel has locked has no effect.
+func test_cannot_solve_after_lock() -> void:
+	var body: Node = autofree(Node.new())
+	_panel._on_body_entered(body)
+	_panel._process(_panel.time_limit + 1.0)
+	_panel._on_option_pressed(1)
+	assert_false(_panel.is_solved())
+	assert_false(_door.is_open())

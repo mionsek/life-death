@@ -11,8 +11,35 @@ func _ready() -> void:
 	add_to_group("door_" + door_id)
 
 
-# Opens the door: animates it upward and disables its collision.
+# Public entry point. In multiplayer the open is routed through the server so both peers stay in sync.
 func open() -> void:
+	if _is_open:
+		return
+	if NetworkManager.state == NetworkManager.State.CONNECTED:
+		if multiplayer.is_server():
+			_rpc_open.rpc()
+		else:
+			_rpc_request_open.rpc_id(1)
+	else:
+		open_local()
+
+
+# Client -> server request to open; only the server acts on it, then broadcasts.
+@rpc("any_peer", "call_remote", "reliable")
+func _rpc_request_open() -> void:
+	if not multiplayer.is_server():
+		return
+	_rpc_open.rpc()
+
+
+# Server -> all peers: perform the open on every instance.
+@rpc("authority", "call_local", "reliable")
+func _rpc_open() -> void:
+	open_local()
+
+
+# Opens the door on this peer only: animates it upward and disables its collision. Idempotent.
+func open_local() -> void:
 	if _is_open:
 		return
 	_is_open = true

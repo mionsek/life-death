@@ -53,7 +53,27 @@ collision_mask = 3
 position = Vector2(40, -16)
 shape = SubResource("right_area_shape")
 
+[node name="LeftUnderArea" type="Area2D" parent="Plank"]
+collision_layer = 0
+collision_mask = 3
+
+[node name="LeftUnderAreaShape" type="CollisionShape2D" parent="Plank/LeftUnderArea"]
+position = Vector2(-40, 16)
+shape = SubResource("left_area_shape")
+
+[node name="RightUnderArea" type="Area2D" parent="Plank"]
+collision_layer = 0
+collision_mask = 3
+
+[node name="RightUnderAreaShape" type="CollisionShape2D" parent="Plank/RightUnderArea"]
+position = Vector2(40, 16)
+shape = SubResource("right_area_shape")
+
 [connection signal="body_entered" from="Plank/LeftArea" to="." method="_on_left_entered"]
 [connection signal="body_exited" from="Plank/LeftArea" to="." method="_on_left_exited"]
 [connection signal="body_entered" from="Plank/RightArea" to="." method="_on_right_entered"]
 [connection signal="body_exited" from="Plank/RightArea" to="." method="_on_right_exited"]
+[connection signal="body_entered" from="Plank/LeftUnderArea" to="." method="_on_left_under_entered"]
+[connection signal="body_exited" from="Plank/LeftUnderArea" to="." method="_on_left_under_exited"]
+[connection signal="body_entered" from="Plank/RightUnderArea" to="." method="_on_right_under_entered"]
+[connection signal="body_exited" from="Plank/RightUnderArea" to="." method="_on_right_under_exited"]

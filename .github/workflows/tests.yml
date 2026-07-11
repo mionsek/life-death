@@ -1,0 +1,35 @@
+name: Tests
+
+# Runs the GUT unit + integration suite headless on every push and pull request.
+# Enforces the project rule that all tests must pass before a change is submitted.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  gut:
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: "4.6.2-stable"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Godot ${{ env.GODOT_VERSION }} (headless)
+        run: |
+          BASE="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}"
+          ZIP="Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          wget -q "${BASE}/${ZIP}"
+          unzip -q "${ZIP}"
+          sudo mv "Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+          godot --version
+
+      - name: Import project resources
+        working-directory: game
+        run: godot --headless --import || true
+
+      - name: Run GUT tests
+        working-directory: game
+        run: godot --headless -s res://addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json -gexit

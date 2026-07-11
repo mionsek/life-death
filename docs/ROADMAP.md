@@ -4,34 +4,37 @@
 
 ---
 
-## STATUS PROJEKTU — 2026-05-19
+## STATUS PROJEKTU — 2026-07-10
 
 | Faza | Status | Opis |
 |------|--------|------|
 | Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
-| Faza 1 — Setup | 🔄 W toku | `001`–`003` zmergowane, `004` w toku |
-| Faza 2 — Core Gameplay | ⬜ Nie rozpoczęta | — |
-| Faza 3 — Treść i poziomy | ⬜ Nie rozpoczęta | — |
-| Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | — |
-| Faza 5 — Polish i testy | ⬜ Nie rozpoczęta | — |
+| Faza 1 — Setup / Prototyp | ✅ Zakończona | Ruch, 2 graczy, śmierć/reset, multiplayer LAN |
+| Faza 2 — Core Gameplay | 🔄 W toku | Umiejętności (warstwy kolizji), przeszkody, zapis — działają na Ziemi |
+| Faza 3 — Treść i poziomy | 🔄 W toku | Ziemia 01–06; Niebo/Piekło jeszcze puste; sklep do zrobienia |
+| Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | Audio pipeline pusty |
+| Faza 5 — Polish i testy | 🔄 Częściowo | GUT unit + integracja, CI (GitHub Actions) |
 | Faza 6 — iOS Port | ⬜ Nie rozpoczęta | — |
 
-### Ostatnio zrobione
-- ✅ Repozytorium GitHub: [github.com/mionsek/life-death](https://github.com/mionsek/life-death)
-- ✅ GDD, OPEN_QUESTIONS, ROADMAP — wszystkie OQ zamknięte
-- ✅ Godot 4.6.2 zainstalowany, projekt 640×360 landscape
-- ✅ GUT v9.6.0 (testy jednostkowe) + `.gutconfig.json`
-- ✅ `MainMenu.tscn` + 4 testy
-- ✅ PR #1 (`001-project-setup`) zmergowany
-- ✅ PR #2 (`002-player-movement`) — Player, TouchControls, TestLevel, 6 testów
-- ✅ PR #3 (`003-second-player`) — Guardian, TouchControlsP2, dwa D-pady, 4 testy
-- ✅ PR #2 (`004-death-and-reset`) — DeathManager, KillZone, DeathScreen, 3 testy
-- ✅ PR #3 (`005-kostucha-sprite`) — Sprite'y grim-reaper i life-guard
-- 🔄 Branch `006-character-abilities` — warstwy kolizji, FireZone, CloudPlatform, 3 testy
+### Ostatnio zrobione (przez branche PR 001–012)
+- ✅ `001`–`005` — setup, ruch gracza, drugi gracz (Guardian), śmierć/reset, sprite'y
+- ✅ `006-character-abilities` — umiejętności przez warstwy/maski kolizji (FireZone, CloudPlatform)
+- ✅ `007` — multiplayer LAN: ENet (port 7777) + auto-discovery UDP (7778), `NetworkManager`
+- ✅ `008-level-system` — `LevelManager`, rejestr 60 poziomów (earth/heaven/hell × 20)
+- ✅ `009-save-system` — `SaveManager`, zapis JSON + Pair ID (UUID v4)
+- ✅ `010`–`011` — poprawki Earth-01, poziomy Earth 02–06
+- ✅ `012-obstacles` — ExitPortal, Door, Lever, PuzzlePanel, Seesaw + wspólna baza `DoorTrigger`
+  - Przeszkody otwierające drzwi synchronizowane po sieci (server-authoritative)
+  - Seesaw: model torque z ograniczeniem kąta (±25°)
+  - Testy jednostkowe wszystkich przeszkód + pierwsze testy integracyjne
+- ✅ **CI**: `.github/workflows/tests.yml` uruchamia GUT headless; runner `run_tests.ps1`
 
 ### Do zrobienia — następne kroki
-- ⬜ Otworzyć PR `006-character-abilities` po weryfikacji testów
-- ⬜ `007-multiplayer-connection` — WiFi Direct + Bluetooth
+- ⬜ Poziomy Niebo/Piekło (katalogi `scenes/levels/{heaven,hell}` puste)
+- ⬜ Baza zagadek — patrz `docs/PUZZLES.md` (szkielet utworzony)
+- ⬜ Mechanika limitu czasu bramek/portali (OQ, `OPEN_QUESTIONS.md`)
+- ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności) + HUD monet
+- ⬜ Ekran ustawień (`MainMenu.gd:24` — TODO)
 
 ---
 

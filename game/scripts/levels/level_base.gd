@@ -8,11 +8,28 @@ func _ready() -> void:
 	$TouchControls.set_player($Player)
 	$TouchControlsP2.set_player($Guardian)
 	_setup_multiplayer_authority()
+	_connect_exit_portals.call_deferred()
 	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		NetworkManager.peer_disconnected_in_game.connect(_on_peer_disconnected)
 
 
+# Auto-connects all ExitPortal child nodes so the designer only needs to add the scene.
+# Called deferred so all children are ready before scanning.
+func _connect_exit_portals() -> void:
+	for child in get_children():
+		if child.get_script() == null:
+			continue
+		var path: String = child.get_script().resource_path
+		if "exit_portal" not in path:
+			continue
+		if not child.character_entered.is_connected(on_exit_entered):
+			child.character_entered.connect(on_exit_entered)
+		if not child.character_exited_portal.is_connected(on_exit_exited):
+			child.character_exited_portal.connect(on_exit_exited)
+
+
 # Called by the exit portal when a character body enters it.
+# Level completes only when both characters are inside their exits simultaneously.
 func on_exit_entered(body: Node) -> void:
 	var body_name := body.name
 	if body_name in _players_at_exit:

@@ -1,7 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://level_earth_01"]
+[gd_scene load_steps=22 format=3 uid="uid://level_earth_01"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="2_tnw0y"]
+[ext_resource type="PackedScene" uid="uid://seesaw" path="res://scenes/obstacles/Seesaw.tscn" id="2_xdjto"]
+[ext_resource type="PackedScene" uid="uid://door" path="res://scenes/obstacles/Door.tscn" id="2_door"]
+[ext_resource type="PackedScene" uid="uid://lever" path="res://scenes/obstacles/Lever.tscn" id="2_lever"]
 [ext_resource type="PackedScene" uid="uid://touch_controls" path="res://scenes/ui/TouchControls.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://guardian" path="res://scenes/characters/Guardian.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="5"]
@@ -25,14 +29,14 @@ size = Vector2(100, 30)
 [sub_resource type="RectangleShape2D" id="cloud_shape"]
 size = Vector2(100, 16)
 
-[sub_resource type="RectangleShape2D" id="exit_shape"]
-size = Vector2(48, 40)
-
 [sub_resource type="RectangleShape2D" id="killzone_shape"]
 size = Vector2(640, 20)
 
 [sub_resource type="RectangleShape2D" id="wall_shape"]
 size = Vector2(20, 360)
+
+[sub_resource type="RectangleShape2D" id="gate_ceiling_shape"]
+size = Vector2(24, 80)
 
 [node name="Level_Earth_01" type="Node2D"]
 script = ExtResource("1")
@@ -115,6 +119,9 @@ offset_right = 120.0
 offset_bottom = 16.0
 color = Color(0.3, 0.2, 0.1, 1)
 
+[node name="Seesaw" parent="." instance=ExtResource("2_xdjto")]
+position = Vector2(123, 112)
+
 [node name="Hazards" type="Node2D" parent="."]
 
 [node name="LavaPool" type="Area2D" parent="Hazards"]
@@ -150,30 +157,38 @@ offset_right = 100.0
 offset_bottom = 16.0
 color = Color(0.9, 0.9, 1.0, 1)
 
-[node name="ExitPortal" type="Area2D" parent="."]
-position = Vector2(564, 316)
-collision_layer = 0
-collision_mask = 3
+[node name="GateLever" parent="." instance=ExtResource("2_lever")]
+position = Vector2(360, 100)
+target_door_id = "gate_01"
 
-[node name="ExitShape" type="CollisionShape2D" parent="ExitPortal"]
-shape = SubResource("exit_shape")
+[node name="GateDoor" parent="." instance=ExtResource("2_door")]
+position = Vector2(500, 340)
+door_id = "gate_01"
 
-[node name="ExitVis" type="ColorRect" parent="ExitPortal"]
-z_index = 2
-offset_left = -24.0
-offset_top = -40.0
-offset_right = 24.0
+[node name="GateCeiling" type="StaticBody2D" parent="."]
+position = Vector2(500, 260)
+collision_layer = 4
+collision_mask = 0
+
+[node name="GateCeilingShape" type="CollisionShape2D" parent="GateCeiling"]
+position = Vector2(0, -40)
+shape = SubResource("gate_ceiling_shape")
+
+[node name="GateCeilingVis" type="ColorRect" parent="GateCeiling"]
+z_index = 1
+offset_left = -12.0
+offset_top = -80.0
+offset_right = 12.0
 offset_bottom = 0.0
-color = Color(0.5, 1.0, 0.5, 0.8)
+color = Color(0.25, 0.18, 0.1, 1)
 
-[node name="ExitLabel" type="Label" parent="ExitPortal"]
-offset_left = -30.0
-offset_top = -60.0
-offset_right = 30.0
-offset_bottom = -42.0
-text = "EXIT"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 10
+[node name="ExitPortalGuardian" parent="." instance=ExtResource("2_tnw0y")]
+position = Vector2(397, 98)
+target_character = "Guardian"
+
+[node name="ExitPortalPlayer" parent="." instance=ExtResource("2_tnw0y")]
+position = Vector2(560, 338)
+target_character = "Player"
 
 [node name="KillZone" type="Area2D" parent="."]
 collision_layer = 0
@@ -206,14 +221,13 @@ position = Vector2(630, 180)
 shape = SubResource("wall_shape")
 
 [node name="TouchControls" parent="." instance=ExtResource("3")]
+visible = false
 
 [node name="TouchControlsP2" parent="." instance=ExtResource("5")]
+visible = false
 
 [node name="DeathScreen" parent="." instance=ExtResource("6")]
+visible = false
 
-[connection signal="body_entered" from="ExitPortal" to="." method="on_exit_entered"]
-[connection signal="body_exited" from="ExitPortal" to="." method="on_exit_exited"]
-[connection signal="body_entered" from="KillZone" to="." method="_on_hazard_entered"]
 [connection signal="body_entered" from="Hazards/LavaPool" to="." method="_on_hazard_entered"]
-[connection signal="body_entered" from="KillZone" to="DeathManager" method="trigger_death"]
-[connection signal="body_entered" from="Hazards/LavaPool" to="DeathManager" method="trigger_death"]
+[connection signal="body_entered" from="KillZone" to="." method="_on_hazard_entered"]

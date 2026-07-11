@@ -34,10 +34,10 @@ func _update_label() -> void:
 		return
 	if target_character == "Player":
 		$Label.text = "KOSTUCHA"
-		$Vis.color = Color(0.4, 0.8, 1.0, 0.8)
+		$Vis.modulate = Color(0.55, 0.35, 1.0, 0.9)
 	elif target_character == "Guardian":
 		$Label.text = "GUARDIAN"
-		$Vis.color = Color(1.0, 0.6, 0.2, 0.8)
+		$Vis.modulate = Color(1.0, 0.75, 0.25, 0.9)
 	else:
 		$Label.text = "EXIT"
-		$Vis.color = Color(0.5, 1.0, 0.5, 0.8)
+		$Vis.modulate = Color(0.5, 1.0, 0.5, 0.9)

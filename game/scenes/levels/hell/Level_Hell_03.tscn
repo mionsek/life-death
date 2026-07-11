@@ -1,0 +1,312 @@
+[gd_scene load_steps=23 format=3 uid="uid://level_hell_03"]
+
+[ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://guardian" path="res://scenes/characters/Guardian.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://door" path="res://scenes/obstacles/Door.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://lever" path="res://scenes/obstacles/Lever.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://puzzle_panel" path="res://scenes/obstacles/PuzzlePanel.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://touch_controls" path="res://scenes/ui/TouchControls.tscn" id="9"]
+[ext_resource type="PackedScene" uid="uid://touch_controls_p2" path="res://scenes/ui/TouchControlsP2.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://death_screen" path="res://scenes/ui/DeathScreen.tscn" id="11"]
+[ext_resource type="Texture2D" path="res://assets/gen/bg/hell_bg.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/basalt.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/obsidian.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="15"]
+[ext_resource type="Script" path="res://scripts/systems/fire_zone.gd" id="16"]
+
+[sub_resource type="RectangleShape2D" id="ground_shape"]
+size = Vector2(1280, 30)
+
+[sub_resource type="RectangleShape2D" id="p_80"]
+size = Vector2(80, 16)
+
+[sub_resource type="RectangleShape2D" id="lava_a_shape"]
+size = Vector2(240, 24)
+
+[sub_resource type="RectangleShape2D" id="lava_b_shape"]
+size = Vector2(280, 24)
+
+[sub_resource type="RectangleShape2D" id="lava_c_shape"]
+size = Vector2(280, 24)
+
+[sub_resource type="RectangleShape2D" id="wall_shape"]
+size = Vector2(20, 360)
+
+[node name="Level_Hell_03" type="Node2D"]
+script = ExtResource("1")
+level_size = Vector2(1280, 360)
+
+[node name="Bg" type="TextureRect" parent="."]
+z_index = -10
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 1380.0
+offset_bottom = 460.0
+texture = ExtResource("12")
+stretch_mode = 1
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Ground" type="StaticBody2D" parent="Platforms"]
+position = Vector2(640, 345)
+collision_layer = 4
+collision_mask = 0
+
+[node name="GroundShape" type="CollisionShape2D" parent="Platforms/Ground"]
+shape = SubResource("ground_shape")
+
+[node name="GroundVis" type="Sprite2D" parent="Platforms/Ground"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-640, -15)
+texture = ExtResource("13")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1280, 30)
+
+[node name="B1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(210, 240)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B1Shape" type="CollisionShape2D" parent="Platforms/B1"]
+shape = SubResource("p_80")
+
+[node name="B1Vis" type="Sprite2D" parent="Platforms/B1"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="B2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(350, 200)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B2Shape" type="CollisionShape2D" parent="Platforms/B2"]
+shape = SubResource("p_80")
+
+[node name="B2Vis" type="Sprite2D" parent="Platforms/B2"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="B3" type="StaticBody2D" parent="Platforms"]
+position = Vector2(520, 230)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B3Shape" type="CollisionShape2D" parent="Platforms/B3"]
+shape = SubResource("p_80")
+
+[node name="B3Vis" type="Sprite2D" parent="Platforms/B3"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="B4" type="StaticBody2D" parent="Platforms"]
+position = Vector2(660, 190)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B4Shape" type="CollisionShape2D" parent="Platforms/B4"]
+shape = SubResource("p_80")
+
+[node name="B4Vis" type="Sprite2D" parent="Platforms/B4"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="B5" type="StaticBody2D" parent="Platforms"]
+position = Vector2(900, 220)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B5Shape" type="CollisionShape2D" parent="Platforms/B5"]
+shape = SubResource("p_80")
+
+[node name="B5Vis" type="Sprite2D" parent="Platforms/B5"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="B6" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1030, 190)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B6Shape" type="CollisionShape2D" parent="Platforms/B6"]
+shape = SubResource("p_80")
+
+[node name="B6Vis" type="Sprite2D" parent="Platforms/B6"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="B7" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1100, 250)
+collision_layer = 4
+collision_mask = 0
+
+[node name="B7Shape" type="CollisionShape2D" parent="Platforms/B7"]
+shape = SubResource("p_80")
+
+[node name="B7Vis" type="Sprite2D" parent="Platforms/B7"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-40, -8)
+texture = ExtResource("14")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="LavaPool1" type="Area2D" parent="Hazards"]
+position = Vector2(280, 322)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("16")
+
+[node name="Lava1Shape" type="CollisionShape2D" parent="Hazards/LavaPool1"]
+shape = SubResource("lava_a_shape")
+
+[node name="Lava1Vis" type="Sprite2D" parent="Hazards/LavaPool1"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -6)
+texture = ExtResource("15")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 240, 22)
+
+[node name="LavaPool2" type="Area2D" parent="Hazards"]
+position = Vector2(620, 322)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("16")
+
+[node name="Lava2Shape" type="CollisionShape2D" parent="Hazards/LavaPool2"]
+shape = SubResource("lava_b_shape")
+
+[node name="Lava2Vis" type="Sprite2D" parent="Hazards/LavaPool2"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-140, -6)
+texture = ExtResource("15")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 280, 22)
+
+[node name="LavaPool3" type="Area2D" parent="Hazards"]
+position = Vector2(980, 322)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("16")
+
+[node name="Lava3Shape" type="CollisionShape2D" parent="Hazards/LavaPool3"]
+shape = SubResource("lava_c_shape")
+
+[node name="Lava3Vis" type="Sprite2D" parent="Hazards/LavaPool3"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-140, -6)
+texture = ExtResource("15")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 280, 22)
+
+[node name="ReaperGate" parent="." instance=ExtResource("5")]
+position = Vector2(410, 330)
+door_id = "d3_gate_reaper"
+
+[node name="GuardGate" parent="." instance=ExtResource("5")]
+position = Vector2(1140, 330)
+door_id = "d3_gate_guard"
+
+[node name="MathPanel" parent="." instance=ExtResource("7")]
+position = Vector2(330, 192)
+target_door_id = "d3_gate_reaper"
+question = "8 × 7 = ?"
+options = PackedStringArray("54", "58", "64", "56")
+correct_index = 3
+time_limit = 8.0
+
+[node name="GateLever" parent="." instance=ExtResource("6")]
+position = Vector2(800, 330)
+target_door_id = "d3_gate_guard"
+
+[node name="ExitPortalPlayer" parent="." instance=ExtResource("4")]
+position = Vector2(1180, 330)
+target_character = "Player"
+
+[node name="ExitPortalGuardian" parent="." instance=ExtResource("4")]
+position = Vector2(1240, 330)
+target_character = "Guardian"
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="WallLeftShape" type="CollisionShape2D" parent="WallLeft"]
+position = Vector2(10, 180)
+shape = SubResource("wall_shape")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="WallRightShape" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(1270, 180)
+shape = SubResource("wall_shape")
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(60, 290)
+
+[node name="Guardian" parent="." instance=ExtResource("3")]
+position = Vector2(120, 290)
+
+[node name="TouchControls" parent="." instance=ExtResource("9")]
+visible = false
+
+[node name="TouchControlsP2" parent="." instance=ExtResource("10")]
+visible = false
+
+[node name="DeathScreen" parent="." instance=ExtResource("11")]
+visible = false

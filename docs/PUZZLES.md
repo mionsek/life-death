@@ -20,11 +20,19 @@
 
 Każda zagadka: **id**, **strefa** (earth/heaven/hell), **typ**, **pytanie**, **4 opcje**, **index poprawnej**, **trudność** (1–5).
 
-| id | Strefa | Typ | Pytanie | Opcje (A/B/C/D) | Poprawna | Trudność |
-|----|--------|-----|---------|-----------------|----------|----------|
-| earth-riddle-01 | earth | word | Co żyje, gdy je, a ginie, gdy pije? | Woda / Ogień / Wiatr / Ziemia | B (Ogień) | 2 |
-| earth-math-01 | earth | math | `6 × 7 = ?` | 36 / 48 / 42 / 56 | C (42) | 1 |
-| _..._ | | | | | | |
+| id | Strefa | Typ | Pytanie | Opcje (A/B/C/D) | Poprawna | Trudność | Użyta w |
+|----|--------|-----|---------|-----------------|----------|----------|---------|
+| earth-riddle-01 | earth | word | Co żyje, gdy je, a ginie, gdy pije? | Woda / Ogień / Wiatr / Ziemia | B (Ogień) | 2 | Earth 02 |
+| earth-math-01 | earth | math | `6 × 7 = ?` | 36 / 48 / 42 / 56 | C (42) | 1 | — |
+| heaven-riddle-01 | heaven | word | Im więcej oddajesz, tym więcej masz | Złoto / Miłość / Czas / Woda | B (Miłość) | 2 | Heaven 01 (10 s) |
+| heaven-riddle-02 | heaven | word | Jestem zawsze przed tobą, nigdy za tobą | Cień / Przeszłość / Przyszłość / Sen | C (Przyszłość) | 2 | Heaven 02 (8 s) |
+| heaven-math-01 | heaven | math | `12 × 4 = ?` | 44 / 48 / 52 / 36 | B (48) | 2 | Heaven 03 (8 s) |
+| heaven-math-02 | heaven | math | `7 × 8 = ?` | 54 / 58 / 48 / 56 | D (56) | 2 | Heaven 04 (6 s) |
+| hell-math-01 | hell | math | `6 + 7 = ?` | 12 / 14 / 13 / 15 | C (13) | 1 | Hell 01 (10 s) |
+| hell-math-02 | hell | math | `9 × 6 = ?` | 52 / 54 / 56 / 48 | B (54) | 2 | Hell 02 (8 s) |
+| hell-math-03 | hell | math | `8 × 7 = ?` | 54 / 58 / 64 / 56 | D (56) | 2 | Hell 03 (8 s) |
+| hell-math-04 | hell | math | `17 × 4 = ?` | 64 / 68 / 72 / 76 | B (68) | 3 | Hell 04 (6 s) |
+| hell-math-05 | hell | math | `96 ÷ 8 = ?` | 14 / 16 / 12 / 11 | C (12) | 3 | Hell 04 (6 s) |
 
 ## Typy zagadek (wg GAME_DESIGN / OPEN_QUESTIONS)
 

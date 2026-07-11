@@ -4,19 +4,19 @@
 
 ---
 
-## STATUS PROJEKTU — 2026-07-10
+## STATUS PROJEKTU — 2026-07-12
 
 | Faza | Status | Opis |
 |------|--------|------|
 | Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
 | Faza 1 — Setup / Prototyp | ✅ Zakończona | Ruch, 2 graczy, śmierć/reset, multiplayer LAN |
-| Faza 2 — Core Gameplay | 🔄 W toku | Umiejętności (warstwy kolizji), przeszkody, zapis — działają na Ziemi |
-| Faza 3 — Treść i poziomy | 🔄 W toku | Ziemia 01–06; Niebo/Piekło jeszcze puste; sklep do zrobienia |
-| Faza 4 — Grafika/Audio | ⬜ Nie rozpoczęta | Audio pipeline pusty |
-| Faza 5 — Polish i testy | 🔄 Częściowo | GUT unit + integracja, CI (GitHub Actions) |
+| Faza 2 — Core Gameplay | 🔄 W toku | Umiejętności (warstwy kolizji), przeszkody, zapis — działają we wszystkich strefach |
+| Faza 3 — Treść i poziomy | 🔄 W toku | Ziemia 01–06, Niebo 01–04, Piekło 01–04; mapa świata jako graf; sklep do zrobienia |
+| Faza 4 — Grafika/Audio | 🔄 W toku | Pixel-art pipeline proceduralny (tools/generate_assets.gd); audio pusty |
+| Faza 5 — Polish i testy | 🔄 Częściowo | GUT unit + integracja (86 testów), CI (GitHub Actions) |
 | Faza 6 — iOS Port | ⬜ Nie rozpoczęta | — |
 
-### Ostatnio zrobione (przez branche PR 001–012)
+### Ostatnio zrobione (przez branche PR 001–013)
 - ✅ `001`–`005` — setup, ruch gracza, drugi gracz (Guardian), śmierć/reset, sprite'y
 - ✅ `006-character-abilities` — umiejętności przez warstwy/maski kolizji (FireZone, CloudPlatform)
 - ✅ `007` — multiplayer LAN: ENet (port 7777) + auto-discovery UDP (7778), `NetworkManager`
@@ -24,16 +24,32 @@
 - ✅ `009-save-system` — `SaveManager`, zapis JSON + Pair ID (UUID v4)
 - ✅ `010`–`011` — poprawki Earth-01, poziomy Earth 02–06
 - ✅ `012-obstacles` — ExitPortal, Door, Lever, PuzzlePanel, Seesaw + wspólna baza `DoorTrigger`
-  - Przeszkody otwierające drzwi synchronizowane po sieci (server-authoritative)
-  - Seesaw: model torque z ograniczeniem kąta (±25°)
-  - Testy jednostkowe wszystkich przeszkód + pierwsze testy integracyjne
 - ✅ **CI**: `.github/workflows/tests.yml` uruchamia GUT headless; runner `run_tests.ps1`
+- ✅ `013-worldmap-heaven-hell`:
+  - **Mapa świata jako graf** (LevelSelect): centralny hub Ziemi poziomo, ramię Nieba
+    w górę (im wyżej, tym trudniej dla Kostuchy), ramię Piekła w dół (analogicznie
+    dla Strażniczki); poziom odblokowuje następców w grafie (`LEVEL_GRAPH`)
+  - **Fix crash rejestru**: rejestr zawiera tylko poziomy z istniejącą sceną;
+    `load_level` odmawia z ostrzeżeniem zamiast crashować
+  - **Niebo 01–04** (pionowe 640×720, chmury + święte światło `LightZone` zabijające
+    tylko Kostuchę) i **Piekło 01–04** (poziome 1280×360, lawa, wysoka trasa Strażniczki);
+    wszystkie z interlockiem kooperacyjnym (panel↔dźwignia otwierają bramy partnera)
+  - **Flagowy level design**: `docs/LEVEL_DESIGN/heaven_01.md` — „Wrota Niebios"
+  - **Pixel-art assety generowane proceduralnie** (`game/tools/generate_assets.gd`):
+    postacie z animacjami (idle/walk/jump), tilesety 3 stref, przeszkody, portale,
+    tła, mapa świata; podpięte do wszystkich scen (retekstura Ziemi 01–06)
+  - **Kamera oddalona** (zoom 0.8) z limitami do granic poziomu (`level_size`)
+  - **Minimapa** w rogu (żywy podgląd przez współdzielony World2D + kropki graczy);
+    klik ⇒ pełna mapa poziomu, ponowny klik ⇒ powrót do rogu
+  - Ziemia 03–06: stare pojedyncze wyjścia zastąpione podwójnymi portalami per postać
+  - Testy: 86 (nowe: graf poziomów, LightZone, ładowanie wszystkich 14 poziomów świata)
 
 ### Do zrobienia — następne kroki
-- ⬜ Poziomy Niebo/Piekło (katalogi `scenes/levels/{heaven,hell}` puste)
-- ⬜ Baza zagadek — patrz `docs/PUZZLES.md` (szkielet utworzony)
-- ⬜ Mechanika limitu czasu bramek/portali (OQ, `OPEN_QUESTIONS.md`)
-- ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności) + HUD monet
+- ⬜ Dalsze poziomy stref (Ziemia 07+, Niebo/Piekło 05+; bossowie na końcach ramion)
+- ⬜ System monet (czaszki/aureole) + HUD — fundament pod sklep
+- ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności)
+- ⬜ Baza zagadek — patrz `docs/PUZZLES.md` (zagadki H01–H04/D01–D04 zaszyte w scenach)
+- ⬜ Synchronizacja blokady panelu zagadki po sieci (timeout tylko lokalny)
 - ⬜ Ekran ustawień (`MainMenu.gd:24` — TODO)
 
 ---

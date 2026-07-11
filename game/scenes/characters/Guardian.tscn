@@ -1,10 +1,77 @@
-[gd_scene load_steps=4 format=3 uid="uid://guardian"]
+[gd_scene load_steps=12 format=3 uid="uid://guardian"]
 
 [ext_resource type="Script" path="res://scripts/characters/guardian.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/characters/life-guard.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/gen/characters/guardian_sheet.png" id="2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(32, 64)
+
+[sub_resource type="AtlasTexture" id="f0"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 24, 32)
+
+[sub_resource type="AtlasTexture" id="f1"]
+atlas = ExtResource("2")
+region = Rect2(24, 0, 24, 32)
+
+[sub_resource type="AtlasTexture" id="f2"]
+atlas = ExtResource("2")
+region = Rect2(48, 0, 24, 32)
+
+[sub_resource type="AtlasTexture" id="f3"]
+atlas = ExtResource("2")
+region = Rect2(72, 0, 24, 32)
+
+[sub_resource type="AtlasTexture" id="f4"]
+atlas = ExtResource("2")
+region = Rect2(96, 0, 24, 32)
+
+[sub_resource type="AtlasTexture" id="f5"]
+atlas = ExtResource("2")
+region = Rect2(120, 0, 24, 32)
+
+[sub_resource type="AtlasTexture" id="f6"]
+atlas = ExtResource("2")
+region = Rect2(144, 0, 24, 32)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("f0")
+}, {
+"duration": 1.0,
+"texture": SubResource("f1")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("f2")
+}, {
+"duration": 1.0,
+"texture": SubResource("f3")
+}, {
+"duration": 1.0,
+"texture": SubResource("f4")
+}, {
+"duration": 1.0,
+"texture": SubResource("f5")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("f6")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 1.0
+}]
 
 [node name="Guardian" type="CharacterBody2D"]
 collision_layer = 2
@@ -14,7 +81,9 @@ script = ExtResource("1")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="Body" type="Sprite2D" parent="."]
-scale = Vector2(0.125, 0.125)
-texture = ExtResource("2")
+[node name="Anim" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
+scale = Vector2(2, 2)
+sprite_frames = SubResource("frames")
+animation = &"idle"
+autoplay = "idle"

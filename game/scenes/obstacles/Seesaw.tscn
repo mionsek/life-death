@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://seesaw"]
+[gd_scene load_steps=7 format=3 uid="uid://seesaw"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/seesaw.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/gen/obstacles/plank.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/gen/obstacles/pivot.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="plank_shape"]
 size = Vector2(160, 12)
@@ -14,13 +16,11 @@ size = Vector2(80, 20)
 [node name="Seesaw" type="Node2D"]
 script = ExtResource("1")
 
-[node name="Pivot" type="ColorRect" parent="."]
+[node name="Pivot" type="Sprite2D" parent="."]
 z_index = 3
-offset_left = -6.0
-offset_top = 0.0
-offset_right = 6.0
-offset_bottom = 14.0
-color = Color(0.3, 0.3, 0.3, 1.0)
+texture_filter = 1
+position = Vector2(0, 7)
+texture = ExtResource("3")
 
 [node name="Plank" type="AnimatableBody2D" parent="."]
 collision_layer = 4
@@ -29,13 +29,10 @@ collision_mask = 0
 [node name="PlankShape" type="CollisionShape2D" parent="Plank"]
 shape = SubResource("plank_shape")
 
-[node name="PlankVis" type="ColorRect" parent="Plank"]
+[node name="PlankVis" type="Sprite2D" parent="Plank"]
 z_index = 2
-offset_left = -80.0
-offset_top = -6.0
-offset_right = 80.0
-offset_bottom = 6.0
-color = Color(0.55, 0.35, 0.1, 1.0)
+texture_filter = 1
+texture = ExtResource("2")
 
 [node name="LeftArea" type="Area2D" parent="Plank"]
 collision_layer = 0

@@ -1,5 +1,11 @@
 extends Node2D
 
+const MINIMAP_SCENE := preload("res://scenes/ui/Minimap.tscn")
+
+# World-space size of this level; override in bigger scenes so the camera
+# limits and the minimap cover the full playfield.
+@export var level_size: Vector2 = Vector2(640, 360)
+
 # Tracks which players have reached the exit portal.
 var _players_at_exit: Array[String] = []
 
@@ -7,10 +13,34 @@ var _players_at_exit: Array[String] = []
 func _ready() -> void:
 	$TouchControls.set_player($Player)
 	$TouchControlsP2.set_player($Guardian)
+	_setup_camera()
+	_setup_minimap()
 	_setup_multiplayer_authority()
 	_connect_exit_portals.call_deferred()
 	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		NetworkManager.peer_disconnected_in_game.connect(_on_peer_disconnected)
+
+
+# Clamps the follow camera to the level bounds. When the zoomed-out view is
+# larger than the level on an axis, the limits are widened symmetrically so the
+# level stays centered instead of pinning to the top-left corner.
+func _setup_camera() -> void:
+	if not $Player.has_node("Camera2D"):
+		return
+	var cam: Camera2D = $Player.get_node("Camera2D")
+	var view: Vector2 = get_viewport().get_visible_rect().size / cam.zoom
+	var overflow: Vector2 = ((view - level_size) / 2.0).max(Vector2.ZERO)
+	cam.limit_left = int(-overflow.x)
+	cam.limit_top = int(-overflow.y)
+	cam.limit_right = int(level_size.x + overflow.x)
+	cam.limit_bottom = int(level_size.y + overflow.y)
+
+
+# Adds the live minimap (top-right corner, click to expand to a full map).
+func _setup_minimap() -> void:
+	var minimap := MINIMAP_SCENE.instantiate()
+	add_child(minimap)
+	minimap.setup(Rect2(Vector2.ZERO, level_size), [$Player, $Guardian])
 
 
 # Auto-connects all ExitPortal child nodes so the designer only needs to add the scene.

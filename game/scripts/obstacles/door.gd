@@ -43,7 +43,7 @@ func open_local() -> void:
 	if _is_open:
 		return
 	_is_open = true
-	$Vis.color = Color(0.4, 0.6, 0.4, 0.3)
+	$Vis.modulate = Color(0.4, 0.9, 0.5, 0.35)
 	var tween := create_tween()
 	tween.tween_property(self, "position:y", position.y - 80.0, 0.5).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_callback(_disable_collision)

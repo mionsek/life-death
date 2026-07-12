@@ -31,8 +31,12 @@ const MAX_ZOOM := 1.6
 const TINT_PLANNED := Color(0.28, 0.28, 0.33, 0.55)
 
 var _canvas: Control
-var _zoom: float = 0.5
+# Starts zoomed-in enough for comfortable finger navigation on a phone;
+# pinch (or mouse wheel) zooms out to the 0.5 full-map overview.
+var _zoom: float = 0.85
 var _dragging: bool = false
+# Active touch points (index -> position) for one-finger pan / two-finger pinch.
+var _touches: Dictionary = {}
 # Runtime-densified copy of the bubble art (the source is very translucent).
 var _bubble_tex: Texture2D
 
@@ -178,16 +182,40 @@ func _add_pulse(btn: TextureButton) -> void:
 
 # ---------------------------------------------------------- pan & zoom ------
 
-# Drag to pan; mouse wheel to zoom around the cursor.
+# Touch: one finger pans, two fingers pinch-zoom.
+# Mouse (desktop): drag pans, wheel zooms around the cursor.
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_touches[event.index] = event.position
+		else:
+			_touches.erase(event.index)
+	elif event is InputEventScreenDrag:
+		if _touches.size() >= 2 and _touches.has(event.index):
+			# pinch: zoom by the change of distance to the other finger
+			var other_index := -1
+			for idx in _touches.keys():
+				if idx != event.index:
+					other_index = idx
+					break
+			var other: Vector2 = _touches[other_index]
+			var old_dist: float = _touches[event.index].distance_to(other)
+			var new_dist: float = event.position.distance_to(other)
+			_touches[event.index] = event.position
+			if old_dist > 1.0:
+				_apply_zoom(new_dist / old_dist, (event.position + other) / 2.0)
+		elif _touches.has(event.index):
+			_touches[event.index] = event.position
+			_canvas.position += event.relative
+			_clamp_canvas()
+	elif event is InputEventMouseButton and _touches.is_empty():
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			_dragging = event.pressed
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_apply_zoom(1.1, event.position)
 		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_apply_zoom(1.0 / 1.1, event.position)
-	elif event is InputEventMouseMotion and _dragging:
+	elif event is InputEventMouseMotion and _dragging and _touches.is_empty():
 		_canvas.position += event.relative
 		_clamp_canvas()
 

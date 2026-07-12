@@ -583,6 +583,65 @@ func _gen_seesaw() -> void:
 	_save(pv, "obstacles/pivot.png")
 
 
+# ------------------------------------------------------------ collectibles ---
+
+const SKULL_MAP := [
+	"....XXXXXXXX....",
+	"..XXWWWWWWWWXX..",
+	".XWWWWWWWWWWWWX.",
+	".XWWWWWWWWWWWWX.",
+	"XWWWWWWWWWWWWWWX",
+	"XWWEEWWWWWWEEWWX",
+	"XWWEPWWWWWWEPWWX",
+	"XWWEEWWWWWWEEWWX",
+	"XWWWWWWNNWWWWWWX",
+	".XWWWWWNNWWWWWX.",
+	".XXWWWWWWWWWWXX.",
+	"...XWTWTWTWTX...",
+	"...XWTWTWTWTX...",
+	"....XXXXXXXX....",
+	"................",
+	"................",
+]
+const SKULL_LEGEND := {
+	"X": Color("2a2438"), "W": Color("f0ece0"), "E": Color("1a1426"),
+	"P": Color("9b30ff"), "N": Color("c8c0ae"), "T": Color("d8d2c2"),
+}
+
+const HALO_MAP := [
+	"................",
+	"................",
+	"....GGGGGGGG....",
+	"..GGYYYYYYYYGG..",
+	".GYYSSYYYYYYYYG.",
+	".GYSYYYYYYYYYYG.",
+	".GYYYYYYYYYYYYG.",
+	"..GGYYYYYYYYGG..",
+	"....GGGGGGGG....",
+	"................",
+	"................",
+	"................",
+	"................",
+	"................",
+	"................",
+	"................",
+]
+const HALO_LEGEND := {
+	"G": Color("b58a24"), "Y": Color("ffd94a"), "S": Color("fff2b8"),
+}
+
+
+func _gen_collectibles() -> void:
+	# 16x16 skull (Reaper's currency) and halo (Guardian's currency).
+	var skull := _make(16, 16)
+	_map(skull, SKULL_MAP, SKULL_LEGEND)
+	_save(skull, "collectibles/skull.png")
+
+	var halo := _make(16, 16)
+	_map(halo, HALO_MAP, HALO_LEGEND)
+	_save(halo, "collectibles/halo.png")
+
+
 # --------------------------------------------------------------------- ui ---
 
 func _gen_gems() -> void:
@@ -768,6 +827,7 @@ func _init() -> void:
 	_gen_panel()
 	_gen_portal()
 	_gen_seesaw()
+	_gen_collectibles()
 	_gen_gems()
 	_gen_map_bg()
 	_gen_zone_backgrounds()

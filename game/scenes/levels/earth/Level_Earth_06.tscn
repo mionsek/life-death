@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://level_earth_06"]
+[gd_scene load_steps=30 format=3 uid="uid://level_earth_06"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -12,6 +12,8 @@
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="tex_lava"]
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/cloud.png" id="tex_cloud"]
 [ext_resource type="PackedScene" uid="uid://exit_portal" path="res://scenes/obstacles/ExitPortal.tscn" id="exit_portal"]
+[ext_resource type="PackedScene" uid="uid://skull_pickup" path="res://scenes/obstacles/Skull.tscn" id="pickup_skull"]
+[ext_resource type="PackedScene" uid="uid://halo_pickup" path="res://scenes/obstacles/Halo.tscn" id="pickup_halo"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(640, 20)
@@ -61,14 +63,14 @@ size = Vector2(20, 360)
 [node name="Level_Earth_06" type="Node2D"]
 script = ExtResource("1")
 
-[node name="WorldEnv" type="ColorRect" parent="."]
+[node name="WorldEnv" type="TextureRect" parent="."]
 z_index = -10
-layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 640.0
-offset_bottom = 360.0
-color = Color(0.12, 0.20, 0.06, 1)
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 740.0
+offset_bottom = 460.0
+texture = ExtResource("tex_bg")
+stretch_mode = 1
 
 [node name="Platforms" type="Node2D" parent="."]
 
@@ -195,13 +197,15 @@ collision_mask = 2
 position = Vector2(105, 345)
 shape = SubResource("lava1_shape")
 
-[node name="LavaVis1" type="ColorRect" parent="Hazards/LavaPool1"]
+[node name="LavaVis1" type="Sprite2D" parent="Hazards/LavaPool1"]
 z_index = 1
-offset_left = 75.0
-offset_top = 330.0
-offset_right = 135.0
-offset_bottom = 360.0
-color = Color(0.9, 0.3, 0.05, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(75.0, 330.0)
+texture = ExtResource("tex_lava")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 60, 30)
 
 [node name="LavaPool2" type="Area2D" parent="Hazards"]
 collision_layer = 0
@@ -211,13 +215,15 @@ collision_mask = 2
 position = Vector2(320, 345)
 shape = SubResource("lava2_shape")
 
-[node name="LavaVis2" type="ColorRect" parent="Hazards/LavaPool2"]
+[node name="LavaVis2" type="Sprite2D" parent="Hazards/LavaPool2"]
 z_index = 1
-offset_left = 290.0
-offset_top = 330.0
-offset_right = 350.0
-offset_bottom = 360.0
-color = Color(0.9, 0.3, 0.05, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(290.0, 330.0)
+texture = ExtResource("tex_lava")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 60, 30)
 
 [node name="LavaPool3" type="Area2D" parent="Hazards"]
 collision_layer = 0
@@ -227,13 +233,15 @@ collision_mask = 2
 position = Vector2(465, 345)
 shape = SubResource("lava3_shape")
 
-[node name="LavaVis3" type="ColorRect" parent="Hazards/LavaPool3"]
+[node name="LavaVis3" type="Sprite2D" parent="Hazards/LavaPool3"]
 z_index = 1
-offset_left = 435.0
-offset_top = 330.0
-offset_right = 495.0
-offset_bottom = 360.0
-color = Color(0.9, 0.3, 0.05, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(435.0, 330.0)
+texture = ExtResource("tex_lava")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 60, 30)
 
 [node name="CloudPlatform1" type="StaticBody2D" parent="."]
 position = Vector2(65, 190)
@@ -244,13 +252,15 @@ collision_mask = 0
 position = Vector2(40, 8)
 shape = SubResource("cloud1_shape")
 
-[node name="CloudVis1" type="ColorRect" parent="CloudPlatform1"]
+[node name="CloudVis1" type="Sprite2D" parent="CloudPlatform1"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 80.0
-offset_bottom = 16.0
-color = Color(0.9, 0.9, 1.0, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_cloud")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
 
 [node name="CloudPlatform2" type="StaticBody2D" parent="."]
 position = Vector2(285, 190)
@@ -261,13 +271,15 @@ collision_mask = 0
 position = Vector2(40, 8)
 shape = SubResource("cloud2_shape")
 
-[node name="CloudVis2" type="ColorRect" parent="CloudPlatform2"]
+[node name="CloudVis2" type="Sprite2D" parent="CloudPlatform2"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 80.0
-offset_bottom = 16.0
-color = Color(0.9, 0.9, 1.0, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_cloud")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
 
 [node name="CloudPlatform3" type="StaticBody2D" parent="."]
 position = Vector2(480, 190)
@@ -278,13 +290,15 @@ collision_mask = 0
 position = Vector2(40, 8)
 shape = SubResource("cloud3_shape")
 
-[node name="CloudVis3" type="ColorRect" parent="CloudPlatform3"]
+[node name="CloudVis3" type="Sprite2D" parent="CloudPlatform3"]
 z_index = 1
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 80.0
-offset_bottom = 16.0
-color = Color(0.9, 0.9, 1.0, 1)
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0.0, 0.0)
+texture = ExtResource("tex_cloud")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 16)
 
 
 [node name="ExitPortalGuardian" parent="." instance=ExtResource("exit_portal")]
@@ -330,6 +344,21 @@ shape = SubResource("wall_shape")
 [node name="TouchControlsP2" parent="." instance=ExtResource("5")]
 
 [node name="DeathScreen" parent="." instance=ExtResource("6")]
+
+[node name="Skull1" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(105, 315)
+
+[node name="Skull2" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(320, 315)
+
+[node name="Skull3" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(465, 315)
+
+[node name="Halo1" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(105, 160)
+
+[node name="Halo2" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(325, 160)
 
 [connection signal="body_entered" from="KillZone" to="." method="_on_hazard_entered"]
 [connection signal="body_entered" from="Hazards/LavaPool1" to="." method="_on_hazard_entered"]

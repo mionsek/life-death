@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://level_hell_01"]
+[gd_scene load_steps=25 format=3 uid="uid://level_hell_01"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -14,6 +14,8 @@
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/obsidian.png" id="14"]
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="15"]
 [ext_resource type="Script" path="res://scripts/systems/fire_zone.gd" id="16"]
+[ext_resource type="PackedScene" uid="uid://skull_pickup" path="res://scenes/obstacles/Skull.tscn" id="pickup_skull"]
+[ext_resource type="PackedScene" uid="uid://halo_pickup" path="res://scenes/obstacles/Halo.tscn" id="pickup_halo"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1280, 30)
@@ -232,3 +234,21 @@ visible = false
 
 [node name="DeathScreen" parent="." instance=ExtResource("11")]
 visible = false
+
+[node name="Skull1" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(360, 300)
+
+[node name="Skull2" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(760, 300)
+
+[node name="Skull3" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(850, 300)
+
+[node name="Halo1" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(340, 205)
+
+[node name="Halo2" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(530, 155)
+
+[node name="Halo3" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(830, 175)

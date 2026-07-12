@@ -1,6 +1,7 @@
 extends Node2D
 
 const MINIMAP_SCENE := preload("res://scenes/ui/Minimap.tscn")
+const COIN_HUD_SCENE := preload("res://scenes/ui/CoinHud.tscn")
 
 # World-space size of this level; override in bigger scenes so the camera
 # limits and the minimap cover the full playfield.
@@ -8,6 +9,14 @@ const MINIMAP_SCENE := preload("res://scenes/ui/Minimap.tscn")
 
 # Tracks which players have reached the exit portal.
 var _players_at_exit: Array[String] = []
+
+# Pickup progress per character — collecting the full set unlocks that
+# character's exit portal; the level completes only with both sets full.
+var _skull_total: int = 0
+var _skull_got: int = 0
+var _halo_total: int = 0
+var _halo_got: int = 0
+var _coin_hud: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -17,6 +26,7 @@ func _ready() -> void:
 	_setup_minimap()
 	_setup_multiplayer_authority()
 	_connect_exit_portals.call_deferred()
+	_setup_collectibles.call_deferred()
 	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		NetworkManager.peer_disconnected_in_game.connect(_on_peer_disconnected)
 
@@ -58,20 +68,82 @@ func _connect_exit_portals() -> void:
 			child.character_exited_portal.connect(on_exit_exited)
 
 
+# Scans the level for collectibles (skulls/halos), wires their signals and
+# shows the counter HUD when the level has any. Deferred so children are ready.
+func _setup_collectibles() -> void:
+	for node in get_tree().get_nodes_in_group("collectible"):
+		if not is_ancestor_of(node):
+			continue
+		if node.target_character == "Guardian":
+			_halo_total += 1
+		else:
+			_skull_total += 1
+		if not node.collected.is_connected(_on_coin_collected):
+			node.collected.connect(_on_coin_collected)
+	if _skull_total + _halo_total > 0:
+		_coin_hud = COIN_HUD_SCENE.instantiate()
+		add_child(_coin_hud)
+	_refresh_coin_state()
+
+
+# Bumps the matching counter and re-evaluates HUD, portal locks and completion.
+func _on_coin_collected(target_character: String) -> void:
+	if target_character == "Guardian":
+		_halo_got += 1
+	else:
+		_skull_got += 1
+	_refresh_coin_state()
+	_try_complete()
+
+
+# Returns true when the character has collected their whole set (or has none).
+func _coins_done(character: String) -> bool:
+	if character == "Guardian":
+		return _halo_got >= _halo_total
+	return _skull_got >= _skull_total
+
+
+# Updates the HUD counters and dims/undims exit portals with progress text.
+func _refresh_coin_state() -> void:
+	if _coin_hud:
+		_coin_hud.update_counts(_skull_got, _skull_total, _halo_got, _halo_total)
+	for child in get_children():
+		if child.get_script() == null or not child.has_method("set_locked"):
+			continue
+		if "exit_portal" not in String(child.get_script().resource_path):
+			continue
+		var target: String = child.target_character
+		if target == "":
+			var both_done := _coins_done("Player") and _coins_done("Guardian")
+			child.set_locked(not both_done)
+		elif target == "Guardian":
+			child.set_locked(not _coins_done("Guardian"), "%d/%d" % [_halo_got, _halo_total])
+		else:
+			child.set_locked(not _coins_done("Player"), "%d/%d" % [_skull_got, _skull_total])
+
+
 # Called by the exit portal when a character body enters it.
-# Level completes only when both characters are inside their exits simultaneously.
 func on_exit_entered(body: Node) -> void:
 	var body_name := body.name
 	if body_name in _players_at_exit:
 		return
 	_players_at_exit.append(body_name)
-	if _players_at_exit.size() >= 2:
-		_complete_level()
+	_try_complete()
 
 
 # Called by the exit portal when a character body leaves it.
 func on_exit_exited(body: Node) -> void:
 	_players_at_exit.erase(body.name)
+
+
+# Completes the level only when both characters stand at their exits AND both
+# have collected their full pickup sets.
+func _try_complete() -> void:
+	if _players_at_exit.size() < 2:
+		return
+	if not _coins_done("Player") or not _coins_done("Guardian"):
+		return
+	_complete_level()
 
 
 # Wrapper for hazard Area2D body_entered signal — discards the body argument.

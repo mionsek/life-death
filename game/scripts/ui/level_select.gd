@@ -12,10 +12,12 @@ const NODE_BUBBLE := preload("res://assets/bubble_transparent.png")
 
 const MAP_PATHS_SCRIPT := preload("res://scripts/ui/map_paths.gd")
 
+const LOCK_ICON := preload("res://assets/gen/ui/lock.png")
+
 # Bubble size on the canvas and zone tints applied via modulate:
 # heaven keeps the bubble's pure white-blue look, earth is clearly green,
 # hell clearly red.
-const NODE_SIZE := Vector2(46, 46)
+const NODE_SIZE := Vector2(58, 58)
 const ZONE_TINTS := {
 	"earth": Color(0.35, 1.0, 0.3),
 	"heaven": Color.WHITE,
@@ -120,14 +122,17 @@ func _add_node(data) -> void:
 	btn.position = data.map_pos - NODE_SIZE / 2.0
 	btn.pivot_offset = NODE_SIZE / 2.0
 
+	var locked := false
 	if not playable:
 		btn.modulate = TINT_PLANNED    # sketched but not built yet
 		btn.disabled = true
 	else:
 		match status:
 			"locked":
-				btn.modulate = zone_tint.darkened(0.35)
+				# very dark on purpose — locked must read at a glance
+				btn.modulate = zone_tint.darkened(0.72)
 				btn.disabled = true
+				locked = true
 			"unlocked":
 				btn.modulate = zone_tint
 				_add_pulse(btn)        # "play me next"
@@ -137,26 +142,37 @@ func _add_node(data) -> void:
 		var level_id: int = data.id
 		btn.pressed.connect(func(): _on_level_selected(level_id))
 
-	var lbl := Label.new()
-	lbl.text = ("✓" if status == "completed" else "") + str(data.index)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 12)
-	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
-	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
-	lbl.add_theme_constant_override("shadow_offset_y", 1)
-	lbl.size = NODE_SIZE
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	btn.add_child(lbl)
+	if locked:
+		# centered padlock instead of the number
+		var lock := TextureRect.new()
+		lock.texture = LOCK_ICON
+		lock.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		lock.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		lock.size = NODE_SIZE
+		lock.modulate = Color(1, 1, 1, 0.9)
+		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(lock)
+	else:
+		var lbl := Label.new()
+		lbl.text = ("✓" if status == "completed" else "") + str(data.index)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 12)
+		lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
+		lbl.add_theme_constant_override("shadow_offset_y", 1)
+		lbl.size = NODE_SIZE
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		btn.add_child(lbl)
 	_canvas.add_child(btn)
 
 
-# Gentle pulse marking levels that are ready to play.
+# Slow, subtle breathing pulse marking levels that are ready to play.
 func _add_pulse(btn: TextureButton) -> void:
 	var tween := btn.create_tween().set_loops()
-	tween.tween_property(btn, "scale", Vector2(1.18, 1.18), 0.55)\
+	tween.tween_property(btn, "scale", Vector2(1.07, 1.07), 1.2)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(btn, "scale", Vector2.ONE, 0.55)\
+	tween.tween_property(btn, "scale", Vector2.ONE, 1.2)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 

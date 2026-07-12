@@ -787,6 +787,31 @@ const MOTIF_FLAME := [
 ]
 
 
+const LOCK_MAP := [
+	"....XXXX....",
+	"...XX..XX...",
+	"...X....X...",
+	"...X....X...",
+	"..XXXXXXXX..",
+	"..XWWWWWWX..",
+	"..XWWKKWWX..",
+	"..XWWKKWWX..",
+	"..XWWWKWWX..",
+	"..XWWWWWWX..",
+	"..XXXXXXXX..",
+]
+const LOCK_LEGEND := {
+	"X": Color("14121a"), "W": Color("e8e4da"), "K": Color("14121a"),
+}
+
+
+func _gen_lock() -> void:
+	# 12x11 padlock stamped on locked level bubbles.
+	var im := _make(12, 11)
+	_map(im, LOCK_MAP, LOCK_LEGEND)
+	_save(im, "ui/lock.png")
+
+
 func _gen_map_nodes() -> void:
 	# 30x30 round level nodes, one per zone (like the circled numbers on the
 	# sketch): coloured disc + dark rim + zone motif. States (locked/unlocked/
@@ -917,6 +942,7 @@ func _init() -> void:
 	_gen_gems()
 	_gen_map_bg()
 	_gen_map_nodes()
+	_gen_lock()
 	_gen_zone_backgrounds()
 	print("Done.")
 	quit()

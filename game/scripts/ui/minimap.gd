@@ -1,13 +1,13 @@
 extends CanvasLayer
 
-# Live minimap in the top-right corner. It renders the actual level through a
-# SubViewport that shares the main World2D, so platforms, obstacles and both
-# characters are always up to date. Clicking the minimap toggles a large
-# full-level map overlay; clicking again collapses it back to the corner.
+# Live minimap — a tiny square in the top-left corner. It renders the actual
+# level through a SubViewport that shares the main World2D, so platforms,
+# obstacles and both characters are always up to date. Tapping the square
+# expands the map to fill the whole screen; tapping again collapses it.
 
-const CORNER_SIZE := Vector2(116, 66)
+const CORNER_SIZE := Vector2(46, 46)
 const CORNER_MARGIN := 8.0
-const EXPANDED_FRACTION := 0.86
+const EXPANDED_FRACTION := 1.0
 
 const PLAYER_DOT := Color(0.62, 0.32, 1.0)
 const GUARDIAN_DOT := Color(1.0, 0.8, 0.25)
@@ -61,7 +61,7 @@ func _apply_layout() -> void:
 		_frame.position = (screen - _frame.size) / 2.0
 	else:
 		_frame.size = CORNER_SIZE
-		_frame.position = Vector2(screen.x - CORNER_SIZE.x - CORNER_MARGIN, CORNER_MARGIN)
+		_frame.position = Vector2(CORNER_MARGIN, CORNER_MARGIN)
 	_fit_camera()
 
 

@@ -692,45 +692,193 @@ func _gen_gems() -> void:
 
 
 func _gen_map_bg() -> void:
-	# 320x180 world-map background: heaven glow on top, earth band in the middle,
-	# hell glow at the bottom (matches the vertical zone metaphor).
-	var im := _make(320, 180)
-	var sky := Color("cfe0f2")
-	var skygold := Color("f2e4c0")
-	var earth_c := Color("4a3a26")
-	var earth_l := Color("5c4930")
-	var hell_c := Color("38100c")
+	# 1280x720 world-map canvas background: three horizontal bands with wavy
+	# borders (Heaven ~top 30%, Earth+grass in the middle, Hell at the bottom),
+	# matching the hand-drawn map design. PLACEHOLDER — the final art will be a
+	# custom image with the same size and band split; drop it over this file.
+	var w := 1280
+	var h := 720
+	var im := _make(w, h)
+	var sky_top := Color("f8f2da")
+	var sky_bot := Color("cfe0f2")
+	var grass := Color("5f9c46")
+	var earth_c := Color("6b4a2a")
+	var earth_d := Color("4c3018")
 	var hell_g := Color("7a2410")
-	for y in 180:
-		var t := float(y) / 179.0
-		for x in 320:
+	var hell_c := Color("2a0c08")
+	for x in w:
+		# wavy band borders like the sketch
+		var border1 := 250.0 + 18.0 * sin(x * 0.012) + 8.0 * sin(x * 0.031 + 2.0)
+		var border2 := 505.0 + 16.0 * sin(x * 0.010 + 4.0) + 7.0 * sin(x * 0.027)
+		for y in h:
 			var c: Color
-			if t < 0.30:
-				c = sky.lerp(skygold, t / 0.30)
-			elif t < 0.42:
-				c = skygold.lerp(earth_l, (t - 0.30) / 0.12)
-			elif t < 0.58:
-				c = earth_l.lerp(earth_c, (t - 0.42) / 0.16)
-			elif t < 0.72:
-				c = earth_c.lerp(hell_g, (t - 0.58) / 0.14)
+			if y < border1:
+				c = sky_top.lerp(sky_bot, y / border1)
+			elif y < border1 + 14.0:
+				c = grass   # grassy rim where Earth meets the sky
+			elif y < border2:
+				var t := (y - border1) / (border2 - border1)
+				c = earth_c.lerp(earth_d, t)
+			elif y < border2 + 10.0:
+				c = hell_g  # glowing rim where Hell begins
 			else:
-				c = hell_g.lerp(hell_c, (t - 0.72) / 0.28)
-			# subtle texture noise + vignette
-			var n := (_noise(x, y, 23) - 0.5) * 0.06
-			c = Color(c.r + n, c.g + n, c.b + n)
-			var vx := absf(x - 160.0) / 160.0
-			c = c.darkened(vx * vx * 0.25)
-			_px(im, x, y, c)
-	# faint stars in the heaven band, embers in the hell band
-	for i in 40:
-		var sx := int(_noise(i, 0, 24) * 320.0)
-		var sy := int(_noise(i, 1, 24) * 45.0)
-		_px(im, sx, sy, Color(1, 1, 1, 0.7))
-	for i in 30:
-		var ex := int(_noise(i, 2, 25) * 320.0)
-		var ey := 140 + int(_noise(i, 3, 25) * 40.0)
+				var t2 := (y - border2) / (h - border2)
+				c = hell_g.lerp(hell_c, t2)
+			var n := (_noise(x, y, 23) - 0.5) * 0.05
+			_px(im, x, y, Color(c.r + n, c.g + n, c.b + n))
+	# clouds in the heaven band
+	for i in 9:
+		var cx := 40 + int(_noise(i, 0, 24) * 1200.0)
+		var cy := 30 + int(_noise(i, 1, 24) * 150.0)
+		for dy in range(-7, 8):
+			for dx in range(-26, 27):
+				if dx * dx / 676.0 + dy * dy / 49.0 <= 1.0:
+					_px(im, cx + dx, cy + dy, Color(1, 1, 1, 0.5))
+	# embers in the hell band
+	for i in 70:
+		var ex := int(_noise(i, 2, 25) * 1280.0)
+		var ey := 540 + int(_noise(i, 3, 25) * 175.0)
 		_px(im, ex, ey, Color(1.0, 0.55, 0.2, 0.8))
 	_save(im, "ui/map_bg.png")
+
+
+# 12x12 zone motifs stamped in the middle of the round map nodes.
+const MOTIF_LEAF := [
+	"........X...",
+	".......XX...",
+	"..X...XLX...",
+	"..XX.XLLX...",
+	"..XLXLLLX...",
+	"..XLLLLX....",
+	"..XLLLLX....",
+	".XLLLLX.....",
+	".XLLLX......",
+	".XLLX.......",
+	".XXX........",
+	"............",
+]
+const MOTIF_CLOUD := [
+	"............",
+	"............",
+	"....XXX.....",
+	"...XLLLX....",
+	"..XLLLLLXX..",
+	".XLLLLLLLLX.",
+	"XLLLLLLLLLLX",
+	"XLLLLLLLLLLX",
+	".XXXXXXXXXX.",
+	"............",
+	"............",
+	"............",
+]
+const MOTIF_FLAME := [
+	".....X......",
+	".....XX.....",
+	"....XLX.....",
+	"....XLLX....",
+	"...XLLLX....",
+	"...XLLLLX...",
+	"..XLLYLLX...",
+	"..XLYYYLX...",
+	"..XLYYYLLX..",
+	"...XLYYLX...",
+	"....XLLX....",
+	".....XX.....",
+]
+
+
+const LOCK_MAP := [
+	"....XXXX....",
+	"...XX..XX...",
+	"...X....X...",
+	"...X....X...",
+	"..XXXXXXXX..",
+	"..XXXXXXXX..",
+	"..XXXKKXXX..",
+	"..XXXKKXXX..",
+	"..XXXXKXXX..",
+	"..XXXXXXXX..",
+	"..XXXXXXXX..",
+]
+const LOCK_LEGEND := {
+	"X": Color("0a0a10"), "K": Color("f5f0dc"),
+}
+
+
+func _gen_lock() -> void:
+	# Black padlock with a soft light halo baked in, so it reads on any bubble
+	# and any background. Rendered at 2x for a bigger on-map size.
+	var base := _make(18, 17)
+	_map(base, LOCK_MAP, LOCK_LEGEND, 3, 3)
+	# two dilation rings of glow around the silhouette
+	var ring1: Array[Vector2i] = []
+	var ring2: Array[Vector2i] = []
+	for y in 17:
+		for x in 18:
+			if base.get_pixel(x, y).a > 0.0:
+				continue
+			var near_solid := false
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					var nx := x + dx
+					var ny := y + dy
+					if nx >= 0 and ny >= 0 and nx < 18 and ny < 17 \
+							and base.get_pixel(nx, ny).a > 0.9:
+						near_solid = true
+			if near_solid:
+				ring1.append(Vector2i(x, y))
+	for p in ring1:
+		base.set_pixel(p.x, p.y, Color(1.0, 0.98, 0.85, 0.6))
+	for y in 17:
+		for x in 18:
+			if base.get_pixel(x, y).a > 0.0:
+				continue
+			var near_glow := false
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					var nx := x + dx
+					var ny := y + dy
+					if nx >= 0 and ny >= 0 and nx < 18 and ny < 17 \
+							and Vector2i(nx, ny) in ring1:
+						near_glow = true
+			if near_glow:
+				ring2.append(Vector2i(x, y))
+	for p in ring2:
+		base.set_pixel(p.x, p.y, Color(1.0, 0.98, 0.85, 0.25))
+	base.resize(36, 34, Image.INTERPOLATE_NEAREST)
+	_save(base, "ui/lock.png")
+
+
+func _gen_map_nodes() -> void:
+	# 30x30 round level nodes, one per zone (like the circled numbers on the
+	# sketch): coloured disc + dark rim + zone motif. States (locked/unlocked/
+	# completed/planned) are tinted at runtime via modulate.
+	var defs := [
+		["node_earth", Color("6fbf4e"), Color("3d7a2a"), MOTIF_LEAF, Color("2e5c1f"), Color("9fe07f")],
+		["node_heaven", Color("f5e3a8"), Color("c2a44e"), MOTIF_CLOUD, Color("a8863c"), Color("fffbe8")],
+		["node_hell", Color("d84a2a"), Color("7a1e10"), MOTIF_FLAME, Color("5c150a"), Color("ffb44a")],
+	]
+	for def in defs:
+		var im := _make(30, 30)
+		var base: Color = def[1]
+		var rim: Color = def[2]
+		for y in 30:
+			for x in 30:
+				var dx := x - 14.5
+				var dy := y - 14.5
+				var d := sqrt(dx * dx + dy * dy)
+				if d > 14.5:
+					continue
+				var c := base
+				if d > 12.8:
+					c = rim
+				elif dx + dy < -9.0:
+					c = base.lightened(0.25)   # top-left sheen
+				elif dx + dy > 11.0:
+					c = base.darkened(0.18)
+				_px(im, x, y, c)
+		_map(im, def[3], {"X": def[4], "L": def[5], "Y": Color("fff0a0")}, 9, 9)
+		_save(im, "ui/%s.png" % def[0])
 
 
 # ------------------------------------------------------------ backgrounds ---
@@ -830,6 +978,8 @@ func _init() -> void:
 	_gen_collectibles()
 	_gen_gems()
 	_gen_map_bg()
+	_gen_map_nodes()
+	_gen_lock()
 	_gen_zone_backgrounds()
 	print("Done.")
 	quit()

@@ -10,22 +10,22 @@ extends Control
 const MAP_BG := preload("res://assets/background/bg1.png")
 const NODE_BUBBLE := preload("res://assets/bubble_transparent.png")
 
-# Bubble size on the canvas and zone tints applied via modulate.
+const MAP_PATHS_SCRIPT := preload("res://scripts/ui/map_paths.gd")
+
+# Bubble size on the canvas and zone tints applied via modulate:
+# heaven keeps the bubble's pure white-blue look, earth is clearly green,
+# hell clearly red.
 const NODE_SIZE := Vector2(46, 46)
 const ZONE_TINTS := {
-	"earth": Color(0.62, 1.0, 0.55),
-	"heaven": Color(1.0, 0.93, 0.6),
-	"hell": Color(1.0, 0.5, 0.4),
+	"earth": Color(0.35, 1.0, 0.3),
+	"heaven": Color.WHITE,
+	"hell": Color(1.0, 0.35, 0.25),
 }
 
 const CANVAS_SIZE := Vector2(1280, 720)
 const MIN_ZOOM := 0.5
 const MAX_ZOOM := 1.6
 
-const PATH_GOLD := Color(0.88, 0.68, 0.2)
-const PATH_DARK := Color(0.24, 0.15, 0.05)
-const PATH_LOCKED := Color(0.55, 0.47, 0.35, 0.5)
-const TINT_LOCKED := Color(0.45, 0.45, 0.5, 0.9)
 const TINT_PLANNED := Color(0.28, 0.28, 0.33, 0.55)
 
 var _canvas: Control
@@ -75,33 +75,23 @@ func _build_canvas() -> void:
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_canvas.add_child(bg)
 
+	var trails := Control.new()
+	trails.name = "Paths"
+	trails.set_script(MAP_PATHS_SCRIPT)
+	trails.size = CANVAS_SIZE
+	trails.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for data in LevelManager.get_all_levels():
 		for next_id in data.next_ids:
 			var next_data = LevelManager.get_level(next_id)
 			if next_data:
-				_add_path(data.map_pos, next_data.map_pos,
-					LevelManager.get_level_status(next_id) != "locked")
+				trails.paths.append({
+					"points": _curve_points(data.map_pos, next_data.map_pos),
+					"open": LevelManager.get_level_status(next_id) != "locked",
+				})
+	_canvas.add_child(trails)
+
 	for data in LevelManager.get_all_levels():
 		_add_node(data)
-
-
-# Adds one curved two-tone path between two nodes (dark outline under gold).
-func _add_path(from: Vector2, to: Vector2, open: bool) -> void:
-	var points := _curve_points(from, to)
-	var under := Line2D.new()
-	under.points = points
-	under.width = 7.0
-	under.default_color = PATH_DARK
-	under.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	under.end_cap_mode = Line2D.LINE_CAP_ROUND
-	_canvas.add_child(under)
-	var over := Line2D.new()
-	over.points = points
-	over.width = 3.0
-	over.default_color = PATH_GOLD if open else PATH_LOCKED
-	over.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	over.end_cap_mode = Line2D.LINE_CAP_ROUND
-	_canvas.add_child(over)
 
 
 # Samples a gentle quadratic arc between two points (hand-drawn feel).
@@ -110,8 +100,8 @@ func _curve_points(from: Vector2, to: Vector2) -> PackedVector2Array:
 	var perp := (to - from).orthogonal().normalized()
 	var control := mid + perp * (to - from).length() * 0.12
 	var points := PackedVector2Array()
-	for i in 13:
-		var t := i / 12.0
+	for i in 25:
+		var t := i / 24.0
 		points.append(from.lerp(control, t).lerp(control.lerp(to, t), t))
 	return points
 

@@ -6,11 +6,11 @@ extends GutTest
 # files do not exist (the old registry crash).
 
 # All playable levels load, wire their exits and create a minimap.
+# Planned (sketched-only) levels are skipped — they have no scene yet.
 func test_all_world_levels_load_and_wire() -> void:
 	for data in LevelManager.get_all_levels():
 		var label := "%s %d (id %d)" % [data.zone, data.index, data.id]
-		assert_true(ResourceLoader.exists(data.scene_path), label + ": scene file exists")
-		if not ResourceLoader.exists(data.scene_path):
+		if not LevelManager.is_level_playable(data.id):
 			continue
 		var scene: PackedScene = load(data.scene_path)
 		assert_not_null(scene, label + ": loads as PackedScene")

@@ -1,110 +1,248 @@
 extends Control
 
-# World map drawn as a binary tree rotated 90°: the root level sits on the
-# left and every branch splits rightward — the upper child climbs toward
-# Heaven, the lower one descends toward Hell. Golden paths connect the level
-# gems; completing a level lights up its children.
+# World map — a faithful rendition of the hand-drawn design: a 1280x720 canvas
+# split into three wavy bands (Heaven / Earth / Hell) with the level graph
+# flowing left→right. The canvas is larger than the screen, so it can be
+# dragged (and zoomed with the mouse wheel); the view starts centered on the
+# next level to play. Completing a level lights up its successors, exactly as
+# defined in LevelManager.LEVEL_GRAPH.
 
 const MAP_BG := preload("res://assets/gen/ui/map_bg.png")
-const GEM := preload("res://assets/gen/ui/gem.png")
-const GEM_BIG := preload("res://assets/gen/ui/gem_big.png")
-
-# Screen-space mapping of LevelManager map units (x = tree depth, y = row).
-const ORIGIN := Vector2(80, 180)
-const SPACING := Vector2(115, 38)
-
-const ZONE_COLORS := {
-	"earth": Color(0.45, 0.85, 0.35),
-	"heaven": Color(1.0, 0.85, 0.4),
-	"hell": Color(1.0, 0.35, 0.25),
+const NODE_TEXTURES := {
+	"earth": preload("res://assets/gen/ui/node_earth.png"),
+	"heaven": preload("res://assets/gen/ui/node_heaven.png"),
+	"hell": preload("res://assets/gen/ui/node_hell.png"),
 }
-const LOCKED_TINT := Color(0.32, 0.32, 0.38, 0.9)
-const PATH_GOLD := Color(0.88, 0.68, 0.2)
-const PATH_DARK := Color(0.28, 0.17, 0.05)
-const PATH_LOCKED := Color(0.45, 0.38, 0.28, 0.6)
 
-var _buttons: Dictionary = {}
+const CANVAS_SIZE := Vector2(1280, 720)
+const MIN_ZOOM := 0.5
+const MAX_ZOOM := 1.6
+
+const PATH_GOLD := Color(0.88, 0.68, 0.2)
+const PATH_DARK := Color(0.24, 0.15, 0.05)
+const PATH_LOCKED := Color(0.55, 0.47, 0.35, 0.5)
+const TINT_LOCKED := Color(0.45, 0.45, 0.5, 0.9)
+const TINT_PLANNED := Color(0.28, 0.28, 0.33, 0.55)
+
+var _canvas: Control
+var _zoom: float = 0.5
+var _dragging: bool = false
 
 
 func _ready() -> void:
 	$BtnBack.pressed.connect(_on_back_pressed)
-	_build_map()
+	_build_canvas()
+	_canvas.scale = Vector2(_zoom, _zoom)
+	_build_zone_progress()
+	_center_on_next_level.call_deferred()
 
 
-# Converts LevelManager map units to screen pixels.
-func _map_to_screen(map_pos: Vector2) -> Vector2:
-	return ORIGIN + map_pos * SPACING
+# ------------------------------------------------------------- map canvas ---
 
+# Builds the pannable canvas: background, curved paths, level nodes, captions.
+func _build_canvas() -> void:
+	_canvas = Control.new()
+	_canvas.name = "Canvas"
+	_canvas.size = CANVAS_SIZE
+	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_canvas)
+	move_child(_canvas, 0)   # under the fixed UI (title, back button)
 
-# Creates one gem button per level in the world graph.
-func _build_map() -> void:
+	var bg := TextureRect.new()
+	bg.texture = MAP_BG
+	bg.size = CANVAS_SIZE
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_canvas.add_child(bg)
+
 	for data in LevelManager.get_all_levels():
-		var status: String = LevelManager.get_level_status(data.id)
-		var is_milestone: bool = data.next_ids.is_empty() and data.index > 1
-		var tex := GEM_BIG if is_milestone else GEM
-		var btn := TextureButton.new()
-		btn.name = "Level_%d" % data.id
-		btn.texture_normal = tex
-		btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		var tex_size: Vector2 = tex.get_size()
-		btn.position = _map_to_screen(data.map_pos) - tex_size / 2.0
-		btn.pivot_offset = tex_size / 2.0
-		var zone_color: Color = ZONE_COLORS[data.zone]
+		for next_id in data.next_ids:
+			var next_data = LevelManager.get_level(next_id)
+			if next_data:
+				_add_path(data.map_pos, next_data.map_pos,
+					LevelManager.get_level_status(next_id) != "locked")
+	for data in LevelManager.get_all_levels():
+		_add_node(data)
+	_add_zone_captions()
+
+
+# Adds one curved two-tone path between two nodes (dark outline under gold).
+func _add_path(from: Vector2, to: Vector2, open: bool) -> void:
+	var points := _curve_points(from, to)
+	var under := Line2D.new()
+	under.points = points
+	under.width = 7.0
+	under.default_color = PATH_DARK
+	under.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	under.end_cap_mode = Line2D.LINE_CAP_ROUND
+	_canvas.add_child(under)
+	var over := Line2D.new()
+	over.points = points
+	over.width = 3.0
+	over.default_color = PATH_GOLD if open else PATH_LOCKED
+	over.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	over.end_cap_mode = Line2D.LINE_CAP_ROUND
+	_canvas.add_child(over)
+
+
+# Samples a gentle quadratic arc between two points (hand-drawn feel).
+func _curve_points(from: Vector2, to: Vector2) -> PackedVector2Array:
+	var mid := (from + to) / 2.0
+	var perp := (to - from).orthogonal().normalized()
+	var control := mid + perp * (to - from).length() * 0.12
+	var points := PackedVector2Array()
+	for i in 13:
+		var t := i / 12.0
+		points.append(from.lerp(control, t).lerp(control.lerp(to, t), t))
+	return points
+
+
+# Adds one clickable level node with its zone icon, state tint and number.
+func _add_node(data) -> void:
+	var status: String = LevelManager.get_level_status(data.id)
+	var playable: bool = LevelManager.is_level_playable(data.id)
+	var tex: Texture2D = NODE_TEXTURES[data.zone]
+	var btn := TextureButton.new()
+	btn.name = "Level_%d" % data.id
+	btn.texture_normal = tex
+	btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var tex_size: Vector2 = tex.get_size()
+	btn.position = data.map_pos - tex_size / 2.0
+	btn.pivot_offset = tex_size / 2.0
+
+	if not playable:
+		btn.modulate = TINT_PLANNED    # sketched but not built yet
+		btn.disabled = true
+	else:
 		match status:
 			"locked":
-				btn.modulate = LOCKED_TINT
+				btn.modulate = TINT_LOCKED
 				btn.disabled = true
 			"unlocked":
-				btn.modulate = zone_color
-				_add_pulse(btn)
+				btn.modulate = Color(1.15, 1.15, 1.15)
+				_add_pulse(btn)        # "play me next"
 			"completed":
-				btn.modulate = zone_color.lightened(0.25)
-		if not btn.disabled:
-			var level_id: int = data.id
-			btn.pressed.connect(func(): _on_level_selected(level_id))
+				btn.modulate = Color.WHITE
+	if not btn.disabled:
+		var level_id: int = data.id
+		btn.pressed.connect(func(): _on_level_selected(level_id))
 
-		# Level number below the gem (checkmark prefix when completed).
-		var lbl := Label.new()
-		lbl.text = ("✓" if status == "completed" else "") + str(data.index)
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 9)
-		lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
-		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-		lbl.add_theme_constant_override("shadow_offset_y", 1)
-		lbl.position = Vector2(0, tex_size.y - 2.0)
-		lbl.size = Vector2(tex_size.x, 10)
-		btn.add_child(lbl)
-		add_child(btn)
-		_buttons[data.id] = btn
+	var lbl := Label.new()
+	lbl.text = ("✓" if status == "completed" else "") + str(data.index)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 9)
+	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
+	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	lbl.add_theme_constant_override("shadow_offset_y", 1)
+	lbl.position = Vector2(0, tex_size.y - 3.0)
+	lbl.size = Vector2(tex_size.x, 10)
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(lbl)
+	_canvas.add_child(btn)
 
 
-# Gentle glow pulse marking levels that are ready to play.
+# Gentle pulse marking levels that are ready to play.
 func _add_pulse(btn: TextureButton) -> void:
 	var tween := btn.create_tween().set_loops()
-	tween.tween_property(btn, "scale", Vector2(1.15, 1.15), 0.55)\
+	tween.tween_property(btn, "scale", Vector2(1.18, 1.18), 0.55)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(btn, "scale", Vector2.ONE, 0.55)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
-# Paints the background, the golden paths and the zone captions (under buttons).
-func _draw() -> void:
-	draw_texture_rect(MAP_BG, Rect2(Vector2.ZERO, size), false)
-	for data in LevelManager.get_all_levels():
-		var from := _map_to_screen(data.map_pos)
-		for next_id in data.next_ids:
-			var next_data = LevelManager.get_level(next_id)
-			if next_data == null:
-				continue
-			var to := _map_to_screen(next_data.map_pos)
-			var open := LevelManager.get_level_status(next_id) != "locked"
-			draw_line(from, to, PATH_DARK, 7.0)
-			draw_line(from, to, PATH_GOLD if open else PATH_LOCKED, 3.0)
-	var font := ThemeDB.fallback_font
-	draw_string(font, Vector2(14, 26), "NIEBO", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.92, 0.6, 0.9))
-	draw_string(font, Vector2(14, 186), "ZIEMIA", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(0.7, 0.9, 0.5, 0.9))
-	draw_string(font, Vector2(14, 310), "PIEKŁO", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color(1.0, 0.5, 0.35, 0.9))
+# Zone captions painted on the canvas near each band.
+func _add_zone_captions() -> void:
+	for def in [["NIEBO", Vector2(18, 30), Color(0.75, 0.62, 0.3, 0.9)],
+			["ZIEMIA", Vector2(18, 330), Color(0.9, 0.95, 0.75, 0.9)],
+			["PIEKŁO", Vector2(18, 620), Color(1.0, 0.55, 0.4, 0.9)]]:
+		var lbl := Label.new()
+		lbl.text = def[0]
+		lbl.position = def[1]
+		lbl.add_theme_font_size_override("font_size", 15)
+		lbl.add_theme_color_override("font_color", def[2])
+		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
+		lbl.add_theme_constant_override("shadow_offset_y", 1)
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_canvas.add_child(lbl)
 
+
+# ------------------------------------------------------- fixed UI overlays ---
+
+# Per-zone completion counters pinned to the screen's top-left.
+func _build_zone_progress() -> void:
+	var box := VBoxContainer.new()
+	box.name = "ZoneProgress"
+	box.position = Vector2(8, 28)
+	box.add_theme_constant_override("separation", 1)
+	add_child(box)
+	for def in [["earth", "ZIEMIA", Color(0.7, 0.95, 0.55)],
+			["heaven", "NIEBO", Color(1.0, 0.9, 0.6)],
+			["hell", "PIEKŁO", Color(1.0, 0.55, 0.4)]]:
+		var done := 0
+		var levels := LevelManager.get_zone_levels(def[0])
+		for data in levels:
+			if data.completed:
+				done += 1
+		var lbl := Label.new()
+		lbl.text = "%s %d/%d" % [def[1], done, levels.size()]
+		lbl.add_theme_font_size_override("font_size", 10)
+		lbl.add_theme_color_override("font_color", def[2])
+		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+		lbl.add_theme_constant_override("shadow_offset_y", 1)
+		box.add_child(lbl)
+
+
+# ---------------------------------------------------------- pan & zoom ------
+
+# Drag to pan; mouse wheel to zoom around the cursor.
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_dragging = event.pressed
+		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_apply_zoom(1.1, event.position)
+		elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_apply_zoom(1.0 / 1.1, event.position)
+	elif event is InputEventMouseMotion and _dragging:
+		_canvas.position += event.relative
+		_clamp_canvas()
+
+
+# Zooms the canvas keeping the point under the cursor stationary.
+func _apply_zoom(factor: float, pivot: Vector2) -> void:
+	var new_zoom: float = clampf(_zoom * factor, MIN_ZOOM, MAX_ZOOM)
+	if is_equal_approx(new_zoom, _zoom):
+		return
+	var local := (pivot - _canvas.position) / _zoom
+	_zoom = new_zoom
+	_canvas.scale = Vector2(_zoom, _zoom)
+	_canvas.position = pivot - local * _zoom
+	_clamp_canvas()
+
+
+# Keeps the canvas covering the screen (centers axes smaller than the view).
+func _clamp_canvas() -> void:
+	var view: Vector2 = size
+	var span: Vector2 = CANVAS_SIZE * _zoom
+	for axis in 2:
+		if span[axis] <= view[axis]:
+			_canvas.position[axis] = (view[axis] - span[axis]) / 2.0
+		else:
+			_canvas.position[axis] = clampf(_canvas.position[axis], view[axis] - span[axis], 0.0)
+
+
+# Starts the view centered on the first unlocked, playable, uncompleted level.
+func _center_on_next_level() -> void:
+	var target: Vector2 = CANVAS_SIZE / 2.0
+	for data in LevelManager.get_all_levels():
+		if LevelManager.get_level_status(data.id) == "unlocked" \
+				and LevelManager.is_level_playable(data.id):
+			target = data.map_pos
+			break
+	_canvas.position = size / 2.0 - target * _zoom
+	_clamp_canvas()
+
+
+# ----------------------------------------------------------------- actions ---
 
 # Starts loading the selected level.
 func _on_level_selected(level_id: int) -> void:

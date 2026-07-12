@@ -7,7 +7,7 @@ extends Control
 # next level to play. Completing a level lights up its successors, exactly as
 # defined in LevelManager.LEVEL_GRAPH.
 
-const MAP_BG := preload("res://assets/gen/ui/map_bg.png")
+const MAP_BG := preload("res://assets/background/bg1.png")
 const NODE_TEXTURES := {
 	"earth": preload("res://assets/gen/ui/node_earth.png"),
 	"heaven": preload("res://assets/gen/ui/node_heaven.png"),
@@ -33,7 +33,6 @@ func _ready() -> void:
 	$BtnBack.pressed.connect(_on_back_pressed)
 	_build_canvas()
 	_canvas.scale = Vector2(_zoom, _zoom)
-	_build_zone_progress()
 	_center_on_next_level.call_deferred()
 
 
@@ -50,6 +49,8 @@ func _build_canvas() -> void:
 
 	var bg := TextureRect.new()
 	bg.texture = MAP_BG
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_SCALE
 	bg.size = CANVAS_SIZE
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_canvas.add_child(bg)
@@ -62,7 +63,6 @@ func _build_canvas() -> void:
 					LevelManager.get_level_status(next_id) != "locked")
 	for data in LevelManager.get_all_levels():
 		_add_node(data)
-	_add_zone_captions()
 
 
 # Adds one curved two-tone path between two nodes (dark outline under gold).
@@ -147,48 +147,6 @@ func _add_pulse(btn: TextureButton) -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(btn, "scale", Vector2.ONE, 0.55)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-
-
-# Zone captions painted on the canvas near each band.
-func _add_zone_captions() -> void:
-	for def in [["NIEBO", Vector2(18, 30), Color(0.75, 0.62, 0.3, 0.9)],
-			["ZIEMIA", Vector2(18, 330), Color(0.9, 0.95, 0.75, 0.9)],
-			["PIEKŁO", Vector2(18, 620), Color(1.0, 0.55, 0.4, 0.9)]]:
-		var lbl := Label.new()
-		lbl.text = def[0]
-		lbl.position = def[1]
-		lbl.add_theme_font_size_override("font_size", 15)
-		lbl.add_theme_color_override("font_color", def[2])
-		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
-		lbl.add_theme_constant_override("shadow_offset_y", 1)
-		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_canvas.add_child(lbl)
-
-
-# ------------------------------------------------------- fixed UI overlays ---
-
-# Per-zone completion counters pinned to the screen's top-left.
-func _build_zone_progress() -> void:
-	var box := VBoxContainer.new()
-	box.name = "ZoneProgress"
-	box.position = Vector2(8, 28)
-	box.add_theme_constant_override("separation", 1)
-	add_child(box)
-	for def in [["earth", "ZIEMIA", Color(0.7, 0.95, 0.55)],
-			["heaven", "NIEBO", Color(1.0, 0.9, 0.6)],
-			["hell", "PIEKŁO", Color(1.0, 0.55, 0.4)]]:
-		var done := 0
-		var levels := LevelManager.get_zone_levels(def[0])
-		for data in levels:
-			if data.completed:
-				done += 1
-		var lbl := Label.new()
-		lbl.text = "%s %d/%d" % [def[1], done, levels.size()]
-		lbl.add_theme_font_size_override("font_size", 10)
-		lbl.add_theme_color_override("font_color", def[2])
-		lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
-		lbl.add_theme_constant_override("shadow_offset_y", 1)
-		box.add_child(lbl)
 
 
 # ---------------------------------------------------------- pan & zoom ------

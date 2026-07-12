@@ -60,11 +60,11 @@ const LEVEL_GRAPH: Array[Dictionary] = [
 	{"zone": "earth", "index": 4, "pos": Vector2(838, 333), "next": [5, 29]},            # gateway: Heaven #2
 	{"zone": "earth", "index": 5, "pos": Vector2(1026, 374), "next": [6, 10]},           # gateway: upper-right pocket
 	{"zone": "earth", "index": 6, "pos": Vector2(1163, 345), "next": []},
-	{"zone": "earth", "index": 7, "pos": Vector2(624, 467), "next": [8]},                # sketch 25 (planned)
-	{"zone": "earth", "index": 8, "pos": Vector2(805, 474), "next": [9, 46, 49]},        # sketch 32 → Hell mid cluster
-	{"zone": "earth", "index": 9, "pos": Vector2(940, 470), "next": [50]},               # sketch 31 → Hell deep cluster
-	{"zone": "earth", "index": 10, "pos": Vector2(1015, 264), "next": [11]},             # sketch 20 (planned)
-	{"zone": "earth", "index": 11, "pos": Vector2(1155, 230), "next": []},               # sketch 21 (planned)
+	{"zone": "earth", "index": 7, "pos": Vector2(624, 435), "next": [8]},                # sketch 25 (planned)
+	{"zone": "earth", "index": 8, "pos": Vector2(805, 443), "next": [9, 46, 49]},        # sketch 32 → Hell mid cluster
+	{"zone": "earth", "index": 9, "pos": Vector2(940, 438), "next": [50]},               # sketch 31 → Hell deep cluster
+	{"zone": "earth", "index": 10, "pos": Vector2(1015, 300), "next": [11]},             # sketch 20 (planned)
+	{"zone": "earth", "index": 11, "pos": Vector2(1155, 292), "next": []},               # sketch 21 (planned)
 	# --- Heaven (top band; the further up-right, the harder for the Reaper) ---
 	{"zone": "heaven", "index": 1, "pos": Vector2(586, 210), "next": [22, 25]},          # sketch 7  = Heaven_01
 	{"zone": "heaven", "index": 2, "pos": Vector2(434, 155), "next": [23]},              # sketch 8  = Heaven_02
@@ -83,7 +83,7 @@ const LEVEL_GRAPH: Array[Dictionary] = [
 	{"zone": "heaven", "index": 15, "pos": Vector2(998, 103), "next": []},               # sketch 23
 	{"zone": "heaven", "index": 16, "pos": Vector2(1213, 77), "next": []},               # sketch 24
 	# --- Hell (bottom band; the deeper, the harder for the Guardian) ---
-	{"zone": "hell", "index": 1, "pos": Vector2(470, 483), "next": [42, 44]},            # sketch 26 = Hell_01
+	{"zone": "hell", "index": 1, "pos": Vector2(470, 505), "next": [42, 44]},            # sketch 26 = Hell_01
 	{"zone": "hell", "index": 2, "pos": Vector2(305, 576), "next": [43]},                # sketch 27 = Hell_02
 	{"zone": "hell", "index": 3, "pos": Vector2(314, 672), "next": []},                  # sketch 28 = Hell_03
 	{"zone": "hell", "index": 4, "pos": Vector2(503, 590), "next": [45]},                # sketch 29 = Hell_04

@@ -126,7 +126,6 @@ func _add_node(data) -> void:
 	btn.position = data.map_pos - NODE_SIZE / 2.0
 	btn.pivot_offset = NODE_SIZE / 2.0
 
-	var locked := false
 	if not playable:
 		btn.modulate = TINT_PLANNED    # sketched but not built yet
 		btn.disabled = true
@@ -136,7 +135,6 @@ func _add_node(data) -> void:
 				# very dark on purpose — locked must read at a glance
 				btn.modulate = zone_tint.darkened(0.72)
 				btn.disabled = true
-				locked = true
 			"unlocked":
 				btn.modulate = zone_tint
 				_add_pulse(btn)        # "play me next"
@@ -146,17 +144,7 @@ func _add_node(data) -> void:
 		var level_id: int = data.id
 		btn.pressed.connect(func(): _on_level_selected(level_id))
 
-	if locked:
-		# centered padlock instead of the number
-		var lock := TextureRect.new()
-		lock.texture = LOCK_ICON
-		lock.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		lock.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-		lock.size = NODE_SIZE
-		lock.modulate = Color(1, 1, 1, 0.9)
-		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(lock)
-	else:
+	if not btn.disabled:
 		var lbl := Label.new()
 		lbl.text = ("✓" if status == "completed" else "") + str(data.index)
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -169,6 +157,19 @@ func _add_node(data) -> void:
 		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		btn.add_child(lbl)
 	_canvas.add_child(btn)
+
+	if btn.disabled:
+		# Every non-playable bubble (locked or planned) shows only a padlock.
+		# Added as a canvas sibling so it stays at full brightness on top of
+		# the darkened bubble.
+		var lock := TextureRect.new()
+		lock.texture = LOCK_ICON
+		lock.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		lock.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		lock.size = NODE_SIZE
+		lock.position = data.map_pos - NODE_SIZE / 2.0
+		lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_canvas.add_child(lock)
 
 
 # Slow, subtle breathing pulse marking levels that are ready to play.

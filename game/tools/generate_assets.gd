@@ -793,23 +793,60 @@ const LOCK_MAP := [
 	"...X....X...",
 	"...X....X...",
 	"..XXXXXXXX..",
-	"..XWWWWWWX..",
-	"..XWWKKWWX..",
-	"..XWWKKWWX..",
-	"..XWWWKWWX..",
-	"..XWWWWWWX..",
+	"..XXXXXXXX..",
+	"..XXXKKXXX..",
+	"..XXXKKXXX..",
+	"..XXXXKXXX..",
+	"..XXXXXXXX..",
 	"..XXXXXXXX..",
 ]
 const LOCK_LEGEND := {
-	"X": Color("14121a"), "W": Color("e8e4da"), "K": Color("14121a"),
+	"X": Color("0a0a10"), "K": Color("f5f0dc"),
 }
 
 
 func _gen_lock() -> void:
-	# 12x11 padlock stamped on locked level bubbles.
-	var im := _make(12, 11)
-	_map(im, LOCK_MAP, LOCK_LEGEND)
-	_save(im, "ui/lock.png")
+	# Black padlock with a soft light halo baked in, so it reads on any bubble
+	# and any background. Rendered at 2x for a bigger on-map size.
+	var base := _make(18, 17)
+	_map(base, LOCK_MAP, LOCK_LEGEND, 3, 3)
+	# two dilation rings of glow around the silhouette
+	var ring1: Array[Vector2i] = []
+	var ring2: Array[Vector2i] = []
+	for y in 17:
+		for x in 18:
+			if base.get_pixel(x, y).a > 0.0:
+				continue
+			var near_solid := false
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					var nx := x + dx
+					var ny := y + dy
+					if nx >= 0 and ny >= 0 and nx < 18 and ny < 17 \
+							and base.get_pixel(nx, ny).a > 0.9:
+						near_solid = true
+			if near_solid:
+				ring1.append(Vector2i(x, y))
+	for p in ring1:
+		base.set_pixel(p.x, p.y, Color(1.0, 0.98, 0.85, 0.6))
+	for y in 17:
+		for x in 18:
+			if base.get_pixel(x, y).a > 0.0:
+				continue
+			var near_glow := false
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					var nx := x + dx
+					var ny := y + dy
+					if nx >= 0 and ny >= 0 and nx < 18 and ny < 17 \
+							and Vector2i(nx, ny) in ring1:
+						near_glow = true
+			if near_glow:
+				ring2.append(Vector2i(x, y))
+	for p in ring2:
+		base.set_pixel(p.x, p.y, Color(1.0, 0.98, 0.85, 0.25))
+	base.resize(36, 34, Image.INTERPOLATE_NEAREST)
+	_save(base, "ui/lock.png")
 
 
 func _gen_map_nodes() -> void:

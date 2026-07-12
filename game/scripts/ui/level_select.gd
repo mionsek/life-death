@@ -8,10 +8,14 @@ extends Control
 # defined in LevelManager.LEVEL_GRAPH.
 
 const MAP_BG := preload("res://assets/background/bg1.png")
-const NODE_TEXTURES := {
-	"earth": preload("res://assets/gen/ui/node_earth.png"),
-	"heaven": preload("res://assets/gen/ui/node_heaven.png"),
-	"hell": preload("res://assets/gen/ui/node_hell.png"),
+const NODE_BUBBLE := preload("res://assets/bubble_transparent.png")
+
+# Bubble size on the canvas and zone tints applied via modulate.
+const NODE_SIZE := Vector2(46, 46)
+const ZONE_TINTS := {
+	"earth": Color(0.62, 1.0, 0.55),
+	"heaven": Color(1.0, 0.93, 0.6),
+	"hell": Color(1.0, 0.5, 0.4),
 }
 
 const CANVAS_SIZE := Vector2(1280, 720)
@@ -27,13 +31,29 @@ const TINT_PLANNED := Color(0.28, 0.28, 0.33, 0.55)
 var _canvas: Control
 var _zoom: float = 0.5
 var _dragging: bool = false
+# Runtime-densified copy of the bubble art (the source is very translucent).
+var _bubble_tex: Texture2D
 
 
 func _ready() -> void:
 	$BtnBack.pressed.connect(_on_back_pressed)
+	_bubble_tex = _densify_bubble()
 	_build_canvas()
 	_canvas.scale = Vector2(_zoom, _zoom)
 	_center_on_next_level.call_deferred()
+
+
+# Stacks the bubble's alpha (equivalent to layering it three times) so nodes
+# stay readable over the detailed map art, without touching the source file.
+func _densify_bubble() -> Texture2D:
+	var img: Image = NODE_BUBBLE.get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			c.a = 1.0 - pow(1.0 - c.a, 3.0)
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
 
 
 # ------------------------------------------------------------- map canvas ---
@@ -96,18 +116,19 @@ func _curve_points(from: Vector2, to: Vector2) -> PackedVector2Array:
 	return points
 
 
-# Adds one clickable level node with its zone icon, state tint and number.
+# Adds one clickable level bubble with its zone/state tint and centered number.
 func _add_node(data) -> void:
 	var status: String = LevelManager.get_level_status(data.id)
 	var playable: bool = LevelManager.is_level_playable(data.id)
-	var tex: Texture2D = NODE_TEXTURES[data.zone]
+	var zone_tint: Color = ZONE_TINTS[data.zone]
 	var btn := TextureButton.new()
 	btn.name = "Level_%d" % data.id
-	btn.texture_normal = tex
-	btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var tex_size: Vector2 = tex.get_size()
-	btn.position = data.map_pos - tex_size / 2.0
-	btn.pivot_offset = tex_size / 2.0
+	btn.texture_normal = _bubble_tex
+	btn.ignore_texture_size = true
+	btn.stretch_mode = TextureButton.STRETCH_SCALE
+	btn.size = NODE_SIZE
+	btn.position = data.map_pos - NODE_SIZE / 2.0
+	btn.pivot_offset = NODE_SIZE / 2.0
 
 	if not playable:
 		btn.modulate = TINT_PLANNED    # sketched but not built yet
@@ -115,13 +136,13 @@ func _add_node(data) -> void:
 	else:
 		match status:
 			"locked":
-				btn.modulate = TINT_LOCKED
+				btn.modulate = zone_tint.darkened(0.35)
 				btn.disabled = true
 			"unlocked":
-				btn.modulate = Color(1.15, 1.15, 1.15)
+				btn.modulate = zone_tint
 				_add_pulse(btn)        # "play me next"
 			"completed":
-				btn.modulate = Color.WHITE
+				btn.modulate = zone_tint.lightened(0.35)
 	if not btn.disabled:
 		var level_id: int = data.id
 		btn.pressed.connect(func(): _on_level_selected(level_id))
@@ -129,12 +150,12 @@ func _add_node(data) -> void:
 	var lbl := Label.new()
 	lbl.text = ("✓" if status == "completed" else "") + str(data.index)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 9)
-	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
-	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.add_theme_font_size_override("font_size", 12)
+	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
 	lbl.add_theme_constant_override("shadow_offset_y", 1)
-	lbl.position = Vector2(0, tex_size.y - 3.0)
-	lbl.size = Vector2(tex_size.x, 10)
+	lbl.size = NODE_SIZE
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	btn.add_child(lbl)
 	_canvas.add_child(btn)

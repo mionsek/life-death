@@ -1,7 +1,7 @@
 extends GutTest
 
 # Integration: level completion is gated by pickups — both characters must
-# stand at their exits AND both full sets (skulls + halos) must be collected.
+# stand at their exits AND both full sets (skulls + hearts) must be collected.
 # Uses a TestableLevel kept out of the tree (same pattern as
 # test_level_completion.gd) with pickup counters driven directly.
 
@@ -56,20 +56,20 @@ func test_missing_skulls_block_completion() -> void:
 	assert_false(_level.completed, "1/2 skulls must not complete the level")
 
 
-# Missing halos block completion too.
-func test_missing_halos_block_completion() -> void:
-	_level._halo_total = 3
-	_level._halo_got = 0
+# Missing hearts block completion too.
+func test_missing_hearts_block_completion() -> void:
+	_level._heart_total = 3
+	_level._heart_got = 0
 	_both_at_exit()
-	assert_false(_level.completed, "0/3 halos must not complete the level")
+	assert_false(_level.completed, "0/3 hearts must not complete the level")
 
 
 # Full sets on both sides complete the level.
 func test_full_sets_complete() -> void:
 	_level._skull_total = 2
 	_level._skull_got = 2
-	_level._halo_total = 3
-	_level._halo_got = 3
+	_level._heart_total = 3
+	_level._heart_got = 3
 	_both_at_exit()
 	assert_true(_level.completed)
 
@@ -87,7 +87,7 @@ func test_last_coin_completes_while_waiting_at_exit() -> void:
 # _coins_done maps characters to their own currency.
 func test_coins_done_per_character() -> void:
 	_level._skull_total = 1
-	_level._halo_total = 0
+	_level._heart_total = 0
 	assert_false(_level._coins_done("Player"))
 	assert_true(_level._coins_done("Guardian"))
 	_level._skull_got = 1

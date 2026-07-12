@@ -15,7 +15,7 @@
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="15"]
 [ext_resource type="Script" path="res://scripts/systems/fire_zone.gd" id="16"]
 [ext_resource type="PackedScene" uid="uid://skull_pickup" path="res://scenes/obstacles/Skull.tscn" id="pickup_skull"]
-[ext_resource type="PackedScene" uid="uid://halo_pickup" path="res://scenes/obstacles/Halo.tscn" id="pickup_halo"]
+[ext_resource type="PackedScene" uid="uid://heart_pickup" path="res://scenes/obstacles/Heart.tscn" id="pickup_heart"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1280, 30)
@@ -244,11 +244,11 @@ position = Vector2(760, 300)
 [node name="Skull3" parent="." instance=ExtResource("pickup_skull")]
 position = Vector2(850, 300)
 
-[node name="Halo1" parent="." instance=ExtResource("pickup_halo")]
+[node name="Heart1" parent="." instance=ExtResource("pickup_heart")]
 position = Vector2(340, 205)
 
-[node name="Halo2" parent="." instance=ExtResource("pickup_halo")]
+[node name="Heart2" parent="." instance=ExtResource("pickup_heart")]
 position = Vector2(530, 155)
 
-[node name="Halo3" parent="." instance=ExtResource("pickup_halo")]
+[node name="Heart3" parent="." instance=ExtResource("pickup_heart")]
 position = Vector2(830, 175)

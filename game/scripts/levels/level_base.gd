@@ -14,8 +14,8 @@ var _players_at_exit: Array[String] = []
 # character's exit portal; the level completes only with both sets full.
 var _skull_total: int = 0
 var _skull_got: int = 0
-var _halo_total: int = 0
-var _halo_got: int = 0
+var _heart_total: int = 0
+var _heart_got: int = 0
 var _coin_hud: CanvasLayer = null
 
 
@@ -68,19 +68,19 @@ func _connect_exit_portals() -> void:
 			child.character_exited_portal.connect(on_exit_exited)
 
 
-# Scans the level for collectibles (skulls/halos), wires their signals and
+# Scans the level for collectibles (skulls/hearts), wires their signals and
 # shows the counter HUD when the level has any. Deferred so children are ready.
 func _setup_collectibles() -> void:
 	for node in get_tree().get_nodes_in_group("collectible"):
 		if not is_ancestor_of(node):
 			continue
 		if node.target_character == "Guardian":
-			_halo_total += 1
+			_heart_total += 1
 		else:
 			_skull_total += 1
 		if not node.collected.is_connected(_on_coin_collected):
 			node.collected.connect(_on_coin_collected)
-	if _skull_total + _halo_total > 0:
+	if _skull_total + _heart_total > 0:
 		_coin_hud = COIN_HUD_SCENE.instantiate()
 		add_child(_coin_hud)
 	_refresh_coin_state()
@@ -89,7 +89,7 @@ func _setup_collectibles() -> void:
 # Bumps the matching counter and re-evaluates HUD, portal locks and completion.
 func _on_coin_collected(target_character: String) -> void:
 	if target_character == "Guardian":
-		_halo_got += 1
+		_heart_got += 1
 	else:
 		_skull_got += 1
 	_refresh_coin_state()
@@ -99,14 +99,14 @@ func _on_coin_collected(target_character: String) -> void:
 # Returns true when the character has collected their whole set (or has none).
 func _coins_done(character: String) -> bool:
 	if character == "Guardian":
-		return _halo_got >= _halo_total
+		return _heart_got >= _heart_total
 	return _skull_got >= _skull_total
 
 
 # Updates the HUD counters and dims/undims exit portals with progress text.
 func _refresh_coin_state() -> void:
 	if _coin_hud:
-		_coin_hud.update_counts(_skull_got, _skull_total, _halo_got, _halo_total)
+		_coin_hud.update_counts(_skull_got, _skull_total, _heart_got, _heart_total)
 	for child in get_children():
 		if child.get_script() == null or not child.has_method("set_locked"):
 			continue
@@ -117,7 +117,7 @@ func _refresh_coin_state() -> void:
 			var both_done := _coins_done("Player") and _coins_done("Guardian")
 			child.set_locked(not both_done)
 		elif target == "Guardian":
-			child.set_locked(not _coins_done("Guardian"), "%d/%d" % [_halo_got, _halo_total])
+			child.set_locked(not _coins_done("Guardian"), "%d/%d" % [_heart_got, _heart_total])
 		else:
 			child.set_locked(not _coins_done("Player"), "%d/%d" % [_skull_got, _skull_total])
 

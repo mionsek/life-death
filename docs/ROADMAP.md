@@ -48,10 +48,20 @@
   - Ziemia 03–06: stare pojedyncze wyjścia zastąpione podwójnymi portalami per postać
   - Testy: 86 (nowe: graf poziomów, LightZone, ładowanie wszystkich 14 poziomów świata)
 
+### Ostatnio zrobione (cd.)
+- ✅ `014-coins-gate` — **monety jako wymóg ukończenia poziomu**:
+  - Czaszki (Kostucha) i Aureole (Strażniczka) — 2–3 na poziom, rozmieszczone
+    na trasach postaci (czaszki m.in. w lawie, aureole na chmurach)
+  - HUD w lewym górnym rogu: `💀 0/3` / `😇 2/2`; zielony gdy komplet
+  - Portal postaci **zablokowany** (przyciemniony, z licznikiem) dopóki postać
+    nie zbierze całego setu; poziom kończy się dopiero z oboma kompletami
+  - `Collectible` (baza), sceny `Skull`/`Halo`, `CoinHud`; testy 96
+  - Naprawa retekstury: tła WorldEnv i wizualizacje z cyframi (LavaVis1 itd.)
+
 ### Do zrobienia — następne kroki
 - ⬜ Dalsze poziomy stref (Ziemia 07+, Niebo/Piekło 05+; bossowie na końcach ramion)
-- ⬜ System monet (czaszki/aureole) + HUD — fundament pod sklep
-- ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności)
+- ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności) — wymaga decyzji,
+  czym się płaci, skoro monety są teraz wymogiem ukończenia (np. suma zebranych)
 - ⬜ Baza zagadek — patrz `docs/PUZZLES.md` (zagadki H01–H04/D01–D04 zaszyte w scenach)
 - ⬜ Synchronizacja blokady panelu zagadki po sieci (timeout tylko lokalny)
 - ⬜ Ekran ustawień (`MainMenu.gd:24` — TODO)

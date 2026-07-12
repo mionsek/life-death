@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://level_earth_01"]
+[gd_scene load_steps=29 format=3 uid="uid://level_earth_01"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -15,6 +15,8 @@
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/wood.png" id="tex_wood"]
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="tex_lava"]
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/cloud.png" id="tex_cloud"]
+[ext_resource type="PackedScene" uid="uid://skull_pickup" path="res://scenes/obstacles/Skull.tscn" id="pickup_skull"]
+[ext_resource type="PackedScene" uid="uid://halo_pickup" path="res://scenes/obstacles/Halo.tscn" id="pickup_halo"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(640, 20)
@@ -46,14 +48,14 @@ size = Vector2(24, 80)
 [node name="Level_Earth_01" type="Node2D"]
 script = ExtResource("1")
 
-[node name="WorldEnv" type="ColorRect" parent="."]
+[node name="WorldEnv" type="TextureRect" parent="."]
 z_index = -10
-layout_mode = 0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 640.0
-offset_bottom = 360.0
-color = Color(0.18, 0.28, 0.1, 1)
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 740.0
+offset_bottom = 460.0
+texture = ExtResource("tex_bg")
+stretch_mode = 1
 
 [node name="Platforms" type="Node2D" parent="."]
 
@@ -247,6 +249,18 @@ visible = false
 
 [node name="DeathScreen" parent="." instance=ExtResource("6")]
 visible = false
+
+[node name="Skull1" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(210, 315)
+
+[node name="Skull2" parent="." instance=ExtResource("pickup_skull")]
+position = Vector2(160, 180)
+
+[node name="Halo1" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(370, 70)
+
+[node name="Halo2" parent="." instance=ExtResource("pickup_halo")]
+position = Vector2(480, 110)
 
 [connection signal="body_entered" from="Hazards/LavaPool" to="." method="_on_hazard_entered"]
 [connection signal="body_entered" from="KillZone" to="." method="_on_hazard_entered"]

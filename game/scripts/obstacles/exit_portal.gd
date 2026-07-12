@@ -8,12 +8,31 @@ class_name ExitPortal
 signal character_entered(body: Node)
 signal character_exited_portal(body: Node)
 
+# While locked (missing pickups) the portal is dimmed and shows progress;
+# level_base still tracks presence but refuses to complete the level.
+var _locked: bool = false
+
 
 func _ready() -> void:
 	add_to_group("exit_portal")
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	_update_label()
+
+
+# Locks/unlocks the portal visuals; progress like "1/3" is appended when locked.
+func set_locked(locked: bool, progress: String = "") -> void:
+	_locked = locked
+	_update_label()
+	if has_node("Vis"):
+		$Vis.self_modulate = Color(0.45, 0.45, 0.45, 0.8) if locked else Color.WHITE
+	if locked and progress != "" and has_node("Label"):
+		$Label.text += " %s" % progress
+
+
+# Returns whether this portal is currently locked by missing pickups.
+func is_locked() -> bool:
+	return _locked
 
 
 # Filters body_entered — only passes through the targeted character.

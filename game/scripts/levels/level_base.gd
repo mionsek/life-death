@@ -3,6 +3,13 @@ extends Node2D
 const MINIMAP_SCENE := preload("res://scenes/ui/Minimap.tscn")
 const COIN_HUD_SCENE := preload("res://scenes/ui/CoinHud.tscn")
 
+const WORLD_BG := preload("res://assets/background/bg1.png")
+# LEVEL_GRAPH positions live on this world-map canvas (see level_select.gd).
+const MAP_CANVAS_SIZE := Vector2(1280, 720)
+# Fraction of bg1's height covered by a level's backdrop crop — smaller means
+# a tighter zoom on the level's spot on the world map.
+const BG_CROP_FRACTION := 0.42
+
 # World-space size of this level; override in bigger scenes so the camera
 # limits and the minimap cover the full playfield.
 @export var level_size: Vector2 = Vector2(640, 360)
@@ -22,6 +29,7 @@ var _coin_hud: CanvasLayer = null
 func _ready() -> void:
 	$TouchControls.set_player($Player)
 	$TouchControlsP2.set_player($Guardian)
+	_setup_background()
 	_setup_camera()
 	_setup_minimap()
 	_setup_multiplayer_authority()
@@ -29,6 +37,46 @@ func _ready() -> void:
 	_setup_collectibles.call_deferred()
 	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		NetworkManager.peer_disconnected_in_game.connect(_on_peer_disconnected)
+
+
+# Swaps the scene's flat backdrop for a zoomed-in crop of the hand-drawn world
+# map (bg1.png), centered on this level's position on the map — each level is
+# visually anchored to the spot the player picked on the world map. Levels
+# without a backdrop node or a graph entry keep their original background.
+func _setup_background() -> void:
+	var bg: TextureRect = get_node_or_null("WorldEnv")
+	if bg == null:
+		bg = get_node_or_null("Bg")
+	if bg == null:
+		return
+	var data = LevelManager.get_level(LevelManager.current_level_id)
+	if data == null or data.scene_path != scene_file_path:
+		data = _find_level_by_scene()
+	if data == null:
+		return
+	var img_size := Vector2(WORLD_BG.get_size())
+	# map_pos is in world-map canvas pixels; bg1 is drawn stretched over that
+	# canvas, so rescale the focus point to the image's own pixels.
+	var focus: Vector2 = data.map_pos * img_size / MAP_CANVAS_SIZE
+	var crop_h: float = img_size.y * BG_CROP_FRACTION
+	var crop := Vector2(crop_h * bg.size.x / bg.size.y, crop_h)
+	if crop.x > img_size.x:
+		crop *= img_size.x / crop.x
+	var atlas := AtlasTexture.new()
+	atlas.atlas = WORLD_BG
+	atlas.region = Rect2((focus - crop / 2.0).clamp(Vector2.ZERO, img_size - crop), crop)
+	bg.texture = atlas
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_SCALE
+
+
+# Finds this scene's graph entry by scene path, so the backdrop also works
+# when the scene is launched directly from the editor (F6).
+func _find_level_by_scene():
+	for data in LevelManager.get_all_levels():
+		if data.scene_path == scene_file_path:
+			return data
+	return null
 
 
 # Clamps the follow camera to the level bounds. When the zoomed-out view is

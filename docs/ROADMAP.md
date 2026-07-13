@@ -58,7 +58,23 @@
   - `Collectible` (baza), sceny `Skull`/`Halo`, `CoinHud`; testy 96
   - Naprawa retekstury: tła WorldEnv i wizualizacje z cyframi (LavaVis1 itd.)
 
+### Ostatnio zrobione (cd. 2)
+- ✅ `015-worldmap-polish` — **mapa świata wg odręcznego szkicu**: graf 42 poziomów
+  w 3 pasmach na kanwie 1280×720 (`bg1.png`), bąbelki z tintami stref, kropkowane
+  ścieżki, kłódki na niedostępnych poziomach, pan/pinch-zoom pod telefon,
+  mini-minimapa 46px rozwijana tapnięciem
+- ✅ `016-level-backdrops` — **tła poziomów jako wycinki mapy świata**: każdy poziom
+  dostaje fragment `bg1.png` wycentrowany na swojej pozycji z `LEVEL_GRAPH`
+  (`level_base._setup_background()`, `BG_CROP_FRACTION` steruje zoomem);
+  `bg1.png` podniesiony do 3072×2048
+
 ### Do zrobienia — następne kroki
+- ⬜ **Minimapa — do poprawy** (zgłoszone 2026-07-13): działa, ale jakość/UX
+  wymaga dopracowania
+- ⬜ **Przenieść zmiany z drugiego laptopa** (stan na 2026-07-13, nie wypchnięte
+  na GitHub): czaszki + **serduszka** zamiast monet (obecnie w repo: czaszki +
+  aureole). Funkcjonalnie uznane za zrobione — wymaga scalenia, gdy drugi laptop
+  wypchnie branch
 - ⬜ Dalsze poziomy stref (Ziemia 07+, Niebo/Piekło 05+; bossowie na końcach ramion)
 - ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności) — wymaga decyzji,
   czym się płaci, skoro monety są teraz wymogiem ukończenia (np. suma zebranych)

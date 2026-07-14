@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://level_earth_01"]
+[gd_scene load_steps=26 format=3 uid="uid://level_earth_01"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -19,37 +19,44 @@
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="tex_lava"]
 
 [sub_resource type="RectangleShape2D" id="border_h_shape"]
-size = Vector2(720, 72)
+size = Vector2(1440, 40)
 
 [sub_resource type="RectangleShape2D" id="border_v_shape"]
-size = Vector2(72, 432)
+size = Vector2(40, 800)
 
 [sub_resource type="RectangleShape2D" id="shelf_shape"]
 size = Vector2(140, 24)
 
+[sub_resource type="RectangleShape2D" id="divider_shape"]
+size = Vector2(50, 360)
+
 [sub_resource type="RectangleShape2D" id="gate_column_shape"]
-size = Vector2(26, 208)
+size = Vector2(50, 600)
 
 [sub_resource type="RectangleShape2D" id="cloud_shape"]
-size = Vector2(100, 16)
+size = Vector2(180, 16)
 
 [sub_resource type="RectangleShape2D" id="lava_shape"]
-size = Vector2(96, 24)
+size = Vector2(120, 24)
+
+[sub_resource type="RectangleShape2D" id="killzone_shape"]
+size = Vector2(1500, 40)
 
 [node name="Level_Earth_01" type="Node2D"]
 script = ExtResource("1")
+level_size = Vector2(1280, 720)
 
 [node name="WorldEnv" type="TextureRect" parent="."]
 z_index = -10
 offset_left = 0.0
 offset_top = 0.0
-offset_right = 640.0
-offset_bottom = 360.0
+offset_right = 1280.0
+offset_bottom = 720.0
 
 [node name="Frame" type="Node2D" parent="."]
 
 [node name="BorderTop" type="StaticBody2D" parent="Frame"]
-position = Vector2(320, 0)
+position = Vector2(640, 0)
 collision_layer = 4
 collision_mask = 0
 
@@ -58,10 +65,10 @@ shape = SubResource("border_h_shape")
 
 [node name="BorderTopVis" type="NinePatchRect" parent="Frame/BorderTop"]
 z_index = 1
-offset_left = -360.0
-offset_top = -106.0
-offset_right = 360.0
-offset_bottom = 46.0
+offset_left = -720.0
+offset_top = -180.0
+offset_right = 720.0
+offset_bottom = 26.0
 texture = ExtResource("tex_panel")
 patch_margin_left = 32
 patch_margin_top = 32
@@ -69,7 +76,7 @@ patch_margin_right = 32
 patch_margin_bottom = 36
 
 [node name="BorderBottom" type="StaticBody2D" parent="Frame"]
-position = Vector2(320, 360)
+position = Vector2(640, 720)
 collision_layer = 4
 collision_mask = 0
 
@@ -78,10 +85,10 @@ shape = SubResource("border_h_shape")
 
 [node name="BorderBottomVis" type="NinePatchRect" parent="Frame/BorderBottom"]
 z_index = 1
-offset_left = -360.0
-offset_top = -46.0
-offset_right = 360.0
-offset_bottom = 106.0
+offset_left = -720.0
+offset_top = -26.0
+offset_right = 720.0
+offset_bottom = 180.0
 texture = ExtResource("tex_panel")
 patch_margin_left = 32
 patch_margin_top = 32
@@ -89,7 +96,7 @@ patch_margin_right = 32
 patch_margin_bottom = 36
 
 [node name="BorderLeft" type="StaticBody2D" parent="Frame"]
-position = Vector2(0, 180)
+position = Vector2(0, 360)
 collision_layer = 4
 collision_mask = 0
 
@@ -98,10 +105,10 @@ shape = SubResource("border_v_shape")
 
 [node name="BorderLeftVis" type="NinePatchRect" parent="Frame/BorderLeft"]
 z_index = 1
-offset_left = -106.0
-offset_top = -216.0
-offset_right = 46.0
-offset_bottom = 216.0
+offset_left = -180.0
+offset_top = -400.0
+offset_right = 26.0
+offset_bottom = 400.0
 texture = ExtResource("tex_panel")
 patch_margin_left = 32
 patch_margin_top = 32
@@ -109,7 +116,7 @@ patch_margin_right = 32
 patch_margin_bottom = 36
 
 [node name="BorderRight" type="StaticBody2D" parent="Frame"]
-position = Vector2(640, 180)
+position = Vector2(1280, 360)
 collision_layer = 4
 collision_mask = 0
 
@@ -118,10 +125,10 @@ shape = SubResource("border_v_shape")
 
 [node name="BorderRightVis" type="NinePatchRect" parent="Frame/BorderRight"]
 z_index = 1
-offset_left = -46.0
-offset_top = -216.0
-offset_right = 106.0
-offset_bottom = 216.0
+offset_left = -26.0
+offset_top = -400.0
+offset_right = 180.0
+offset_bottom = 400.0
 texture = ExtResource("tex_panel")
 patch_margin_left = 32
 patch_margin_top = 32
@@ -130,16 +137,16 @@ patch_margin_bottom = 36
 
 [node name="Platforms" type="Node2D" parent="."]
 
-[node name="ShelfA" type="StaticBody2D" parent="Platforms"]
-position = Vector2(100, 210)
+[node name="ShelfS1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(140, 560)
 collision_layer = 4
 collision_mask = 0
 
-[node name="ShelfAShape" type="CollisionShape2D" parent="Platforms/ShelfA"]
+[node name="ShelfS1Shape" type="CollisionShape2D" parent="Platforms/ShelfS1"]
 position = Vector2(0, 22)
 shape = SubResource("shelf_shape")
 
-[node name="ShelfAVis" type="TextureRect" parent="Platforms/ShelfA"]
+[node name="ShelfS1Vis" type="TextureRect" parent="Platforms/ShelfS1"]
 z_index = 1
 offset_left = -72.0
 offset_top = 0.0
@@ -147,16 +154,16 @@ offset_right = 72.0
 offset_bottom = 59.0
 texture = ExtResource("tex_bar")
 
-[node name="ShelfB" type="StaticBody2D" parent="Platforms"]
-position = Vector2(255, 165)
+[node name="ShelfS2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(320, 470)
 collision_layer = 4
 collision_mask = 0
 
-[node name="ShelfBShape" type="CollisionShape2D" parent="Platforms/ShelfB"]
+[node name="ShelfS2Shape" type="CollisionShape2D" parent="Platforms/ShelfS2"]
 position = Vector2(0, 22)
 shape = SubResource("shelf_shape")
 
-[node name="ShelfBVis" type="TextureRect" parent="Platforms/ShelfB"]
+[node name="ShelfS2Vis" type="TextureRect" parent="Platforms/ShelfS2"]
 z_index = 1
 offset_left = -72.0
 offset_top = 0.0
@@ -164,25 +171,62 @@ offset_right = 72.0
 offset_bottom = 59.0
 texture = ExtResource("tex_bar")
 
-[node name="ShelfC" type="StaticBody2D" parent="Platforms"]
-position = Vector2(420, 120)
+[node name="ShelfS3" type="StaticBody2D" parent="Platforms"]
+position = Vector2(150, 380)
 collision_layer = 4
 collision_mask = 0
 
-[node name="ShelfCShape" type="CollisionShape2D" parent="Platforms/ShelfC"]
+[node name="ShelfS3Shape" type="CollisionShape2D" parent="Platforms/ShelfS3"]
 position = Vector2(0, 22)
 shape = SubResource("shelf_shape")
 
-[node name="ShelfCVis" type="TextureRect" parent="Platforms/ShelfC"]
+[node name="ShelfS3Vis" type="TextureRect" parent="Platforms/ShelfS3"]
 z_index = 1
 offset_left = -72.0
 offset_top = 0.0
 offset_right = 72.0
 offset_bottom = 59.0
 texture = ExtResource("tex_bar")
+
+[node name="ShelfS4" type="StaticBody2D" parent="Platforms"]
+position = Vector2(330, 280)
+collision_layer = 4
+collision_mask = 0
+
+[node name="ShelfS4Shape" type="CollisionShape2D" parent="Platforms/ShelfS4"]
+position = Vector2(0, 22)
+shape = SubResource("shelf_shape")
+
+[node name="ShelfS4Vis" type="TextureRect" parent="Platforms/ShelfS4"]
+z_index = 1
+offset_left = -72.0
+offset_top = 0.0
+offset_right = 72.0
+offset_bottom = 59.0
+texture = ExtResource("tex_bar")
+
+[node name="Divider" type="StaticBody2D" parent="Platforms"]
+position = Vector2(640, 200)
+collision_layer = 4
+collision_mask = 0
+
+[node name="DividerShape" type="CollisionShape2D" parent="Platforms/Divider"]
+shape = SubResource("divider_shape")
+
+[node name="DividerVis" type="NinePatchRect" parent="Platforms/Divider"]
+z_index = 1
+offset_left = -34.0
+offset_top = -196.0
+offset_right = 34.0
+offset_bottom = 190.0
+texture = ExtResource("tex_column")
+patch_margin_left = 22
+patch_margin_top = 40
+patch_margin_right = 22
+patch_margin_bottom = 40
 
 [node name="GateColumn" type="StaticBody2D" parent="Platforms"]
-position = Vector2(500, 140)
+position = Vector2(880, 320)
 collision_layer = 4
 collision_mask = 0
 
@@ -191,23 +235,74 @@ shape = SubResource("gate_column_shape")
 
 [node name="GateColumnVis" type="NinePatchRect" parent="Platforms/GateColumn"]
 z_index = 1
-offset_left = -30.0
-offset_top = -110.0
-offset_right = 30.0
-offset_bottom = 118.0
+offset_left = -34.0
+offset_top = -316.0
+offset_right = 34.0
+offset_bottom = 310.0
 texture = ExtResource("tex_column")
 patch_margin_left = 22
 patch_margin_top = 40
 patch_margin_right = 22
 patch_margin_bottom = 40
 
+[node name="ShelfR1" type="StaticBody2D" parent="Platforms"]
+position = Vector2(980, 590)
+collision_layer = 4
+collision_mask = 0
+
+[node name="ShelfR1Shape" type="CollisionShape2D" parent="Platforms/ShelfR1"]
+position = Vector2(0, 22)
+shape = SubResource("shelf_shape")
+
+[node name="ShelfR1Vis" type="TextureRect" parent="Platforms/ShelfR1"]
+z_index = 1
+offset_left = -72.0
+offset_top = 0.0
+offset_right = 72.0
+offset_bottom = 59.0
+texture = ExtResource("tex_bar")
+
+[node name="ShelfR2" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1140, 480)
+collision_layer = 4
+collision_mask = 0
+
+[node name="ShelfR2Shape" type="CollisionShape2D" parent="Platforms/ShelfR2"]
+position = Vector2(0, 22)
+shape = SubResource("shelf_shape")
+
+[node name="ShelfR2Vis" type="TextureRect" parent="Platforms/ShelfR2"]
+z_index = 1
+offset_left = -72.0
+offset_top = 0.0
+offset_right = 72.0
+offset_bottom = 59.0
+texture = ExtResource("tex_bar")
+
+[node name="ShelfR3" type="StaticBody2D" parent="Platforms"]
+position = Vector2(1000, 380)
+collision_layer = 4
+collision_mask = 0
+
+[node name="ShelfR3Shape" type="CollisionShape2D" parent="Platforms/ShelfR3"]
+position = Vector2(0, 22)
+shape = SubResource("shelf_shape")
+
+[node name="ShelfR3Vis" type="TextureRect" parent="Platforms/ShelfR3"]
+z_index = 1
+offset_left = -72.0
+offset_top = 0.0
+offset_right = 72.0
+offset_bottom = 59.0
+texture = ExtResource("tex_bar")
+
 [node name="CloudPlatform" type="StaticBody2D" parent="."]
-position = Vector2(300, 92)
+position = Vector2(420, 240)
 collision_layer = 8
 collision_mask = 0
 
 [node name="CloudShape" type="CollisionShape2D" parent="CloudPlatform"]
-position = Vector2(50, 8)
+position = Vector2(90, 8)
 shape = SubResource("cloud_shape")
 
 [node name="CloudVis" type="Sprite2D" parent="CloudPlatform"]
@@ -217,12 +312,12 @@ texture_repeat = 2
 texture = ExtResource("tex_cloud")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 0, 100, 16)
+region_rect = Rect2(0, 0, 180, 16)
 
 [node name="Hazards" type="Node2D" parent="."]
 
 [node name="LavaPool" type="Area2D" parent="Hazards"]
-position = Vector2(218, 312)
+position = Vector2(400, 688)
 collision_layer = 0
 collision_mask = 2
 
@@ -233,48 +328,56 @@ shape = SubResource("lava_shape")
 z_index = 1
 texture_filter = 1
 texture_repeat = 2
-position = Vector2(-48, -12)
+position = Vector2(-60, -12)
 texture = ExtResource("tex_lava")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 0, 96, 36)
+region_rect = Rect2(0, 0, 120, 36)
+
+[node name="KillZone" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 3
+
+[node name="KillZoneShape" type="CollisionShape2D" parent="KillZone"]
+position = Vector2(640, 790)
+shape = SubResource("killzone_shape")
 
 [node name="Seesaw" parent="." instance=ExtResource("2_xdjto")]
-position = Vector2(123, 112)
+position = Vector2(560, 706)
 
 [node name="GateLever" parent="." instance=ExtResource("2_lever")]
-position = Vector2(350, 92)
+position = Vector2(560, 240)
 target_door_id = "gate_01"
 
 [node name="GateDoor" parent="." instance=ExtResource("2_door")]
-position = Vector2(500, 324)
+position = Vector2(880, 700)
 door_id = "gate_01"
 
 [node name="ExitPortalGuardian" parent="." instance=ExtResource("2_tnw0y")]
-position = Vector2(397, 92)
+position = Vector2(1060, 700)
 target_character = "Guardian"
 
 [node name="ExitPortalPlayer" parent="." instance=ExtResource("2_tnw0y")]
-position = Vector2(560, 324)
+position = Vector2(1160, 700)
 target_character = "Player"
 
 [node name="Skull1" parent="." instance=ExtResource("pickup_skull")]
-position = Vector2(218, 288)
+position = Vector2(400, 664)
 
 [node name="Skull2" parent="." instance=ExtResource("pickup_skull")]
-position = Vector2(100, 180)
+position = Vector2(150, 350)
 
 [node name="Heart1" parent="." instance=ExtResource("pickup_heart")]
-position = Vector2(370, 62)
+position = Vector2(480, 208)
 
 [node name="Heart2" parent="." instance=ExtResource("pickup_heart")]
-position = Vector2(450, 92)
+position = Vector2(1000, 348)
 
 [node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(70, 290)
+position = Vector2(70, 660)
 
 [node name="Guardian" parent="." instance=ExtResource("4")]
-position = Vector2(125, 290)
+position = Vector2(130, 660)
 
 [node name="TouchControls" parent="." instance=ExtResource("3")]
 visible = false
@@ -286,3 +389,4 @@ visible = false
 visible = false
 
 [connection signal="body_entered" from="Hazards/LavaPool" to="." method="_on_hazard_entered"]
+[connection signal="body_entered" from="KillZone" to="." method="_on_hazard_entered"]

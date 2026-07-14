@@ -77,11 +77,23 @@ Odstęp pionowy między półkami rób 90–120 px.
 
 | Scena | Po co | Co ustawić w Inspektorze |
 |-------|-------|--------------------------|
-| `obstacles/Door.tscn` | brama (znika po aktywacji dźwigni) | `Door Id` np. `"gate_07"` — drzwi mają 80 px wysokości, stawiaj na podłodze |
-| `obstacles/Lever.tscn` | dźwignia otwierająca bramę | `Target Door Id` = ten sam co w drzwiach |
+| `obstacles/Door.tscn` | brama (otwiera ją dźwignia lub płyta) | `Door Id` np. `"gate_07"` — drzwi mają 80 px wysokości, stawiaj na podłodze |
+| `obstacles/Lever.tscn` | dźwignia — otwiera bramę NA STAŁE | `Target Door Id` = ten sam co w drzwiach |
+| `obstacles/PressurePlate.tscn` | płyta naciskowa — brama otwarta TYLKO gdy ktoś stoi | `Target Door Id`; **para płyt po obu stronach drzwi** = przechodzenie na zmianę |
+| `obstacles/MovingPlatform.tscn` | winda / patrol | `Travel` (wektor, np. `(0,-260)` = 260 px w górę), `Period` (sekundy pełnego cyklu), `Phase` (0–1, przesunięcie cyklu) |
+| `obstacles/CrumblingPlatform.tscn` | krusząca się platforma: dotyk → 0,5 s trzęsienia → spada → wraca po 3 s | pozycja; opcjonalnie `Shake Time` / `Respawn Time` |
+| `obstacles/OneWayPlatform.tscn` | półka jednokierunkowa — wskakujesz od dołu, lądujesz na górze | tylko pozycja |
 | `obstacles/Seesaw.tscn` | huśtawka fizyczna | tylko pozycja |
 | `obstacles/Skull.tscn` | 💀 moneta Kostuchy (1–5 szt.) | tylko pozycja — kładź na trasie Kostuchy (może w lawie!) |
 | `obstacles/Heart.tscn` | ❤️ moneta Strażniczki (1–5 szt.) | na trasie Strażniczki (np. na chmurach) |
+
+> 🎨 **Kolory par:** drzwi i wszystkie ich wyzwalacze (dźwignie, płyty) automatycznie
+> barwią się TYM SAMYM kolorem wyliczonym z `Door Id` — gracz od razu widzi, co co
+> otwiera. Nic nie konfigurujesz; wystarczy zgodne `Door Id`/`Target Door Id`.
+
+> 🤝 **Head-boost:** postać stojąca na głowie partnera zostaje wystrzelona w górę
+> (wyżej niż zwykły skok) i zachowuje sterowanie w locie — projektuj półki
+> osiągalne TYLKO tak (np. nasza `OneWayStep` w Earth_01 na wys. 560).
 
 Portale są zablokowane, dopóki postać nie zbierze wszystkich swoich monet — poziom
 kończy się, gdy obie postacie z kompletami staną w swoich portalach.

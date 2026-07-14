@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://level_earth_01"]
+[gd_scene load_steps=30 format=3 uid="uid://level_earth_01"]
 
 [ext_resource type="Script" path="res://scripts/levels/level_base.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player" path="res://scenes/characters/Player.tscn" id="2"]
@@ -12,6 +12,10 @@
 [ext_resource type="PackedScene" uid="uid://death_screen" path="res://scenes/ui/DeathScreen.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://skull_pickup" path="res://scenes/obstacles/Skull.tscn" id="pickup_skull"]
 [ext_resource type="PackedScene" uid="uid://heart_pickup" path="res://scenes/obstacles/Heart.tscn" id="pickup_heart"]
+[ext_resource type="PackedScene" uid="uid://moving_platform" path="res://scenes/obstacles/MovingPlatform.tscn" id="obs_elevator"]
+[ext_resource type="PackedScene" uid="uid://crumbling_platform" path="res://scenes/obstacles/CrumblingPlatform.tscn" id="obs_crumble"]
+[ext_resource type="PackedScene" uid="uid://pressure_plate" path="res://scenes/obstacles/PressurePlate.tscn" id="obs_plate"]
+[ext_resource type="PackedScene" uid="uid://one_way_platform" path="res://scenes/obstacles/OneWayPlatform.tscn" id="obs_oneway"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mossy/panel.png" id="tex_panel"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mossy/bar.png" id="tex_bar"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mossy/column.png" id="tex_column"]
@@ -343,7 +347,7 @@ position = Vector2(640, 790)
 shape = SubResource("killzone_shape")
 
 [node name="Seesaw" parent="." instance=ExtResource("2_xdjto")]
-position = Vector2(560, 706)
+position = Vector2(250, 706)
 
 [node name="GateLever" parent="." instance=ExtResource("2_lever")]
 position = Vector2(560, 240)
@@ -352,6 +356,29 @@ target_door_id = "gate_01"
 [node name="GateDoor" parent="." instance=ExtResource("2_door")]
 position = Vector2(880, 700)
 door_id = "gate_01"
+
+[node name="Elevator" parent="." instance=ExtResource("obs_elevator")]
+position = Vector2(540, 620)
+travel = Vector2(0, -260)
+period = 6.0
+
+[node name="CrumbleBridge" parent="." instance=ExtResource("obs_crumble")]
+position = Vector2(395, 600)
+
+[node name="PlateGateDoor" parent="." instance=ExtResource("2_door")]
+position = Vector2(690, 700)
+door_id = "plate_gate"
+
+[node name="PlateWest" parent="." instance=ExtResource("obs_plate")]
+position = Vector2(630, 700)
+target_door_id = "plate_gate"
+
+[node name="PlateEast" parent="." instance=ExtResource("obs_plate")]
+position = Vector2(770, 700)
+target_door_id = "plate_gate"
+
+[node name="OneWayStep" parent="." instance=ExtResource("obs_oneway")]
+position = Vector2(690, 560)
 
 [node name="ExitPortalGuardian" parent="." instance=ExtResource("2_tnw0y")]
 position = Vector2(1060, 700)

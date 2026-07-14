@@ -549,6 +549,23 @@ func _gen_portal() -> void:
 		_save(im, "obstacles/portal_%d.png" % phase)
 
 
+func _gen_plate() -> void:
+	# Pressure plate: raised (36x10) and pressed (36x6) states. Drawn light
+	# gray — the game tints it with the paired door's colour.
+	var up := _make(36, 10)
+	_rect(up, 2, 2, 32, 8, Color("b8b8c2"))
+	_rect(up, 2, 2, 32, 2, Color("e0e0e8"))
+	_rect(up, 2, 8, 32, 2, Color("84848e"))
+	_rect(up, 0, 8, 36, 2, Color("6a6a74"))
+	_save(up, "obstacles/plate_up.png")
+
+	var down := _make(36, 10)
+	_rect(down, 2, 6, 32, 4, Color("9a9aa4"))
+	_rect(down, 2, 6, 32, 1, Color("c4c4cc"))
+	_rect(down, 0, 8, 36, 2, Color("6a6a74"))
+	_save(down, "obstacles/plate_down.png")
+
+
 func _gen_seesaw() -> void:
 	# Plank 160x12 wood + metal caps, pivot 12x14 stone wedge.
 	var im := _make(160, 12)
@@ -975,6 +992,7 @@ func _init() -> void:
 	_gen_panel()
 	_gen_portal()
 	_gen_seesaw()
+	_gen_plate()
 	_gen_collectibles()
 	_gen_gems()
 	_gen_map_bg()

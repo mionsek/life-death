@@ -15,7 +15,7 @@
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/lava0.png" id="tex_lava"]
 [ext_resource type="Texture2D" path="res://assets/gen/tiles/cloud.png" id="tex_cloud"]
 [ext_resource type="PackedScene" uid="uid://skull_pickup" path="res://scenes/obstacles/Skull.tscn" id="pickup_skull"]
-[ext_resource type="PackedScene" uid="uid://halo_pickup" path="res://scenes/obstacles/Halo.tscn" id="pickup_halo"]
+[ext_resource type="PackedScene" uid="uid://heart_pickup" path="res://scenes/obstacles/Heart.tscn" id="pickup_heart"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(640, 20)
@@ -252,10 +252,10 @@ position = Vector2(290, 308)
 [node name="Skull2" parent="." instance=ExtResource("pickup_skull")]
 position = Vector2(120, 250)
 
-[node name="Halo1" parent="." instance=ExtResource("pickup_halo")]
+[node name="Heart1" parent="." instance=ExtResource("pickup_heart")]
 position = Vector2(280, 140)
 
-[node name="Halo2" parent="." instance=ExtResource("pickup_halo")]
+[node name="Heart2" parent="." instance=ExtResource("pickup_heart")]
 position = Vector2(340, 140)
 
 [connection signal="body_entered" from="Hazards/LavaPool" to="." method="_on_hazard_entered"]

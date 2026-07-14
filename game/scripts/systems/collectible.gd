@@ -1,13 +1,13 @@
 extends Area2D
 class_name Collectible
 
-# A per-character pickup (skull for the Reaper, halo for the Guardian).
+# A per-character pickup (skull for the Reaper, heart for the Guardian).
 # Collecting every pickup of a character unlocks that character's exit portal —
 # levels cannot be completed until both characters have a full set.
 # Collection applies locally on every peer (positions are synced each frame,
 # same pattern as FireZone/KillZone), so both devices stay consistent.
 
-# Which character can pick this up: "Player" (skull) or "Guardian" (halo).
+# Which character can pick this up: "Player" (skull) or "Guardian" (heart).
 @export var target_character: String = "Player"
 
 # Emitted once, when the matching character touches the pickup.

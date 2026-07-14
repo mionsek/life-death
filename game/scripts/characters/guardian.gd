@@ -9,7 +9,10 @@ func _ready() -> void:
 
 
 # Overrides horizontal movement to add WASD support for single-device PC testing.
+# A steering-locked bounce keeps its knockback velocity and ignores input.
 func _apply_horizontal_movement() -> void:
+	if _bounce_timer > 0.0 and _steer_locked:
+		return
 	var direction := 0.0
 	if NetworkManager.state != NetworkManager.State.CONNECTED:
 		if Input.is_physical_key_pressed(KEY_A):

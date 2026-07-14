@@ -22,6 +22,7 @@ DeathManager="*res://scripts/systems/death_manager.gd"
 NetworkManager="*res://scripts/systems/network_manager.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
 LevelManager="*res://scripts/systems/level_manager.gd"
+AudioFx="*res://scripts/systems/audio_fx.gd"
 
 [display]
 

@@ -66,6 +66,8 @@ func set_open_state(open: bool) -> void:
 	if _is_open == open:
 		return
 	_is_open = open
+	if open:
+		AudioFx.play("gate")
 	if _tween:
 		_tween.kill()
 	_tween = create_tween()

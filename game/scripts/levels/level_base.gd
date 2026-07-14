@@ -201,6 +201,7 @@ func _on_hazard_entered(_body: Node) -> void:
 
 # Marks the current level complete and returns to level select.
 func _complete_level() -> void:
+	AudioFx.play("level_complete")
 	LevelManager.complete_level(LevelManager.current_level_id)
 	get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
 

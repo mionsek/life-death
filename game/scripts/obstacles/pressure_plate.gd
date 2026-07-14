@@ -37,6 +37,8 @@ func _on_body_exited(_body: Node) -> void:
 
 # Applies the plate state: swaps the visual and drives the paired door.
 func _set_pressed(pressed: bool) -> void:
+	if pressed:
+		AudioFx.play("switch")
 	if has_node("VisUp"):
 		$VisUp.visible = not pressed
 	if has_node("VisDown"):

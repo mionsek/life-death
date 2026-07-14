@@ -52,3 +52,29 @@ func test_bounce_timer_decays() -> void:
 	_player._bounce_timer = 0.01
 	_player._tick_bounce(0.02)
 	assert_false(_player.is_bouncing())
+
+
+# Side contact knocks both characters apart with steering locked.
+func test_side_contact_repels_both() -> void:
+	_player.global_position = Vector2(100, 300)
+	_guardian.global_position = Vector2(130, 300)
+	_player._resolve_character_contact(_guardian, Vector2(-1, 0))
+	assert_lt(_player.velocity.x, 0.0, "player (left) knocked further left")
+	assert_gt(_guardian.velocity.x, 0.0, "guardian (right) knocked further right")
+	assert_true(_player._steer_locked, "side bounce locks steering")
+
+
+# Standing on the partner's head launches the top character upward
+# and keeps steering available for aiming the flight.
+func test_top_character_launches_up() -> void:
+	_player._resolve_character_contact(_guardian, Vector2(0, -1))
+	assert_eq(_player.velocity.y, _player.BOUNCE_LAUNCH)
+	assert_false(_player._steer_locked, "launch keeps steering")
+
+
+# The airborne bottom character is pushed down when touched from above.
+func test_airborne_bottom_character_pushed_down() -> void:
+	# neither test instance touches a floor, so both count as airborne
+	_player._resolve_character_contact(_guardian, Vector2(0, 1))
+	assert_eq(_guardian.velocity.y, _guardian.BOUNCE_LAUNCH, "top partner launches")
+	assert_eq(_player.velocity.y, _player.BOUNCE_PUSH_DOWN, "airborne bottom pushed down")

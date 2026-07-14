@@ -9,9 +9,9 @@ func _ready() -> void:
 
 
 # Overrides horizontal movement to add WASD support for single-device PC testing.
-# During a bounce the knockback velocity is kept and steering is ignored.
+# A steering-locked bounce keeps its knockback velocity and ignores input.
 func _apply_horizontal_movement() -> void:
-	if _bounce_timer > 0.0:
+	if _bounce_timer > 0.0 and _steer_locked:
 		return
 	var direction := 0.0
 	if NetworkManager.state != NetworkManager.State.CONNECTED:

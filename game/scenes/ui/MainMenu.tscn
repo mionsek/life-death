@@ -37,16 +37,16 @@ theme_override_font_sizes/font_size = 28
 
 [node name="BtnStart" type="Button" parent="VBox"]
 layout_mode = 2
-text = "Start Game"
+text = "MENU_START"
 
 [node name="BtnMultiplayer" type="Button" parent="VBox"]
 layout_mode = 2
-text = "Multiplayer"
+text = "MENU_MULTIPLAYER"
 
 [node name="BtnSettings" type="Button" parent="VBox"]
 layout_mode = 2
-text = "Settings"
+text = "MENU_SETTINGS"
 
 [node name="BtnQuit" type="Button" parent="VBox"]
 layout_mode = 2
-text = "Quit"
+text = "MENU_QUIT"

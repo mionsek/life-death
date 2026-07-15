@@ -2,6 +2,7 @@ extends Node2D
 
 const MINIMAP_SCENE := preload("res://scenes/ui/Minimap.tscn")
 const COIN_HUD_SCENE := preload("res://scenes/ui/CoinHud.tscn")
+const PAUSE_MENU_SCENE := preload("res://scenes/ui/PauseMenu.tscn")
 
 const WORLD_BG := preload("res://assets/background/bg1.png")
 # LEVEL_GRAPH positions live on this world-map canvas (see level_select.gd).
@@ -35,8 +36,19 @@ func _ready() -> void:
 	_setup_multiplayer_authority()
 	_connect_exit_portals.call_deferred()
 	_setup_collectibles.call_deferred()
+	_setup_pause_and_tutorials.call_deferred()
 	if NetworkManager.state == NetworkManager.State.CONNECTED:
 		NetworkManager.peer_disconnected_in_game.connect(_on_peer_disconnected)
+
+
+# Adds the pause menu (Escape) and points the tutorial system at this level's
+# obstacles and camera. Deferred so the whole level tree is ready first.
+func _setup_pause_and_tutorials() -> void:
+	var pause_menu := PAUSE_MENU_SCENE.instantiate()
+	pause_menu.name = "PauseMenu"
+	add_child(pause_menu)
+	var camera: Camera2D = get_node_or_null("Player/Camera2D")
+	TutorialManager.track_level(self, camera)
 
 
 # Swaps the scene's flat backdrop for a zoomed-in crop of the hand-drawn world

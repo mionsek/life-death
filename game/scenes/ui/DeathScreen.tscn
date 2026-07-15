@@ -36,14 +36,14 @@ alignment = 1
 
 [node name="Title" type="Label" parent="HUD/Panel"]
 layout_mode = 2
-text = "One of you died..."
+text = "DEATH_TITLE"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 20
 
 [node name="BtnTryAgain" type="Button" parent="HUD/Panel"]
 layout_mode = 2
-text = "Try Again"
+text = "DEATH_TRY_AGAIN"
 
 [node name="BtnMainMenu" type="Button" parent="HUD/Panel"]
 layout_mode = 2
-text = "Main Menu"
+text = "DEATH_MAIN_MENU"

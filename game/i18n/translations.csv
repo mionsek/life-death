@@ -1,0 +1,48 @@
+keys,en,pl
+MENU_START,Start Game,Rozpocznij grę
+MENU_MULTIPLAYER,Multiplayer,Gra wieloosobowa
+MENU_SETTINGS,Settings,Ustawienia
+MENU_QUIT,Quit,Wyjdź
+DEATH_TITLE,One of you died...,Jedno z was zginęło...
+DEATH_TRY_AGAIN,Try Again,Spróbuj ponownie
+DEATH_MAIN_MENU,Main Menu,Menu główne
+SET_TITLE,Settings,Ustawienia
+SET_SOUND,Sound effects,Efekty dźwiękowe
+SET_MUSIC,Music,Muzyka
+SET_LANGUAGE,Language,Język
+SET_BACK,Back,Wróć
+PAUSE_TITLE,Paused,Pauza
+PAUSE_RESUME,Resume,Wznów
+PAUSE_RESTART,Restart level,Restartuj poziom
+PAUSE_EXIT_MAP,World map,Mapa świata
+RESTART_CONFIRM_BODY,The host wants to restart the level. Agree?,Gospodarz chce zrestartować poziom. Zgadzasz się?
+RESTART_WAITING,Waiting for partner's approval...,Czekam na zgodę partnera...
+BTN_YES,Yes,Tak
+BTN_NO,No,Nie
+TUT_OK,Got it!,Rozumiem!
+TUT_LAVA_TITLE,Lava,Lawa
+TUT_LAVA_BODY,Lava is deadly for the Guardian — one touch kills her. The Reaper is immune and can wade right through.,Lawa jest śmiertelna dla Strażniczki — jedno dotknięcie ją zabija. Kostucha jest odporna i może przez nią przechodzić.
+TUT_HOLY_LIGHT_TITLE,Holy Light,Święte światło
+TUT_HOLY_LIGHT_BODY,The holy light burns the Reaper — keep him away. The Guardian passes through unharmed.,Święte światło razi Kostuchę — trzymaj ją z daleka. Strażniczka przechodzi przez nie bez szwanku.
+TUT_CLOUD_TITLE,Clouds,Chmury
+TUT_CLOUD_BODY,Only the Guardian can stand on clouds. The Reaper falls straight through them.,Tylko Strażniczka może stawać na chmurach. Kostucha spada przez nie na wylot.
+TUT_MOVING_PLATFORM_TITLE,Moving Platform,Ruchoma platforma
+TUT_MOVING_PLATFORM_BODY,This platform patrols a fixed route. Hop on and ride it — time your jumps.,Ta platforma krąży po stałej trasie. Wskocz na nią i daj się przewieźć — wyczuj moment skoku.
+TUT_CRUMBLING_PLATFORM_TITLE,Crumbling Platform,Krusząca się platforma
+TUT_CRUMBLING_PLATFORM_BODY,It starts to crumble the moment you stand on it. Cross quickly — it rebuilds after a while.,Zaczyna się kruszyć — gdy tylko na niej staniesz. Przebiegnij szybko — po chwili się odbuduje.
+TUT_PRESSURE_PLATE_TITLE,Pressure Plate,Płyta naciskowa
+TUT_PRESSURE_PLATE_BODY,A door of the same colour stays open only while someone stands on the plate. Work together to hold the way open.,Drzwi w tym samym kolorze są otwarte tylko wtedy — gdy ktoś stoi na płycie. Współpracujcie i utrzymajcie przejście otwarte.
+TUT_ONE_WAY_TITLE,One-way Platform,Platforma jednokierunkowa
+TUT_ONE_WAY_BODY,You can jump up through this platform and land on top of it. You cannot drop back down through it.,Możesz przeskoczyć przez tę platformę od dołu i wylądować na niej. Nie przejdziesz przez nią z powrotem w dół.
+TUT_LEVER_TITLE,Lever,Dźwignia
+TUT_LEVER_BODY,Flip the lever to open or close the door of the matching colour.,Przestaw dźwignię — otworzysz lub zamkniesz drzwi w tym samym kolorze.
+TUT_DOOR_TITLE,Door,Drzwi
+TUT_DOOR_BODY,Doors are opened by the lever or plate of the matching colour. Look around for it.,Drzwi otwiera dźwignia lub płyta w tym samym kolorze. Rozejrzyj się za nią.
+TUT_SEESAW_TITLE,Seesaw,Huśtawka
+TUT_SEESAW_BODY,The plank tilts under your weight. Balance it together to reach higher ledges.,Deska przechyla się pod ciężarem. Balansujcie razem — dosięgniecie wyższych półek.
+TUT_PORTAL_TITLE,Exit Portal,Portal wyjścia
+TUT_PORTAL_BODY,Each character must stand at their own portal — after collecting their full set of skulls or hearts.,Każda postać musi stanąć przy swoim portalu — najpierw jednak musi zebrać cały zestaw czaszek lub serduszek.
+TUT_SKULL_TITLE,Skulls,Czaszki
+TUT_SKULL_BODY,Skulls are collected by the Reaper. His exit portal stays locked until he has them all.,Czaszki zbiera Kostucha. Jej portal wyjścia pozostaje zamknięty — dopóki nie zbierze wszystkich.
+TUT_HEART_TITLE,Hearts,Serduszka
+TUT_HEART_BODY,Hearts are collected by the Guardian. Her exit portal stays locked until she has them all.,Serduszka zbiera Strażniczka. Jej portal pozostaje zamknięty — dopóki nie zbierze wszystkich.

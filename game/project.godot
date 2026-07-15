@@ -16,12 +16,18 @@ run/main_scene="res://scenes/ui/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://assets/sprites/icon.svg"
 
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
 [autoload]
 
+Settings="*res://scripts/systems/settings.gd"
 DeathManager="*res://scripts/systems/death_manager.gd"
 NetworkManager="*res://scripts/systems/network_manager.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
 LevelManager="*res://scripts/systems/level_manager.gd"
+TutorialManager="*res://scripts/systems/tutorial_manager.gd"
 
 [display]
 
@@ -29,6 +35,11 @@ window/size/viewport_width=640
 window/size/viewport_height=360
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://i18n/translations.en.translation", "res://i18n/translations.pl.translation")
+locale/fallback="en"
 
 [editor_plugins]
 

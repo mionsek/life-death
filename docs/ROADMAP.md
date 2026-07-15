@@ -68,13 +68,28 @@
   (`level_base._setup_background()`, `BG_CROP_FRACTION` steruje zoomem);
   `bg1.png` podniesiony do 3072×2048
 
+### Ostatnio zrobione (cd. 3)
+- ✅ `021-tutorials-settings` — **żywe instrukcje, języki PL/EN, ustawienia, pauza**:
+  - **Live-instrukcje przeszkód** (`TutorialManager`): gdy przeszkoda danego typu
+    (lawa, święte światło, chmury, ruchome/kruszące/jednokierunkowe platformy,
+    płyty, dźwignie, drzwi, huśtawka, portale, czaszki, serduszka) pierwszy raz
+    pojawia się w kadrze kamery — gra pauzuje i tłumaczy mechanikę; „widziane"
+    zapisywane w `user://tutorials_seen.json` (raz na instalację)
+  - **i18n PL/EN** (`i18n/translations.csv` + TranslationServer); menu, ekran
+    śmierci, pauza, ustawienia i instrukcje przetłumaczone
+  - **Ustawienia** (`Settings` autoload → `user://settings.cfg`): dźwięk, muzyka
+    (busy SFX/Music), język; dostępne z menu głównego i z pauzy
+  - **Menu pauzy (Escape)**: wznów / restart / ustawienia / mapa świata;
+    restart w multi tylko dla hosta, z potwierdzeniem u partnera (RPC)
+
 ### Do zrobienia — następne kroki
 - ⬜ **Minimapa — do poprawy** (zgłoszone 2026-07-13): działa, ale jakość/UX
   wymaga dopracowania
-- ⬜ **Przenieść zmiany z drugiego laptopa** (stan na 2026-07-13, nie wypchnięte
-  na GitHub): czaszki + **serduszka** zamiast monet (obecnie w repo: czaszki +
-  aureole). Funkcjonalnie uznane za zrobione — wymaga scalenia, gdy drugi laptop
-  wypchnie branch
+- ⬜ **Restart w multi — test na 2 urządzeniach** (flow RPC host→klient
+  zaimplementowany w `pause_menu.gd`, przetestowany tylko offline/lokalnie)
+- ✅ ~~Przenieść zmiany z drugiego laptopa~~ — scalone 2026-07-14 (branche
+  017–020: czaszki + serduszka, tileset Mossy, odbijanie postaci, przeszkody
+  Tier 1)
 - ⬜ Dalsze poziomy stref (Ziemia 07+, Niebo/Piekło 05+; bossowie na końcach ramion)
 - ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności) — wymaga decyzji,
   czym się płaci, skoro monety są teraz wymogiem ukończenia (np. suma zebranych)

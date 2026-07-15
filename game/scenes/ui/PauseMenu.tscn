@@ -1,0 +1,105 @@
+[gd_scene load_steps=2 format=3 uid="uid://pause_menu"]
+
+[ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+layer = 30
+process_mode = 3
+script = ExtResource("1")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Overlay" type="ColorRect" parent="HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.7)
+
+[node name="Panel" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -110.0
+offset_right = 100.0
+offset_bottom = 110.0
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Title" type="Label" parent="HUD/Panel"]
+layout_mode = 2
+text = "PAUSE_TITLE"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+
+[node name="BtnResume" type="Button" parent="HUD/Panel"]
+layout_mode = 2
+text = "PAUSE_RESUME"
+
+[node name="BtnRestart" type="Button" parent="HUD/Panel"]
+layout_mode = 2
+text = "PAUSE_RESTART"
+
+[node name="BtnSettings" type="Button" parent="HUD/Panel"]
+layout_mode = 2
+text = "MENU_SETTINGS"
+
+[node name="BtnExitMap" type="Button" parent="HUD/Panel"]
+layout_mode = 2
+text = "PAUSE_EXIT_MAP"
+
+[node name="ConfirmPanel" type="VBoxContainer" parent="HUD"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -60.0
+offset_right = 150.0
+offset_bottom = 60.0
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="LblConfirm" type="Label" parent="HUD/ConfirmPanel"]
+layout_mode = 2
+text = "RESTART_CONFIRM_BODY"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="HUD/ConfirmPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="BtnYes" type="Button" parent="HUD/ConfirmPanel/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+text = "BTN_YES"
+
+[node name="BtnNo" type="Button" parent="HUD/ConfirmPanel/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 0)
+text = "BTN_NO"
+
+[node name="LblWaiting" type="Label" parent="HUD"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -10.0
+offset_right = 150.0
+offset_bottom = 10.0
+text = "RESTART_WAITING"
+horizontal_alignment = 1

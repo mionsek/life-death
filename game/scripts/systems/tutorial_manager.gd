@@ -12,6 +12,9 @@ const POPUP_SCENE := preload("res://scenes/ui/TutorialPopup.tscn")
 const CHECK_INTERVAL: float = 0.25
 # Extra margin (px) around the view so obstacles trigger right at the edge.
 const VIEW_MARGIN: float = 8.0
+# A lesson triggers only when a hero is this close to the obstacle (px),
+# besides it being on screen — walking past matters, not seeing from afar.
+const PROXIMITY_RADIUS: float = 130.0
 
 # Toggle for tests / speedruns; popups are skipped entirely when false.
 var enabled: bool = true
@@ -20,6 +23,8 @@ var _seen: Dictionary = {}
 # Pending {type, node} entries for the currently tracked level.
 var _pending: Array[Dictionary] = []
 var _camera: Camera2D = null
+# The two characters — a lesson needs one of them near the obstacle.
+var _heroes: Array[Node2D] = []
 var _timer: float = 0.0
 # The popup currently on screen — no new lessons trigger while it lives.
 var _active_popup: Node = null
@@ -34,8 +39,13 @@ func _ready() -> void:
 func track_level(level_root: Node, camera: Camera2D) -> void:
 	_pending.clear()
 	_camera = camera
+	_heroes.clear()
 	if not enabled or camera == null:
 		return
+	for hero_name in ["Player", "Guardian"]:
+		var hero := level_root.get_node_or_null(hero_name)
+		if hero is Node2D:
+			_heroes.append(hero)
 	_collect(level_root)
 
 
@@ -72,6 +82,10 @@ func classify(node: Node) -> String:
 			return "lava"
 		if "light_zone" in path:
 			return "holy_light"
+	# Newer levels wire lava areas straight to the level script — recognise
+	# them by name instead (LavaPool, LavaPool2, ...).
+	if node is Area2D and node.name.begins_with("Lava"):
+		return "lava"
 	if node is StaticBody2D:
 		if node.name.begins_with("Cloud"):
 			return "cloud"
@@ -117,11 +131,24 @@ func _process(delta: float) -> void:
 			continue
 		if was_seen(entry.type):
 			continue
-		if view.has_point(node.global_position):
-			_show_tutorial(entry.type)
+		if view.has_point(node.global_position) and _near_heroes(node.global_position):
+			_show_tutorial(entry.type, node)
 			break
 	_pending = _pending.filter(
 		func(e): return is_instance_valid(e.node) and not was_seen(e.type))
+
+
+# Whether any hero stands close enough to the obstacle for the lesson to
+# matter. Levels without hero nodes (tests, tools) fall back to view-only.
+func _near_heroes(pos: Vector2) -> bool:
+	var any_valid := false
+	for hero in _heroes:
+		if not is_instance_valid(hero):
+			continue
+		any_valid = true
+		if hero.global_position.distance_to(pos) <= PROXIMITY_RADIUS:
+			return true
+	return not any_valid
 
 
 # The world-space rectangle currently visible through the camera.
@@ -131,12 +158,13 @@ func _view_rect() -> Rect2:
 		.grow(VIEW_MARGIN)
 
 
-# Pauses the game and shows the popup; the popup unpauses on dismiss.
-func _show_tutorial(type: String) -> void:
+# Pauses the game and shows the popup with its spotlight aimed at the
+# obstacle; the popup unpauses on dismiss.
+func _show_tutorial(type: String, target: Node = null) -> void:
 	mark_seen(type)
 	var popup := POPUP_SCENE.instantiate()
 	get_tree().root.add_child(popup)
-	popup.setup(type)
+	popup.setup(type, target if target is Node2D else null)
 	_active_popup = popup
 	get_tree().paused = true
 

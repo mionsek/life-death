@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://tutorial_popup"]
+[gd_scene load_steps=4 format=3 uid="uid://tutorial_popup"]
 
 [ext_resource type="Script" path="res://scripts/ui/tutorial_popup.gd" id="1"]
+[ext_resource type="Shader" path="res://shaders/tutorial_spotlight.gdshader" id="2"]
+
+[sub_resource type="ShaderMaterial" id="spotlight_mat"]
+shader = ExtResource("2")
 
 [node name="TutorialPopup" type="CanvasLayer"]
 layer = 25
@@ -14,11 +18,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Overlay" type="ColorRect" parent="HUD"]
+material = SubResource("spotlight_mat")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.6)
 
 [node name="Panel" type="VBoxContainer" parent="HUD"]
 layout_mode = 1

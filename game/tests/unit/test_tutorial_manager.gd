@@ -15,6 +15,7 @@ func after_each() -> void:
 	TutorialManager._save_seen()
 	TutorialManager._pending.clear()
 	TutorialManager._camera = null
+	TutorialManager._heroes.clear()
 
 
 func _scripted(base: Node, script_path: String) -> Node:
@@ -28,6 +29,13 @@ func test_classifies_hazard_zones_by_script() -> void:
 	var light := _scripted(Area2D.new(), "res://scripts/systems/light_zone.gd")
 	assert_eq(TutorialManager.classify(lava), "lava")
 	assert_eq(TutorialManager.classify(light), "holy_light")
+
+
+func test_classifies_unscripted_lava_pools_by_name() -> void:
+	var pool := Area2D.new()
+	pool.name = "LavaPool"
+	add_child_autofree(pool)
+	assert_eq(TutorialManager.classify(pool), "lava")
 
 
 func test_classifies_obstacle_classes() -> void:
@@ -81,6 +89,22 @@ func test_seen_marking_persists() -> void:
 	TutorialManager._load_seen()
 	assert_true(TutorialManager.was_seen("lava"),
 		"seen flags should survive a reload from disk")
+
+
+func test_lesson_needs_a_hero_nearby() -> void:
+	var hero := Node2D.new()
+	hero.global_position = Vector2.ZERO
+	add_child_autofree(hero)
+	TutorialManager._heroes = [hero] as Array[Node2D]
+	assert_true(TutorialManager._near_heroes(Vector2(100, 0)),
+		"obstacle 100px away should be near")
+	assert_false(TutorialManager._near_heroes(Vector2(500, 0)),
+		"obstacle 500px away should be far")
+
+
+func test_no_heroes_falls_back_to_view_only() -> void:
+	TutorialManager._heroes.clear()
+	assert_true(TutorialManager._near_heroes(Vector2(9999, 9999)))
 
 
 func test_track_level_skips_seen_types() -> void:

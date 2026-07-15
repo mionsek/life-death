@@ -3,6 +3,9 @@ extends Node2D
 const MINIMAP_SCENE := preload("res://scenes/ui/Minimap.tscn")
 const COIN_HUD_SCENE := preload("res://scenes/ui/CoinHud.tscn")
 const PAUSE_MENU_SCENE := preload("res://scenes/ui/PauseMenu.tscn")
+const LEVEL_COMPLETE_SCENE := preload("res://scenes/ui/LevelComplete.tscn")
+# Seconds the "Level Complete" banner stays up before the world map loads.
+const COMPLETE_BANNER_SECONDS := 3.0
 
 const WORLD_BG := preload("res://assets/background/bg1.png")
 # LEVEL_GRAPH positions live on this world-map canvas (see level_select.gd).
@@ -25,6 +28,8 @@ var _skull_got: int = 0
 var _heart_total: int = 0
 var _heart_got: int = 0
 var _coin_hud: CanvasLayer = null
+# Guards against the completion flow running twice.
+var _completed: bool = false
 
 
 func _ready() -> void:
@@ -211,10 +216,20 @@ func _on_hazard_entered(_body: Node) -> void:
 	DeathManager.trigger_death()
 
 
-# Marks the current level complete and returns to level select.
+# Marks the level complete, shows the banner for a few seconds (game frozen),
+# then returns to the world map. Guarded so it runs only once.
 func _complete_level() -> void:
+	if _completed:
+		return
+	_completed = true
 	AudioFx.play("level_complete")
 	LevelManager.complete_level(LevelManager.current_level_id)
+	var banner := LEVEL_COMPLETE_SCENE.instantiate()
+	add_child(banner)
+	get_tree().paused = true
+	# process_always timer keeps ticking while the tree is paused.
+	await get_tree().create_timer(COMPLETE_BANNER_SECONDS).timeout
+	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
 
 

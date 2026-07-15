@@ -128,5 +128,5 @@ func test_lever_carries_door_color() -> void:
 	var lever = preload("res://scenes/obstacles/Lever.tscn").instantiate()
 	lever.target_door_id = "gate_77"
 	add_child_autofree(lever)
-	var expected := Door.id_color("gate_77").lerp(Color.WHITE, 0.35)
-	assert_eq(lever.get_node("VisIdle").self_modulate, expected)
+	var expected := Door.id_color("gate_77").lerp(Color.WHITE, 0.7)
+	assert_eq(lever.get_node("Vis").self_modulate, expected)

@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://lever"]
+[gd_scene load_steps=4 format=3 uid="uid://lever"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/lever.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/gen/obstacles/lever_idle.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/gen/obstacles/lever_active.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/lever_frames.png" id="2"]
 
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(24, 32)
@@ -16,24 +15,10 @@ script = ExtResource("1")
 position = Vector2(0, -16)
 shape = SubResource("shape")
 
-[node name="VisIdle" type="Sprite2D" parent="."]
+[node name="Vis" type="Sprite2D" parent="."]
 z_index = 2
 texture_filter = 1
-position = Vector2(0, -16)
+position = Vector2(0, -20)
 texture = ExtResource("2")
-
-[node name="VisActivated" type="Sprite2D" parent="."]
-z_index = 2
-texture_filter = 1
-visible = false
-position = Vector2(0, -16)
-texture = ExtResource("3")
-
-[node name="Label" type="Label" parent="."]
-offset_left = -20.0
-offset_top = -48.0
-offset_right = 20.0
-offset_bottom = -34.0
-text = "LEVER"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 8
+hframes = 4
+frame = 0

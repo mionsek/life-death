@@ -7,10 +7,11 @@
 extends SceneTree
 
 const SRC := "res://assets/sprites/drzwi, dzwignie.png"
+# Dedicated 4-frame lever sheet (handle sweeps left -> right).
+const SRC_LEVER := "res://assets/sprites/dzwignie.png"
 
-# Content bands on the 1536x1024 sheet (chosen to skip the title/number text).
+# Content band for the doors on the combined 1536x1024 sheet (skips the text).
 const DOOR_BAND := Vector2i(195, 585)
-const LEVER_BAND := Vector2i(755, 990)
 
 # Pixels this close to white (min channel) become transparent; soft edge below.
 const WHITE_HI := 0.80
@@ -29,7 +30,18 @@ func _init() -> void:
 	img.convert(Image.FORMAT_RGBA8)
 	_knock_out_white(img)
 	_slice_row(img, DOOR_BAND, "res://assets/sprites/doors/door_frames.png", DOOR_FRAME_H)
-	_slice_row(img, LEVER_BAND, "res://assets/sprites/doors/lever_frames.png", LEVER_FRAME_H)
+
+	# Levers come from their own clean 4-frame sheet. They are split into equal
+	# quarters (not tight-cropped per frame) so the base stays fixed while the
+	# handle sweeps — a per-frame crop would recentre and make the base jitter.
+	var lever := Image.load_from_file(ProjectSettings.globalize_path(SRC_LEVER))
+	if lever == null:
+		push_error("cannot load " + SRC_LEVER)
+		quit(1)
+		return
+	lever.convert(Image.FORMAT_RGBA8)
+	_knock_out_white(lever)
+	_slice_even(lever, 4, "res://assets/sprites/doors/lever_frames.png", LEVER_FRAME_H)
 	quit()
 
 
@@ -44,6 +56,29 @@ func _knock_out_white(img: Image) -> void:
 			elif m > WHITE_LO:
 				c.a = (WHITE_HI - m) / (WHITE_HI - WHITE_LO)
 			img.set_pixel(x, y, c)
+
+
+# Splits a clean sheet into `count` equal-width cells and stacks them into a
+# horizontal strip, sharing one vertical crop (union of all content) so every
+# frame keeps its horizontal position — the base stays put, the handle sweeps.
+func _slice_even(img: Image, count: int, dst: String, frame_h: int) -> void:
+	var used := img.get_used_rect()
+	if used.size.y <= 0:
+		push_warning("slice_doors: empty lever sheet")
+		return
+	var cell_w := img.get_width() / count
+	var sheet := Image.create(cell_w * count, used.size.y, false, Image.FORMAT_RGBA8)
+	for i in count:
+		var region := img.get_region(Rect2i(i * cell_w, used.position.y, cell_w, used.size.y))
+		sheet.blit_rect(region, Rect2i(0, 0, cell_w, used.size.y), Vector2i(i * cell_w, 0))
+	var scale := float(frame_h) / float(used.size.y)
+	var frame_w := int(round(cell_w * scale))
+	sheet.resize(frame_w * count, frame_h, Image.INTERPOLATE_LANCZOS)
+	var abs_dst := ProjectSettings.globalize_path(dst)
+	DirAccess.make_dir_recursive_absolute(abs_dst.get_base_dir())
+	sheet.save_png(abs_dst)
+	print("  sliced ", dst, " (", sheet.get_width(), "x", sheet.get_height(),
+		", ", count, " frames)")
 
 
 # Detects the 4 content columns inside a y-band, crops each to a shared box and

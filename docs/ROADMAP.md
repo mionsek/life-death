@@ -83,6 +83,10 @@
     restart w multi tylko dla hosta, z potwierdzeniem u partnera (RPC)
 
 ### Do zrobienia — następne kroki
+- ⬜ **Więcej dźwięków** (zgłoszone 2026-07-15): `022-audio-sfx` dał AudioFx +
+  4 efekty (dźwignia/płyta, drzwi, ukończenie poziomu, wybór na mapie);
+  brakuje m.in. skoku, śmierci, zbierania czaszek/serc, odbicia postaci,
+  kruszenia platform i muzyki tła per strefa (bus Music już czeka)
 - ⬜ **Minimapa — do poprawy** (zgłoszone 2026-07-13): działa, ale jakość/UX
   wymaga dopracowania
 - ⬜ **Restart w multi — test na 2 urządzeniach** (flow RPC host→klient
@@ -95,7 +99,8 @@
   czym się płaci, skoro monety są teraz wymogiem ukończenia (np. suma zebranych)
 - ⬜ Baza zagadek — patrz `docs/PUZZLES.md` (zagadki H01–H04/D01–D04 zaszyte w scenach)
 - ⬜ Synchronizacja blokady panelu zagadki po sieci (timeout tylko lokalny)
-- ⬜ Ekran ustawień (`MainMenu.gd:24` — TODO)
+- ✅ ~~Ekran ustawień~~ — zrobiony w `021-tutorials-settings` (dźwięk/muzyka/język,
+  dostępny z menu i z pauzy)
 
 ---
 

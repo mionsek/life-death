@@ -1,0 +1,8 @@
+# Audio credits — Life & Death
+# Format wpisu: plik | tytuł | autor | źródło (link) | licencja
+# CC-BY/OGA-BY wymagają umieszczenia autora w creditsach gry przy publikacji.
+
+game/assets/audio/sfx/Door_Switch_01.wav    | TODO | TODO | TODO(link) | TODO
+game/assets/audio/sfx/Gate_Open_01.wav      | TODO | TODO | TODO(link) | TODO
+game/assets/audio/sfx/Level_Complete_01.wav | TODO | TODO | TODO(link) | TODO
+game/assets/audio/sfx/Menu_Select_02.wav    | TODO | TODO | TODO(link) | TODO

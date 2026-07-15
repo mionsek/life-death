@@ -21,7 +21,7 @@ func _on_multiplayer_pressed() -> void:
 
 # Opens the settings screen.
 func _on_settings_pressed() -> void:
-	pass  # TODO: get_tree().change_scene_to_file("res://scenes/ui/Settings.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/SettingsMenu.tscn")
 
 
 # Exits the application.

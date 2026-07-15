@@ -18,10 +18,13 @@ config/icon="res://assets/sprites/icon.svg"
 
 [autoload]
 
+Settings="*res://scripts/systems/settings.gd"
 DeathManager="*res://scripts/systems/death_manager.gd"
 NetworkManager="*res://scripts/systems/network_manager.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
 LevelManager="*res://scripts/systems/level_manager.gd"
+TutorialManager="*res://scripts/systems/tutorial_manager.gd"
+AudioFx="*res://scripts/systems/audio_fx.gd"
 
 [display]
 
@@ -33,6 +36,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://i18n/translations.en.translation", "res://i18n/translations.pl.translation")
 
 [layer_names]
 

@@ -22,6 +22,7 @@ func _on_body_entered(_body: Node) -> void:
 
 # Swaps the lever visuals when activated.
 func _on_triggered() -> void:
+	AudioFx.play("switch")
 	$VisIdle.visible = false
 	$VisActivated.visible = true
 

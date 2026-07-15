@@ -260,6 +260,7 @@ func _center_on_next_level() -> void:
 
 # Starts loading the selected level.
 func _on_level_selected(level_id: int) -> void:
+	AudioFx.play("menu_select")
 	LevelManager.load_level(level_id)
 
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://door"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/door.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/gen/obstacles/door.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_frames.png" id="2"]
 
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(24, 80)
@@ -18,14 +18,7 @@ shape = SubResource("shape")
 [node name="Vis" type="Sprite2D" parent="."]
 z_index = 2
 texture_filter = 1
-position = Vector2(0, -40)
+position = Vector2(0, -44)
 texture = ExtResource("2")
-
-[node name="Label" type="Label" parent="."]
-offset_left = -20.0
-offset_top = -50.0
-offset_right = 20.0
-offset_bottom = -34.0
-text = "DOOR"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 8
+hframes = 4
+frame = 0

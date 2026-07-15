@@ -4,20 +4,23 @@ class_name Door
 # Unique ID used by levers, panels and pressure plates to target this door.
 @export var door_id: String = "door_01"
 
-# How far up the door slides when opening.
-const OPEN_OFFSET := 80.0
+# Portcullis strip: frame 0 = shut (gate down, red light), last = open (gate
+# retracted, green light). Opening animates through the frames in place — the
+# stone frame stays put, only the gate rises, so a character walks through.
+const OPEN_FRAME := 3
+const OPEN_TIME := 0.5
+const CLOSE_TIME := 0.3
 
 var _is_open: bool = false
-var _closed_y: float = 0.0
 var _tween: Tween
 
 
 func _ready() -> void:
 	add_to_group("door_" + door_id)
-	_closed_y = position.y
-	# every trigger paired with this door carries the same hue (see id_color)
 	if has_node("Vis"):
-		$Vis.self_modulate = id_color(door_id).lerp(Color.WHITE, 0.25)
+		# subtle pairing tint so the door and its trigger read as a set
+		$Vis.self_modulate = id_color(door_id).lerp(Color.WHITE, 0.7)
+		_set_frame(0)
 
 
 # Deterministic pairing colour for a door id — the door and all of its
@@ -59,7 +62,7 @@ func open_local() -> void:
 	set_open_state(true)
 
 
-# Slides the door open or shut on this peer. Hold-style triggers (pressure
+# Animates the gate open or shut on this peer. Hold-style triggers (pressure
 # plates) call this both ways; the collision comes back the moment the door
 # starts closing so nobody clips through.
 func set_open_state(open: bool) -> void:
@@ -72,18 +75,26 @@ func set_open_state(open: bool) -> void:
 		_tween.kill()
 	_tween = create_tween()
 	if open:
-		if has_node("Vis"):
-			$Vis.modulate = Color(0.4, 0.9, 0.5, 0.35)
-		_tween.tween_property(self, "position:y", _closed_y - OPEN_OFFSET, 0.5)\
-			.set_ease(Tween.EASE_IN_OUT)
+		_tween.tween_method(_set_frame, float(_current_frame()), float(OPEN_FRAME), OPEN_TIME)
 		_tween.tween_callback(_disable_collision)
 	else:
-		if has_node("Vis"):
-			$Vis.modulate = Color.WHITE
 		if has_node("Shape"):
 			$Shape.set_deferred("disabled", false)
-		_tween.tween_property(self, "position:y", _closed_y, 0.3)\
-			.set_ease(Tween.EASE_IN_OUT)
+		_tween.tween_method(_set_frame, float(_current_frame()), 0.0, CLOSE_TIME)
+
+
+# Current gate frame (0..OPEN_FRAME); falls back to the logical state when the
+# visual is not an animatable sprite (e.g. in unit tests).
+func _current_frame() -> int:
+	if has_node("Vis") and $Vis is Sprite2D:
+		return $Vis.frame
+	return OPEN_FRAME if _is_open else 0
+
+
+# Sets the gate frame; no-op when the visual is not a sprite strip.
+func _set_frame(v: float) -> void:
+	if has_node("Vis") and $Vis is Sprite2D:
+		$Vis.frame = clampi(int(round(v)), 0, OPEN_FRAME)
 
 
 # Disables the collision shape after the open animation finishes.

@@ -10,7 +10,7 @@ func before_each() -> void:
 	var shape := CollisionShape2D.new()
 	shape.name = "Shape"
 	_door.add_child(shape)
-	var vis := ColorRect.new()
+	var vis := Sprite2D.new()
 	vis.name = "Vis"
 	_door.add_child(vis)
 

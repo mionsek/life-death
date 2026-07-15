@@ -107,6 +107,22 @@ func test_no_heroes_falls_back_to_view_only() -> void:
 	assert_true(TutorialManager._near_heroes(Vector2(9999, 9999)))
 
 
+func test_airborne_hero_blocks_lessons() -> void:
+	# A fresh CharacterBody2D has never touched a floor — counts as airborne.
+	var hero := CharacterBody2D.new()
+	add_child_autofree(hero)
+	TutorialManager._heroes = [hero] as Array[Node2D]
+	assert_false(TutorialManager._heroes_grounded(),
+		"a mid-air hero should postpone lessons")
+
+
+func test_non_body_heroes_count_as_grounded() -> void:
+	var hero := Node2D.new()
+	add_child_autofree(hero)
+	TutorialManager._heroes = [hero] as Array[Node2D]
+	assert_true(TutorialManager._heroes_grounded())
+
+
 func test_track_level_skips_seen_types() -> void:
 	TutorialManager.mark_seen("lava")
 	var root := Node2D.new()

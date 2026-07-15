@@ -124,6 +124,8 @@ func _process(delta: float) -> void:
 	if _timer > 0.0:
 		return
 	_timer = CHECK_INTERVAL
+	if not _heroes_grounded():
+		return
 	var view := _view_rect()
 	for entry in _pending:
 		var node: Node = entry.node
@@ -136,6 +138,17 @@ func _process(delta: float) -> void:
 			break
 	_pending = _pending.filter(
 		func(e): return is_instance_valid(e.node) and not was_seen(e.type))
+
+
+# Pausing mid-jump is jarring — no lesson fires while any hero is airborne;
+# the pending obstacle simply waits for the next check after landing.
+func _heroes_grounded() -> bool:
+	for hero in _heroes:
+		if not is_instance_valid(hero):
+			continue
+		if hero is CharacterBody2D and not hero.is_on_floor():
+			return false
+	return true
 
 
 # Whether any hero stands close enough to the obstacle for the lesson to

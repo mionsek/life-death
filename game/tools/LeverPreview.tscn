@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://lever_preview_tmp"]
+
+[ext_resource type="PackedScene" uid="uid://lever" path="res://scenes/obstacles/Lever.tscn" id="1"]
+
+[sub_resource type="GDScript" id="preview_script"]
+script/source = "extends Node2D
+
+# Dev preview: flips the lever every second so the pivot can be inspected.
+var _t := 0.0
+
+func _process(delta: float) -> void:
+	_t += delta
+	if _t > 1.0:
+		_t = 0.0
+		$Lever._apply_toggle()
+"
+
+[node name="LeverPreview" type="Node2D"]
+script = SubResource("preview_script")
+
+[node name="Bg" type="ColorRect" parent="."]
+offset_right = 640.0
+offset_bottom = 360.0
+color = Color(0.5, 0.6, 0.7, 1)
+
+[node name="Lever" parent="." instance=ExtResource("1")]
+position = Vector2(320, 220)
+
+[node name="Cam" type="Camera2D" parent="."]
+position = Vector2(320, 190)
+zoom = Vector2(5, 5)

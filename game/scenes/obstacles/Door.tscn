@@ -1,10 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://door"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/door.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_back.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_back_1.png" id="2"]
 [ext_resource type="Texture2D" path="res://assets/sprites/doors/door_gate.png" id="3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_front.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_light.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_front_1.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_light_1.png" id="5"]
 [ext_resource type="Shader" path="res://shaders/door_gate.gdshader" id="6"]
 
 [sub_resource type="RectangleShape2D" id="shape"]

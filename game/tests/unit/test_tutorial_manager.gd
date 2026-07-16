@@ -3,16 +3,21 @@ extends GutTest
 # TutorialManager: obstacle classification and the seen-once bookkeeping.
 
 var _saved_seen: Dictionary
+var _saved_enabled: bool
 
 
 func before_each() -> void:
 	_saved_seen = TutorialManager._seen.duplicate()
+	# The manager ships disabled for playtesting; exercise the real logic here.
+	_saved_enabled = TutorialManager.enabled
+	TutorialManager.enabled = true
 	TutorialManager.reset_seen()
 
 
 func after_each() -> void:
 	TutorialManager._seen = _saved_seen
 	TutorialManager._save_seen()
+	TutorialManager.enabled = _saved_enabled
 	TutorialManager._pending.clear()
 	TutorialManager._camera = null
 	TutorialManager._heroes.clear()

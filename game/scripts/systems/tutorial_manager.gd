@@ -16,8 +16,10 @@ const VIEW_MARGIN: float = 8.0
 # besides it being on screen — walking past matters, not seeing from afar.
 const PROXIMITY_RADIUS: float = 130.0
 
-# Toggle for tests / speedruns; popups are skipped entirely when false.
-var enabled: bool = true
+# Master toggle; popups are skipped entirely when false.
+# TEMP: disabled during playtesting because the popups get in the way.
+# TODO: set back to true before the public release (see memory note).
+var enabled: bool = false
 
 var _seen: Dictionary = {}
 # Pending {type, node} entries for the currently tracked level.

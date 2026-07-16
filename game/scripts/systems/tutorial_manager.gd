@@ -16,8 +16,10 @@ const VIEW_MARGIN: float = 8.0
 # besides it being on screen — walking past matters, not seeing from afar.
 const PROXIMITY_RADIUS: float = 130.0
 
-# Toggle for tests / speedruns; popups are skipped entirely when false.
-var enabled: bool = true
+# Master toggle; popups are skipped entirely when false.
+# TEMP: disabled during playtesting because the popups get in the way.
+# TODO: set back to true before the public release (see memory note).
+var enabled: bool = false
 
 var _seen: Dictionary = {}
 # Pending {type, node} entries for the currently tracked level.
@@ -124,6 +126,8 @@ func _process(delta: float) -> void:
 	if _timer > 0.0:
 		return
 	_timer = CHECK_INTERVAL
+	if not _heroes_grounded():
+		return
 	var view := _view_rect()
 	for entry in _pending:
 		var node: Node = entry.node
@@ -136,6 +140,17 @@ func _process(delta: float) -> void:
 			break
 	_pending = _pending.filter(
 		func(e): return is_instance_valid(e.node) and not was_seen(e.type))
+
+
+# Pausing mid-jump is jarring — no lesson fires while any hero is airborne;
+# the pending obstacle simply waits for the next check after landing.
+func _heroes_grounded() -> bool:
+	for hero in _heroes:
+		if not is_instance_valid(hero):
+			continue
+		if hero is CharacterBody2D and not hero.is_on_floor():
+			return false
+	return true
 
 
 # Whether any hero stands close enough to the obstacle for the lesson to

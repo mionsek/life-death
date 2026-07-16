@@ -14,7 +14,7 @@ void fragment() {
 	float radius = hole_radius + sin(TIME * 3.0) * 3.0;
 	float dist = distance(UV * canvas_size, hole_center);
 	float shade = smoothstep(radius, radius + softness, dist);
-	float ring = 1.0 - smoothstep(1.5, 4.5, abs(dist - radius));
+	float ring = 1.0 - smoothstep(0.6, 2.2, abs(dist - radius));
 	vec3 gold = vec3(1.0, 0.82, 0.35);
 	COLOR = vec4(gold * ring, max(darkness * shade, ring * 0.9));
 }

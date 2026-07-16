@@ -20,6 +20,10 @@ func play(sound_name: String) -> void:
 	var player := AudioStreamPlayer.new()
 	player.stream = SOUNDS[sound_name]
 	player.bus = "SFX"
+	# Keep playing while the tree is paused — the level-complete jingle plays
+	# over the frozen "Level Complete" banner, not after it (level_base pauses
+	# the game for the banner).
+	player.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(player)
 	player.finished.connect(player.queue_free)
 	player.play()

@@ -4,20 +4,36 @@ class_name Door
 # Unique ID used by levers, panels and pressure plates to target this door.
 @export var door_id: String = "door_01"
 
-# How far up the door slides when opening.
-const OPEN_OFFSET := 80.0
+# The door is built from stacked layers (see Door.tscn) so it animates smoothly
+# and the character passes through the doorway — in front of the left jamb
+# (DoorBack, z below the character) and behind the right jamb + lintel
+# (DoorFront, z above). The red curtain (DoorGate) slides up via a shader;
+# DoorLight is a greyscale indicator tinted red (shut) / green (open).
+const OPEN_TIME := 0.5
+const CLOSE_TIME := 0.35
+const LIGHT_SHUT := Color(0.9, 0.15, 0.15)
+const LIGHT_OPEN := Color(0.3, 0.95, 0.4)
 
 var _is_open: bool = false
-var _closed_y: float = 0.0
+var _open_amount: float = 0.0
 var _tween: Tween
+var _gate_mat: ShaderMaterial
 
 
 func _ready() -> void:
 	add_to_group("door_" + door_id)
-	_closed_y = position.y
-	# every trigger paired with this door carries the same hue (see id_color)
-	if has_node("Vis"):
-		$Vis.self_modulate = id_color(door_id).lerp(Color.WHITE, 0.25)
+	if has_node("DoorGate"):
+		# unique material per instance so doors animate independently
+		_gate_mat = ($DoorGate.material as ShaderMaterial).duplicate()
+		$DoorGate.material = _gate_mat
+		_set_open_amount(0.0)
+	if has_node("DoorLight"):
+		$DoorLight.modulate = LIGHT_SHUT
+	# subtle pairing tint on the stone so the door and its trigger read as a set
+	var tint := id_color(door_id).lerp(Color.WHITE, 0.7)
+	for jamb in ["DoorBack", "DoorFront"]:
+		if has_node(jamb):
+			get_node(jamb).self_modulate = tint
 
 
 # Deterministic pairing colour for a door id — the door and all of its
@@ -59,7 +75,7 @@ func open_local() -> void:
 	set_open_state(true)
 
 
-# Slides the door open or shut on this peer. Hold-style triggers (pressure
+# Smoothly opens or shuts the door on this peer. Hold-style triggers (pressure
 # plates) call this both ways; the collision comes back the moment the door
 # starts closing so nobody clips through.
 func set_open_state(open: bool) -> void:
@@ -68,22 +84,30 @@ func set_open_state(open: bool) -> void:
 	_is_open = open
 	if open:
 		AudioFx.play("gate")
-	if _tween:
-		_tween.kill()
-	_tween = create_tween()
-	if open:
-		if has_node("Vis"):
-			$Vis.modulate = Color(0.4, 0.9, 0.5, 0.35)
-		_tween.tween_property(self, "position:y", _closed_y - OPEN_OFFSET, 0.5)\
-			.set_ease(Tween.EASE_IN_OUT)
-		_tween.tween_callback(_disable_collision)
 	else:
-		if has_node("Vis"):
-			$Vis.modulate = Color.WHITE
+		# collision returns immediately when shutting
 		if has_node("Shape"):
 			$Shape.set_deferred("disabled", false)
-		_tween.tween_property(self, "position:y", _closed_y, 0.3)\
-			.set_ease(Tween.EASE_IN_OUT)
+	if _tween:
+		_tween.kill()
+	var dur := OPEN_TIME if open else CLOSE_TIME
+	_tween = create_tween()
+	_tween.set_ease(Tween.EASE_IN_OUT)
+	_tween.set_parallel(true)
+	_tween.tween_method(_set_open_amount, _open_amount, 1.0 if open else 0.0, dur)
+	if has_node("DoorLight"):
+		_tween.tween_property($DoorLight, "modulate",
+			LIGHT_OPEN if open else LIGHT_SHUT, dur)
+	_tween.set_parallel(false)
+	if open:
+		_tween.tween_callback(_disable_collision)
+
+
+# Drives the gate curtain's retract shader (0 = shut, 1 = fully open).
+func _set_open_amount(v: float) -> void:
+	_open_amount = v
+	if _gate_mat:
+		_gate_mat.set_shader_parameter("open_amount", v)
 
 
 # Disables the collision shape after the open animation finishes.

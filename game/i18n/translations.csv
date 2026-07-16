@@ -6,6 +6,7 @@ MENU_QUIT,Quit,Wyjdź
 DEATH_TITLE,One of you died...,Jedno z was zginęło...
 DEATH_TRY_AGAIN,Try Again,Spróbuj ponownie
 DEATH_MAIN_MENU,Main Menu,Menu główne
+LEVEL_COMPLETE_TITLE,Level Complete!,Poziom ukończony!
 SET_TITLE,Settings,Ustawienia
 SET_SOUND,Sound effects,Efekty dźwiękowe
 SET_MUSIC,Music,Muzyka

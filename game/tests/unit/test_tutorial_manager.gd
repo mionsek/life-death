@@ -3,16 +3,21 @@ extends GutTest
 # TutorialManager: obstacle classification and the seen-once bookkeeping.
 
 var _saved_seen: Dictionary
+var _saved_enabled: bool
 
 
 func before_each() -> void:
 	_saved_seen = TutorialManager._seen.duplicate()
+	# The manager ships disabled for playtesting; exercise the real logic here.
+	_saved_enabled = TutorialManager.enabled
+	TutorialManager.enabled = true
 	TutorialManager.reset_seen()
 
 
 func after_each() -> void:
 	TutorialManager._seen = _saved_seen
 	TutorialManager._save_seen()
+	TutorialManager.enabled = _saved_enabled
 	TutorialManager._pending.clear()
 	TutorialManager._camera = null
 	TutorialManager._heroes.clear()
@@ -105,6 +110,22 @@ func test_lesson_needs_a_hero_nearby() -> void:
 func test_no_heroes_falls_back_to_view_only() -> void:
 	TutorialManager._heroes.clear()
 	assert_true(TutorialManager._near_heroes(Vector2(9999, 9999)))
+
+
+func test_airborne_hero_blocks_lessons() -> void:
+	# A fresh CharacterBody2D has never touched a floor — counts as airborne.
+	var hero := CharacterBody2D.new()
+	add_child_autofree(hero)
+	TutorialManager._heroes = [hero] as Array[Node2D]
+	assert_false(TutorialManager._heroes_grounded(),
+		"a mid-air hero should postpone lessons")
+
+
+func test_non_body_heroes_count_as_grounded() -> void:
+	var hero := Node2D.new()
+	add_child_autofree(hero)
+	TutorialManager._heroes = [hero] as Array[Node2D]
+	assert_true(TutorialManager._heroes_grounded())
 
 
 func test_track_level_skips_seen_types() -> void:

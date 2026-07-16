@@ -1,12 +1,14 @@
 extends "res://scripts/obstacles/door_trigger.gd"
 class_name Lever
 
-# A toggle lever: each touch flips it left<->right and opens or closes the
-# paired door to match. The 4-frame handle sweeps between the two ends. Only
-# the peer that owns the touching character originates the flip, which then
-# syncs to everyone, so the state stays consistent in multiplayer.
+# A toggle lever: each touch flips the handle left<->right and opens or closes
+# the paired door to match. The handle is a separate sprite that rotates around
+# its joint (HandlePivot), so the sweep is smooth instead of stepping frames.
+# Only the peer that owns the touching character originates the flip, which
+# then syncs to everyone, so the state stays consistent in multiplayer.
 
-const FRAMES := 4
+# Handle angle when thrown "on" (rest = 0, pointing left as drawn).
+const ON_ANGLE := 1.65   # radians (~95 degrees)
 const SWEEP_TIME := 0.3
 
 var _on: bool = false
@@ -15,10 +17,11 @@ var _tween: Tween
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
-	if has_node("Vis"):
-		# subtle pairing tint so the lever and its door read as a set
-		$Vis.self_modulate = Door.id_color(target_door_id).lerp(Color.WHITE, 0.7)
-		_set_frame(0)
+	# subtle pairing tint so the lever and its door read as a set
+	var tint := Door.id_color(target_door_id).lerp(Color.WHITE, 0.7)
+	for part in ["LeverBase", "HandlePivot/LeverHandle"]:
+		if has_node(part):
+			get_node(part).self_modulate = tint
 
 
 # Flips on contact. In multiplayer only the character's owning peer originates
@@ -49,21 +52,11 @@ func is_activated() -> bool:
 	return _on
 
 
-# Tweens the handle to the end matching the state.
+# Rotates the handle to the end matching the state.
 func _animate_to(on: bool) -> void:
-	var target := (FRAMES - 1) if on else 0
+	if not has_node("HandlePivot"):
+		return
 	if _tween:
 		_tween.kill()
-	_tween = create_tween()
-	_tween.tween_method(_set_frame, float(_current_frame()), float(target), SWEEP_TIME)
-
-
-func _current_frame() -> int:
-	if has_node("Vis") and $Vis is Sprite2D:
-		return $Vis.frame
-	return (FRAMES - 1) if _on else 0
-
-
-func _set_frame(v: float) -> void:
-	if has_node("Vis") and $Vis is Sprite2D:
-		$Vis.frame = clampi(int(round(v)), 0, FRAMES - 1)
+	_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	_tween.tween_property($HandlePivot, "rotation", ON_ANGLE if on else 0.0, SWEEP_TIME)

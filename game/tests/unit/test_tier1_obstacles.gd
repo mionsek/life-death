@@ -129,4 +129,4 @@ func test_lever_carries_door_color() -> void:
 	lever.target_door_id = "gate_77"
 	add_child_autofree(lever)
 	var expected := Door.id_color("gate_77").lerp(Color.WHITE, 0.7)
-	assert_eq(lever.get_node("Vis").self_modulate, expected)
+	assert_eq(lever.get_node("LeverBase").self_modulate, expected)

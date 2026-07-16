@@ -43,7 +43,96 @@ func _init() -> void:
 	lever.convert(Image.FORMAT_RGBA8)
 	_knock_out_white(lever)
 	_slice_even(lever, 4, "res://assets/sprites/doors/lever_frames.png", LEVER_FRAME_H)
+	_slice_lever_layers(lever, LEVER_FRAME_H)
 	quit()
+
+
+# Splits one lever frame into a static base and a handle that pivots at the
+# joint, so the handle can rotate smoothly instead of stepping through frames.
+# Outputs lever_base.png (full frame) and lever_handle.png (cropped so the
+# joint sits at its bottom-centre = the rotation pivot). Prints the pivot in
+# the base's local space (base bottom-centre at origin) for the scene.
+func _slice_lever_layers(sheet: Image, target_h: int) -> void:
+	var cell_w := sheet.get_width() / 4
+	var frame := sheet.get_region(Rect2i(0, 0, cell_w, sheet.get_height()))
+	var used := frame.get_used_rect()
+	if used.size.x <= 0:
+		push_warning("slice_doors: empty lever frame")
+		return
+	frame = frame.get_region(used)
+	var w := frame.get_width()
+	var h := frame.get_height()
+	# widest opaque run per row; the dome/platform are wide, the arm is thin
+	var max_width := 0
+	var widths := PackedInt32Array()
+	widths.resize(h)
+	for y in h:
+		var wdt := 0
+		var run := 0
+		for x in w:
+			if frame.get_pixel(x, y).a > 0.3:
+				run += 1
+				wdt = maxi(wdt, run)
+			else:
+				run = 0
+		widths[y] = wdt
+		max_width = maxi(max_width, wdt)
+	# joint = dome top: first row (from the top) that is clearly wide
+	var joint_y := h / 2
+	for y in h:
+		if widths[y] > int(0.45 * max_width):
+			joint_y = y
+			break
+	# joint x = centre of the widest run on that row
+	var jx := _widest_run_centre(frame, joint_y)
+
+	var base := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	base.blit_rect(frame, Rect2i(0, joint_y, w, h - joint_y), Vector2i(0, joint_y))
+
+	# handle crop: symmetric around jx, from the handle top down to the joint,
+	# so the joint lands at the crop's bottom-centre.
+	var htop := 0
+	for y in joint_y:
+		if widths[y] > 0:
+			htop = y
+			break
+	var half := maxi(jx, w - jx)
+	var hx0 := maxi(jx - half, 0)
+	var hw := mini(jx + half, w) - hx0
+	var handle := Image.create(hw, joint_y - htop, false, Image.FORMAT_RGBA8)
+	handle.blit_rect(frame, Rect2i(hx0, htop, hw, joint_y - htop), Vector2i(0, 0))
+
+	var scale := float(target_h) / float(h)
+	_save_scaled(base, target_h, "res://assets/sprites/doors/lever_base.png")
+	# handle keeps the same scale as the base so they line up
+	var hh := int(round((joint_y - htop) * scale))
+	handle.resize(int(round(hw * scale)), maxi(hh, 1), Image.INTERPOLATE_LANCZOS)
+	handle.save_png(ProjectSettings.globalize_path("res://assets/sprites/doors/lever_handle.png"))
+	# pivot in the base's local space (base bottom-centre = origin, y up = neg)
+	var pivot := Vector2((jx - w / 2.0) * scale, (joint_y - h) * scale)
+	print("  lever layers: base %dx%d, handle %dx%d, pivot=(%.1f, %.1f)"
+		% [int(w * scale), target_h, handle.get_width(), handle.get_height(),
+		pivot.x, pivot.y])
+
+
+# X centre of the widest opaque run on a row.
+func _widest_run_centre(img: Image, y: int) -> int:
+	var best_start := 0
+	var best_len := 0
+	var start := -1
+	for x in img.get_width():
+		if img.get_pixel(x, y).a > 0.3:
+			if start == -1:
+				start = x
+		elif start != -1:
+			if x - start > best_len:
+				best_len = x - start
+				best_start = start
+			start = -1
+	if start != -1 and img.get_width() - start > best_len:
+		best_len = img.get_width() - start
+		best_start = start
+	return best_start + best_len / 2
 
 
 # White background -> transparent, with a soft edge so cut lines stay clean.

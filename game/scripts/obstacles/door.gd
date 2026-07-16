@@ -4,23 +4,36 @@ class_name Door
 # Unique ID used by levers, panels and pressure plates to target this door.
 @export var door_id: String = "door_01"
 
-# Portcullis strip: frame 0 = shut (gate down, red light), last = open (gate
-# retracted, green light). Opening animates through the frames in place — the
-# stone frame stays put, only the gate rises, so a character walks through.
-const OPEN_FRAME := 3
+# The door is built from stacked layers (see Door.tscn) so it animates smoothly
+# and the character passes through the doorway — in front of the left jamb
+# (DoorBack, z below the character) and behind the right jamb + lintel
+# (DoorFront, z above). The red curtain (DoorGate) slides up via a shader;
+# DoorLight is a greyscale indicator tinted red (shut) / green (open).
 const OPEN_TIME := 0.5
-const CLOSE_TIME := 0.3
+const CLOSE_TIME := 0.35
+const LIGHT_SHUT := Color(0.9, 0.15, 0.15)
+const LIGHT_OPEN := Color(0.3, 0.95, 0.4)
 
 var _is_open: bool = false
+var _open_amount: float = 0.0
 var _tween: Tween
+var _gate_mat: ShaderMaterial
 
 
 func _ready() -> void:
 	add_to_group("door_" + door_id)
-	if has_node("Vis"):
-		# subtle pairing tint so the door and its trigger read as a set
-		$Vis.self_modulate = id_color(door_id).lerp(Color.WHITE, 0.7)
-		_set_frame(0)
+	if has_node("DoorGate"):
+		# unique material per instance so doors animate independently
+		_gate_mat = ($DoorGate.material as ShaderMaterial).duplicate()
+		$DoorGate.material = _gate_mat
+		_set_open_amount(0.0)
+	if has_node("DoorLight"):
+		$DoorLight.modulate = LIGHT_SHUT
+	# subtle pairing tint on the stone so the door and its trigger read as a set
+	var tint := id_color(door_id).lerp(Color.WHITE, 0.7)
+	for jamb in ["DoorBack", "DoorFront"]:
+		if has_node(jamb):
+			get_node(jamb).self_modulate = tint
 
 
 # Deterministic pairing colour for a door id — the door and all of its
@@ -62,7 +75,7 @@ func open_local() -> void:
 	set_open_state(true)
 
 
-# Animates the gate open or shut on this peer. Hold-style triggers (pressure
+# Smoothly opens or shuts the door on this peer. Hold-style triggers (pressure
 # plates) call this both ways; the collision comes back the moment the door
 # starts closing so nobody clips through.
 func set_open_state(open: bool) -> void:
@@ -71,30 +84,30 @@ func set_open_state(open: bool) -> void:
 	_is_open = open
 	if open:
 		AudioFx.play("gate")
-	if _tween:
-		_tween.kill()
-	_tween = create_tween()
-	if open:
-		_tween.tween_method(_set_frame, float(_current_frame()), float(OPEN_FRAME), OPEN_TIME)
-		_tween.tween_callback(_disable_collision)
 	else:
+		# collision returns immediately when shutting
 		if has_node("Shape"):
 			$Shape.set_deferred("disabled", false)
-		_tween.tween_method(_set_frame, float(_current_frame()), 0.0, CLOSE_TIME)
+	if _tween:
+		_tween.kill()
+	var dur := OPEN_TIME if open else CLOSE_TIME
+	_tween = create_tween()
+	_tween.set_ease(Tween.EASE_IN_OUT)
+	_tween.set_parallel(true)
+	_tween.tween_method(_set_open_amount, _open_amount, 1.0 if open else 0.0, dur)
+	if has_node("DoorLight"):
+		_tween.tween_property($DoorLight, "modulate",
+			LIGHT_OPEN if open else LIGHT_SHUT, dur)
+	_tween.set_parallel(false)
+	if open:
+		_tween.tween_callback(_disable_collision)
 
 
-# Current gate frame (0..OPEN_FRAME); falls back to the logical state when the
-# visual is not an animatable sprite (e.g. in unit tests).
-func _current_frame() -> int:
-	if has_node("Vis") and $Vis is Sprite2D:
-		return $Vis.frame
-	return OPEN_FRAME if _is_open else 0
-
-
-# Sets the gate frame; no-op when the visual is not a sprite strip.
-func _set_frame(v: float) -> void:
-	if has_node("Vis") and $Vis is Sprite2D:
-		$Vis.frame = clampi(int(round(v)), 0, OPEN_FRAME)
+# Drives the gate curtain's retract shader (0 = shut, 1 = fully open).
+func _set_open_amount(v: float) -> void:
+	_open_amount = v
+	if _gate_mat:
+		_gate_mat.set_shader_parameter("open_amount", v)
 
 
 # Disables the collision shape after the open animation finishes.

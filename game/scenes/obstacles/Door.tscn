@@ -1,10 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://door"]
+[gd_scene load_steps=9 format=3 uid="uid://door"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/door.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_frames.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_back.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_gate.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_front.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/doors/door_light.png" id="5"]
+[ext_resource type="Shader" path="res://shaders/door_gate.gdshader" id="6"]
 
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(24, 80)
+
+[sub_resource type="ShaderMaterial" id="gate_mat"]
+shader = ExtResource("6")
+shader_parameter/open_amount = 0.0
+shader_parameter/top = 0.13
 
 [node name="Door" type="StaticBody2D"]
 collision_layer = 4
@@ -15,10 +24,27 @@ script = ExtResource("1")
 position = Vector2(0, -40)
 shape = SubResource("shape")
 
-[node name="Vis" type="Sprite2D" parent="."]
-z_index = 2
+[node name="DoorBack" type="Sprite2D" parent="."]
+z_index = -1
 texture_filter = 1
 position = Vector2(0, -44)
 texture = ExtResource("2")
-hframes = 4
-frame = 0
+
+[node name="DoorGate" type="Sprite2D" parent="."]
+z_index = -1
+texture_filter = 1
+material = SubResource("gate_mat")
+position = Vector2(0, -44)
+texture = ExtResource("3")
+
+[node name="DoorFront" type="Sprite2D" parent="."]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -44)
+texture = ExtResource("4")
+
+[node name="DoorLight" type="Sprite2D" parent="."]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -44)
+texture = ExtResource("5")

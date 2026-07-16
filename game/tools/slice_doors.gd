@@ -78,17 +78,27 @@ func _slice_lever_layers(sheet: Image, target_h: int) -> void:
 				run = 0
 		widths[y] = wdt
 		max_width = maxi(max_width, wdt)
-	# joint = dome top: first row (from the top) that is clearly wide
+	# The joint is the dome's TOP edge — cut any lower and part of the dome ends
+	# up in the handle and tilts with the arm. Scan upward from the bottom
+	# (platform -> dome -> thin arm) and stop at the first thin row: that skips
+	# the knob entirely, which a top-down scan keeps tripping over.
 	var joint_y := h / 2
-	for y in h:
-		if widths[y] > int(0.45 * max_width):
+	for y in range(h - 1, -1, -1):
+		if widths[y] > 0 and widths[y] < int(0.25 * max_width):
 			joint_y = y
 			break
-	# joint x = centre of the widest run on that row
-	var jx := _widest_run_centre(frame, joint_y)
+	# Hinge x = the dome's centre, sampled just inside it. Sampling the joint row
+	# itself would return the arm's position (it leans off to one side).
+	var jx := _widest_run_centre(frame, mini(joint_y + int(h * 0.05), h - 1))
 
 	var base := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	base.blit_rect(frame, Rect2i(0, joint_y, w, h - joint_y), Vector2i(0, joint_y))
+	# In the source art the arm is painted over the dome, so cutting at the dome
+	# top leaves its dark stub poking out of the dome's silhouette. It would sit
+	# there unmoved while the handle swings the other way, so rebuild that half
+	# of the (symmetric) dome by mirroring the clean half over it.
+	var arm_cx := _widest_run_centre(frame, maxi(joint_y - maxi(int(h * 0.03), 2), 0))
+	_mirror_dome(base, joint_y, mini(joint_y + int(h * 0.16), h), jx, arm_cx < jx)
 
 	# handle crop: symmetric around jx, from the handle top down to the joint,
 	# so the joint lands at the crop's bottom-centre.
@@ -114,6 +124,24 @@ func _slice_lever_layers(sheet: Image, target_h: int) -> void:
 	print("  lever layers: base %dx%d, handle %dx%d, pivot=(%.1f, %.1f)"
 		% [int(w * scale), target_h, handle.get_width(), handle.get_height(),
 		pivot.x, pivot.y])
+
+
+# Rebuilds the dome half that holds the arm's leftover stub by mirroring the
+# clean half across the hinge. The dome is symmetric, so this removes the stub
+# (silhouette included) without leaving a hole.
+func _mirror_dome(img: Image, y0: int, y1: int, jx: int, stub_left: bool) -> void:
+	var w := img.get_width()
+	for y in range(y0, y1):
+		if stub_left:
+			for x in jx:
+				var mx := 2 * jx - x
+				if mx >= 0 and mx < w:
+					img.set_pixel(x, y, img.get_pixel(mx, y))
+		else:
+			for x in range(jx + 1, w):
+				var mx := 2 * jx - x
+				if mx >= 0 and mx < w:
+					img.set_pixel(x, y, img.get_pixel(mx, y))
 
 
 # X centre of the widest opaque run on a row.
@@ -246,8 +274,9 @@ func _slice_door_layers(img: Image, band: Vector2i, target_h: int) -> void:
 		return
 	var x1: int = runs[0].y            # inner edge of the left pillar
 	var x2: int = runs[runs.size() - 1].x   # inner edge of the right pillar
-	# light bounding box: bright pixels in the top-right of the lintel
-	var light_rect := _light_bbox(opened, cx, lintel_bottom)
+	# the indicator light, matched by hue so its faint rim is caught too
+	var light_mask := _light_mask(opened)
+	var wipe_mask := _dilate(light_mask, w, h, 2)
 
 	# --- build the four same-size layers ---
 	var back := Image.create(w, h, false, Image.FORMAT_RGBA8)
@@ -255,19 +284,23 @@ func _slice_door_layers(img: Image, band: Vector2i, target_h: int) -> void:
 
 	var front := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	front.blit_rect(opened, Rect2i(x1, 0, w - x1, h), Vector2i(x1, 0))
-	var socket := opened.get_pixel(cx, (lintel_top + lintel_bottom) / 2)   # dark lintel colour
-	for y in range(light_rect.position.y, light_rect.end.y):
-		for x in range(light_rect.position.x, light_rect.end.x):
-			if front.get_pixel(x, y).a > 0.0:
-				front.set_pixel(x, y, socket)
+	# wipe the baked light (and its rim) down to a dark socket — the live light
+	# is drawn by the separate, tintable door_light layer on top.
+	var socket := opened.get_pixel(cx, (lintel_top + lintel_bottom) / 2)
+	for y in h:
+		for x in w:
+			if wipe_mask[y * w + x] == 1 and front.get_pixel(x, y).a > 0.0:
+				front.set_pixel(x, y, Color(socket.r, socket.g, socket.b,
+					front.get_pixel(x, y).a))
 
 	var light := Image.create(w, h, false, Image.FORMAT_RGBA8)
-	for y in range(light_rect.position.y, light_rect.end.y):
-		for x in range(light_rect.position.x, light_rect.end.x):
+	for y in h:
+		for x in w:
+			if light_mask[y * w + x] == 0:
+				continue
 			var c := opened.get_pixel(x, y)
-			if c.a > 0.3:
-				var lum: float = maxf(c.r, maxf(c.g, c.b))
-				light.set_pixel(x, y, Color(lum, lum, lum, c.a))
+			var lum: float = maxf(c.r, maxf(c.g, c.b))
+			light.set_pixel(x, y, Color(lum, lum, lum, c.a))
 
 	var gate := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	for y in range(lintel_bottom, h):
@@ -319,23 +352,42 @@ func _opaque_runs(img: Image, y: int) -> Array:
 	return runs
 
 
-# Bounding box of the bright indicator light in the top-right of the lintel.
-func _light_bbox(img: Image, cx: int, lintel_bottom: int) -> Rect2i:
-	var minx := img.get_width()
-	var miny := lintel_bottom
-	var maxx := 0
-	var maxy := 0
-	var found := false
-	for y in lintel_bottom:
-		for x in range(cx, img.get_width()):
+# Mask of the indicator light. It is green in the open frame, so match on hue
+# rather than brightness — a brightness cut leaves the light's dim green rim
+# baked into the frame, which shows as a permanent green tinge beside the dot.
+func _light_mask(img: Image) -> PackedByteArray:
+	var w := img.get_width()
+	var mask := PackedByteArray()
+	mask.resize(w * img.get_height())
+	for y in img.get_height():
+		for x in w:
 			var c := img.get_pixel(x, y)
-			if c.a > 0.3 and maxf(c.r, maxf(c.g, c.b)) > 0.45:
-				found = true
-				minx = mini(minx, x); miny = mini(miny, y)
-				maxx = maxi(maxx, x); maxy = maxi(maxy, y)
-	if not found:
-		return Rect2i(0, 0, 0, 0)
-	return Rect2i(minx, miny, maxx - minx + 1, maxy - miny + 1)
+			if c.a > 0.2 and c.g > c.r + 0.05 and c.g > c.b + 0.05:
+				mask[y * w + x] = 1
+	return mask
+
+
+# Grows a mask by `radius` pixels (used to wipe the light's faint rim too).
+func _dilate(mask: PackedByteArray, w: int, h: int, radius: int) -> PackedByteArray:
+	var out := mask.duplicate()
+	for _r in radius:
+		var src := out.duplicate()
+		for y in h:
+			for x in w:
+				if src[y * w + x] == 1:
+					continue
+				var hit := false
+				for dy in range(-1, 2):
+					for dx in range(-1, 2):
+						var nx := x + dx
+						var ny := y + dy
+						if nx < 0 or ny < 0 or nx >= w or ny >= h:
+							continue
+						if src[ny * w + nx] == 1:
+							hit = true
+				if hit:
+					out[y * w + x] = 1
+	return out
 
 
 # Scales an image to target_h (keeping aspect) and saves it.

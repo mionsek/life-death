@@ -60,6 +60,7 @@ func _slice_lever_layers(sheet: Image, target_h: int) -> void:
 		push_warning("slice_doors: empty lever frame")
 		return
 	frame = frame.get_region(used)
+	_defringe(frame, 4)
 	var w := frame.get_width()
 	var h := frame.get_height()
 	# widest opaque run per row; the dome/platform are wide, the arm is thin
@@ -135,6 +136,40 @@ func _widest_run_centre(img: Image, y: int) -> int:
 	return best_start + best_len / 2
 
 
+# Bleeds opaque colours outward into transparent / semi-transparent pixels so
+# the soft cut edges take the art's colour instead of the white background.
+# Without this the edges keep light pixels at partial alpha — a bright halo
+# that shimmers against the moving level background. Alpha is left untouched.
+func _defringe(img: Image, passes: int) -> void:
+	var w := img.get_width()
+	var h := img.get_height()
+	for _p in passes:
+		var src := img.duplicate() as Image
+		for y in h:
+			for x in w:
+				var c := src.get_pixel(x, y)
+				if c.a >= 0.9:
+					continue
+				var r := 0.0
+				var g := 0.0
+				var b := 0.0
+				var n := 0.0
+				for dy in range(-1, 2):
+					for dx in range(-1, 2):
+						var nx := x + dx
+						var ny := y + dy
+						if nx < 0 or ny < 0 or nx >= w or ny >= h:
+							continue
+						var nc := src.get_pixel(nx, ny)
+						if nc.a >= 0.9:
+							r += nc.r
+							g += nc.g
+							b += nc.b
+							n += 1.0
+				if n > 0.0:
+					img.set_pixel(x, y, Color(r / n, g / n, b / n, c.a))
+
+
 # White background -> transparent, with a soft edge so cut lines stay clean.
 func _knock_out_white(img: Image) -> void:
 	for y in img.get_height():
@@ -190,6 +225,9 @@ func _slice_door_layers(img: Image, band: Vector2i, target_h: int) -> void:
 	var h := maxi(closed.get_height(), opened.get_height())
 	closed = _place(closed, w, h)
 	opened = _place(opened, w, h)
+	# clean the white halo off the cut edges before splitting into layers
+	_defringe(closed, 4)
+	_defringe(opened, 4)
 
 	var cx := w / 2
 	# Skip transparent top padding to the lintel top, then find where the centre

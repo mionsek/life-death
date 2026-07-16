@@ -26,25 +26,25 @@ shape = SubResource("shape")
 
 [node name="DoorBack" type="Sprite2D" parent="."]
 z_index = -1
-texture_filter = 1
+texture_filter = 2
 position = Vector2(0, -44)
 texture = ExtResource("2")
 
 [node name="DoorGate" type="Sprite2D" parent="."]
 z_index = -1
-texture_filter = 1
+texture_filter = 2
 material = SubResource("gate_mat")
 position = Vector2(0, -44)
 texture = ExtResource("3")
 
 [node name="DoorFront" type="Sprite2D" parent="."]
 z_index = 2
-texture_filter = 1
+texture_filter = 2
 position = Vector2(0, -44)
 texture = ExtResource("4")
 
 [node name="DoorLight" type="Sprite2D" parent="."]
 z_index = 2
-texture_filter = 1
+texture_filter = 2
 position = Vector2(0, -44)
 texture = ExtResource("5")

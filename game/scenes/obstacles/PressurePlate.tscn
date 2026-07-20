@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://pressure_plate"]
 
 [ext_resource type="Script" path="res://scripts/obstacles/pressure_plate.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/gen/obstacles/plate_up.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/gen/obstacles/plate_down.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/buttons/button_up.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/buttons/button_down.png" id="3"]
 
 [sub_resource type="RectangleShape2D" id="shape"]
 size = Vector2(32, 10)
@@ -18,13 +18,13 @@ shape = SubResource("shape")
 
 [node name="VisUp" type="Sprite2D" parent="."]
 z_index = 2
-texture_filter = 1
-position = Vector2(0, -5)
+texture_filter = 2
+position = Vector2(0, -11)
 texture = ExtResource("2")
 
 [node name="VisDown" type="Sprite2D" parent="."]
 z_index = 2
-texture_filter = 1
+texture_filter = 2
 visible = false
-position = Vector2(0, -5)
+position = Vector2(0, -11)
 texture = ExtResource("3")

@@ -17,13 +17,13 @@ position = Vector2(0, -5)
 shape = SubResource("shape")
 
 [node name="VisUp" type="Sprite2D" parent="."]
-z_index = 2
+z_index = -1
 texture_filter = 2
 position = Vector2(0, -11)
 texture = ExtResource("2")
 
 [node name="VisDown" type="Sprite2D" parent="."]
-z_index = 2
+z_index = -1
 texture_filter = 2
 visible = false
 position = Vector2(0, -11)

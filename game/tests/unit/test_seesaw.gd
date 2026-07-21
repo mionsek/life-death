@@ -17,17 +17,21 @@ func test_starts_balanced() -> void:
 	assert_almost_eq(_seesaw.get_tilt(), 0.0, 0.01)
 
 
+# These direction checks step by a frame-sized delta: the plank now takes an
+# impact kick and spins up briskly, so a whole second carries it past half a
+# turn and the wrapped angle comes back with the opposite sign.
+
 # More weight on the left tilts the seesaw left (negative angle).
 func test_left_heavy_tilts_left() -> void:
 	_seesaw._on_left_entered(Node.new())
-	_seesaw._update_rotation(1.0)
+	_seesaw._update_rotation(0.1)
 	assert_lt(_seesaw.get_tilt(), 0.0)
 
 
 # More weight on the right tilts the seesaw right (positive angle).
 func test_right_heavy_tilts_right() -> void:
 	_seesaw._on_right_entered(Node.new())
-	_seesaw._update_rotation(1.0)
+	_seesaw._update_rotation(0.1)
 	assert_gt(_seesaw.get_tilt(), 0.0)
 
 
@@ -52,7 +56,7 @@ func test_count_cannot_go_below_zero() -> void:
 func test_push_under_left_tilts_right() -> void:
 	var body: Node = autofree(Node.new())
 	_seesaw._on_left_under_entered(body)
-	_seesaw._update_rotation(1.0)
+	_seesaw._update_rotation(0.1)
 	assert_gt(_seesaw.get_tilt(), 0.0)
 
 
@@ -60,7 +64,7 @@ func test_push_under_left_tilts_right() -> void:
 func test_push_under_right_tilts_left() -> void:
 	var body: Node = autofree(Node.new())
 	_seesaw._on_right_under_entered(body)
-	_seesaw._update_rotation(1.0)
+	_seesaw._update_rotation(0.1)
 	assert_lt(_seesaw.get_tilt(), 0.0)
 
 

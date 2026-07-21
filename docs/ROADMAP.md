@@ -83,6 +83,11 @@
     restart w multi tylko dla hosta, z potwierdzeniem u partnera (RPC)
 
 ### Do zrobienia — następne kroki
+- ⬜ **Skok jeszcze niżej** (zgłoszone 2026-07-21): `jump_velocity` obniżone do
+  −520 (~138 px). Nadal za wysoko — docelowo niżej, ale to **wymusza rewizję
+  rozstawienia półek**: `LEVEL_BUILDING.md` projektuje skoki do 130 px, więc
+  trzeba obniżyć ten limit razem ze skokiem. Bez znaczenia póki poziomy nie są
+  jeszcze robione — zrobić przed budowaniem właściwych poziomów
 - ⬜ **Więcej dźwięków** (zgłoszone 2026-07-15): `022-audio-sfx` dał AudioFx +
   4 efekty (dźwignia/płyta, drzwi, ukończenie poziomu, wybór na mapie);
   brakuje m.in. skoku, śmierci, zbierania czaszek/serc, odbicia postaci,

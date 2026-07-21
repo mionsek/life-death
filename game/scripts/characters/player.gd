@@ -3,8 +3,12 @@ class_name Player
 
 # Movement speed in pixels per second.
 @export var speed: float = 200.0
-# Upward velocity applied when a jump is triggered.
-@export var jump_velocity: float = -550.0
+# Upward velocity applied when a jump is triggered. Height is v^2/2g, so this
+# clears ~138 px — deliberately kept above the 130 px ceiling that
+# docs/LEVEL_BUILDING.md designs jumps to, or existing levels stop being
+# beatable. The head-boost (BOUNCE_LAUNCH) is unchanged and now reads as a
+# clearly bigger hop than a normal jump.
+@export var jump_velocity: float = -520.0
 # Gravity acceleration in pixels per second squared.
 @export var gravity: float = 980.0
 # Whether this player responds to keyboard input.

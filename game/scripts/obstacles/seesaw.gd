@@ -2,7 +2,11 @@ extends Node2D
 class_name Seesaw
 
 # Angular acceleration applied per unit of weight imbalance (rad/s²).
-const TORQUE := 2.5
+const TORQUE := 6.0
+# Instant kick given when a body lands on an arm (or shoves one from below).
+# Torque alone only eases the plank over, so jumping onto it barely moved it;
+# this makes the impact itself throw the seesaw.
+const IMPACT_IMPULSE := 1.8
 # Max rotation speed (rad/s) — prevents infinite spin-up while still allowing full 360° turns.
 const MAX_ANGULAR_VELOCITY := 5.0
 # Constant angular friction (rad/s²) applied when balanced — coasts smoothly to a stop.
@@ -43,8 +47,16 @@ func _update_rotation(delta: float) -> void:
 		_rpc_sync_rotation.rpc($Plank.rotation)
 
 
+# Landing on an arm (or shoving one from below) kicks the plank straight away.
+# The sign matches the torque convention: positive tips the right arm down.
+func _impact(direction: float) -> void:
+	_angular_velocity = clampf(_angular_velocity + direction * IMPACT_IMPULSE,
+		-MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY)
+
+
 func _on_left_entered(_body: Node) -> void:
 	_left_count += 1
+	_impact(-1.0)
 
 
 func _on_left_exited(_body: Node) -> void:
@@ -53,6 +65,7 @@ func _on_left_exited(_body: Node) -> void:
 
 func _on_right_entered(_body: Node) -> void:
 	_right_count += 1
+	_impact(1.0)
 
 
 func _on_right_exited(_body: Node) -> void:
@@ -61,6 +74,7 @@ func _on_right_exited(_body: Node) -> void:
 
 func _on_left_under_entered(_body: Node) -> void:
 	_left_under_count += 1
+	_impact(1.0)
 
 
 func _on_left_under_exited(_body: Node) -> void:
@@ -69,6 +83,7 @@ func _on_left_under_exited(_body: Node) -> void:
 
 func _on_right_under_entered(_body: Node) -> void:
 	_right_under_count += 1
+	_impact(-1.0)
 
 
 func _on_right_under_exited(_body: Node) -> void:

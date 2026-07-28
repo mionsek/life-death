@@ -34,7 +34,32 @@ Minimapa i HUD monet dodają się same — nic nie rób.
 
 ---
 
-## 2. Obudowa poziomu (styl „Ziemia" — zamknięte pudło)
+## 2. Teren — malowanie kafelkami (najszybsza droga)
+
+Podłogi, ściany, półki i filary rysujesz **pędzlem**, a nie stawiając węzły jeden
+po drugim. Kolizja powstaje przy tym sama — nie dodajesz żadnego `StaticBody2D`.
+
+1. Dodaj do korzenia węzeł **TileMapLayer**, nazwij `Terrain`.
+2. W Inspektorze **Tile Set** → przeciągnij `res://assets/tilesets/earth/earth_terrain.tres`.
+3. Ustaw **Z Index = −1** (postacie mają 0, więc chodzą PRZED terenem).
+4. Na dolnym panelu wejdź w zakładkę **TileMap → Terrains**, wybierz teren
+   **„Ziemia"** i maluj. Godot **sam dobiera** rogi, krawędzie i zaślepki —
+   rysujesz bryłę, a wykończenie robi się samo.
+
+Kafel ma **32×32 px**, więc siatka trzyma poziom w ryzach: skok w górę to ~4
+kafle, komfortowy odstęp półek 3–4 kafle. Poziom 1280×720 = 40×22 kafli.
+
+> Podglądówka wszystkich 16 kafli z nazwami: `docs/terrain_tiles_reference.png`.
+> Atlas powstaje z `assets/sprites/earth_tileset_src.png` przez
+> `tools/slice_terrain.gd`, a `.tres` przez `tools/build_terrain_tileset.gd` —
+> uruchamiaj je tylko, gdy podmieniasz grafikę źródłową.
+
+---
+
+## 2b. Obudowa ręczna (styl „Ziemia" — zamknięte pudło)
+
+> Kafelki z pkt 2 zastępują to przy zwykłym terenie. Ten sposób zostaje dla
+> wielkich jednolitych ścian i elementów, które nie leżą na siatce 32 px.
 
 Każda ściana = **StaticBody2D** + **CollisionShape2D** (fizyka) + **NinePatchRect** (wygląd).
 

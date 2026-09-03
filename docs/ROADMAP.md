@@ -4,16 +4,19 @@
 
 ---
 
-## STATUS PROJEKTU — 2026-07-12
+## STATUS PROJEKTU — 2026-09-03
+
+> Stan zweryfikowany na commicie `4e42d1b` (merge brancha `027-tileset-terrain`).
+> Liczby pochodzą z uruchomionego pakietu testów i z przeglądu kodu, nie z opisów commitów.
 
 | Faza | Status | Opis |
 |------|--------|------|
-| Faza 0 — Decyzje | ✅ Zakończona | Wszystkie OQ zamknięte |
-| Faza 1 — Setup / Prototyp | ✅ Zakończona | Ruch, 2 graczy, śmierć/reset, multiplayer LAN |
-| Faza 2 — Core Gameplay | 🔄 W toku | Umiejętności (warstwy kolizji), przeszkody, zapis — działają we wszystkich strefach |
-| Faza 3 — Treść i poziomy | 🔄 W toku | Ziemia 01–06, Niebo 01–04, Piekło 01–04; mapa świata jako graf; sklep do zrobienia |
-| Faza 4 — Grafika/Audio | 🔄 W toku | Pixel-art pipeline proceduralny (tools/generate_assets.gd); audio pusty |
-| Faza 5 — Polish i testy | 🔄 Częściowo | GUT unit + integracja (86 testów), CI (GitHub Actions) |
+| Faza 0 — Decyzje | ✅ Zakończona | OQ zamknięte poza OQ-03 (lista przeszkód, rozbudowywana) i OQ-06 (bossowie, odłożone) |
+| Faza 1 — Setup / Prototyp | ✅ Zakończona | Ruch, skok, 2 graczy, śmierć/reset, multiplayer LAN; brak testu na 2 fizycznych telefonach |
+| Faza 2 — Core Gameplay | ✅ W praktyce zamknięta | Umiejętności (warstwy kolizji), przeszkody Tier 1, monety, zapis — działają we wszystkich strefach |
+| Faza 3 — Treść i poziomy | 🔄 W toku | 14 scen poziomów z 42 węzłów mapy (Ziemia 01–06, Niebo 01–04, Piekło 01–04); sklep nierozpoczęty |
+| Faza 4 — Grafika/Audio | 🔄 W toku | Assety ręcznie rysowane zastępują proceduralne (drzwi, dźwignia, przycisk, huśtawka, teren); 4 SFX, 0 muzyki |
+| Faza 5 — Polish i testy | 🔄 Częściowo | 133 testy GUT w 27 skryptach, wszystkie przechodzą; CI (GitHub Actions) |
 | Faza 6 — iOS Port | ⬜ Nie rozpoczęta | — |
 
 ### Ostatnio zrobione (przez branche PR 001–013)
@@ -33,8 +36,9 @@
     (`LEVEL_GRAPH`)
   - **Zagadki wycofane z poziomów** (decyzja 2026-07-12): wszystkie `PuzzlePanel`
     w scenach zastąpione dźwigniami; mechanika i testy pozostają w kodzie
-  - **Fix crash rejestru**: rejestr zawiera tylko poziomy z istniejącą sceną;
-    `load_level` odmawia z ostrzeżeniem zamiast crashować
+  - **Fix crash rejestru**: rejestr zawiera wszystkie 42 węzły `LEVEL_GRAPH`
+    (są widoczne na mapie), ale `load_level` sprawdza `ResourceLoader.exists()`
+    i odmawia z ostrzeżeniem zamiast crashować, gdy sceny jeszcze nie ma
   - **Niebo 01–04** (pionowe 640×720, chmury + święte światło `LightZone` zabijające
     tylko Kostuchę) i **Piekło 01–04** (poziome 1280×360, lawa, wysoka trasa Strażniczki);
     wszystkie z interlockiem kooperacyjnym (panel↔dźwignia otwierają bramy partnera)
@@ -82,35 +86,94 @@
   - **Menu pauzy (Escape)**: wznów / restart / ustawienia / mapa świata;
     restart w multi tylko dla hosta, z potwierdzeniem u partnera (RPC)
 
+### Ostatnio zrobione (cd. 4) — dźwięk i assety rysowane ręcznie (022–027)
+- ✅ `022-audio-sfx` — autoload `AudioFx` + busy `SFX`/`Music`
+  (`default_bus_layout.tres`); 4 efekty: dźwignia/płyta (`Door_Switch_01`),
+  brama (`Gate_Open_01`), ukończenie poziomu (`Level_Complete_01`),
+  wybór na mapie (`Menu_Select_02`)
+- ✅ `023-tutorials-assets` — **pierwsze assety z odręcznych rysunków**:
+  - **Drzwi warstwowe**: `door_back` / `door_gate` / `door_front` / `door_light`
+    + `shaders/door_gate.gdshader` — krata zjeżdża w górę, a postać przechodzi
+    przez prześwit pomiędzy warstwami (efekt głębi)
+  - **Dźwignia**: `lever_base` + `lever_handle` — obraca się sama rączka wokół
+    przegubu, płynnie zamiast skokowo
+  - **Baner „Level Complete"** (`scenes/ui/LevelComplete.tscn`) na 3 s przed
+    powrotem na mapę; jingiel gra nad zamrożonym banerem, nie po nim
+  - **Tutoriale**: cieńszy pierścień reflektora + blokada lekcji, gdy którykolwiek
+    bohater jest w powietrzu; `TutorialManager.enabled` ustawione na `false`
+    na czas playtestów
+  - `tools/slice_doors.gd` — wycinanie i odszumianie sprite'ów ze skanu rysunku
+- ✅ `024-lever-pivot` — rączka dźwigni zakotwiczona w czarnej kropce podstawy
+  (`tools/find_anchor.gd`, podgląd `tools/LeverPreview.tscn`), poprawiona grafika drzwi
+- ✅ `025-button-asset` — kamienny przycisk płyty naciskowej (`button_up`/`button_down`
+  cięte przez `tools/slice_button.gd`), rysowany za postacią
+- ✅ `026-seesaw-asset` — huśtawka: obracająca się belka na nieruchomej podstawie
+  (`tools/slice_seesaw.gd`). Fizyka: `TORQUE` 2.5 → 6.0 plus nowy `IMPACT_IMPULSE`
+  (1.8), więc skok na ramię realnie przechyla deskę. Skok postaci:
+  `jump_velocity` −550 → −520 (~138 px zamiast ~154)
+- ✅ `027-tileset-terrain` — **malowalny tileset terenu z autotilingiem**:
+  `tools/slice_terrain.gd` zamienia odręczny arkusz w atlas 4×4 indeksowany maską
+  sąsiadów (16 wariantów; 5 cienkich ról składanych z ćwiartek),
+  `tools/build_terrain_tileset.gd` generuje `assets/tilesets/earth/earth_terrain.tres`
+  z peering bits i pełną kolizją 32×32 na każdym kaflu — malowany poziom jest solidny
+  bez dodatkowych węzłów; instrukcja w `LEVEL_BUILDING.md` §2 + podglądówka
+  `docs/terrain_tiles_reference.png`
+
 ### Do zrobienia — następne kroki
-- ⬜ **Skok jeszcze niżej** (zgłoszone 2026-07-21): `jump_velocity` obniżone do
-  −520 (~138 px). Nadal za wysoko — docelowo niżej, ale to **wymusza rewizję
-  rozstawienia półek**: `LEVEL_BUILDING.md` projektuje skoki do 130 px, więc
-  trzeba obniżyć ten limit razem ze skokiem. Bez znaczenia póki poziomy nie są
-  jeszcze robione — zrobić przed budowaniem właściwych poziomów
-- ⬜ **Więcej dźwięków** (zgłoszone 2026-07-15): `022-audio-sfx` dał AudioFx +
-  4 efekty (dźwignia/płyta, drzwi, ukończenie poziomu, wybór na mapie);
-  brakuje m.in. skoku, śmierci, zbierania czaszek/serc, odbicia postaci,
-  kruszenia platform i muzyki tła per strefa (bus Music już czeka)
+
+**Zaległości z ostatnich branchy (potwierdzone w kodzie):**
+- ⬜ **Włączyć z powrotem tutoriale** — `TutorialManager.enabled = false` od `023`
+  („na czas playtestów"); cały system działa, ale nic się nie wyświetla w grze
+- ⬜ **Użyć tilesetu terenu w poziomach** — `earth_terrain.tres` nie jest podpięty
+  do żadnej sceny (znają go tylko narzędzia); Ziemia 01–06 nadal stoi na ręcznych
+  `StaticBody2D` + `NinePatchRect`. Tileset istnieje tylko dla Ziemi — Niebo i Piekło
+  nie mają swoich
+- ⬜ **Skok jeszcze niżej** (zgłoszone 2026-07-21): `jump_velocity` = −520 (~138 px).
+  Nadal za wysoko — docelowo niżej, ale to **wymusza rewizję rozstawienia półek**:
+  `LEVEL_BUILDING.md` projektuje skoki do 130 px, więc trzeba obniżyć ten limit
+  razem ze skokiem. Zrobić przed budowaniem właściwych poziomów
+- ⬜ **Więcej dźwięków** (zgłoszone 2026-07-15): są 4 efekty, brakuje m.in. skoku,
+  śmierci, zbierania czaszek/serc, odbicia postaci, kruszenia platform.
+  `assets/audio/music/` jest **puste** — 0 muzyki, choć bus `Music` i przełącznik
+  w ustawieniach już działają
 - ⬜ **Minimapa — do poprawy** (zgłoszone 2026-07-13): działa, ale jakość/UX
   wymaga dopracowania
 - ⬜ **Restart w multi — test na 2 urządzeniach** (flow RPC host→klient
   zaimplementowany w `pause_menu.gd`, przetestowany tylko offline/lokalnie)
+
+**Treść i systemy:**
+- ⬜ **Poziomy: 14 scen z 42 węzłów mapy** — brakuje Ziemi 07–11 (5), Nieba 05–16 (12)
+  i Piekła 05–15 (11), czyli 28 węzłów widocznych na mapie bez sceny. Docelowo
+  OQ-05 mówi o 60 poziomach, więc graf też jest niepełny
+- ⬜ **Sklep** (ulepszenia: szybkość / wyskok / 10 s nietykalności) — nierozpoczęty;
+  wymaga decyzji, czym się płaci, skoro monety są teraz wymogiem ukończenia poziomu
+  (np. suma zebranych narastająco)
+- ⬜ **Zagadki** — `PuzzlePanel` + testy zostają w kodzie, ale **żadna scena poziomu
+  go nie używa** (wycofane 2026-07-12). Baza treści: `docs/PUZZLES.md`. Do decyzji,
+  czy wracają w innej formie
+- ⬜ Synchronizacja blokady panelu zagadki po sieci (timeout tylko lokalny)
+- ⬜ **Przeszkody z OQ-03 bez implementacji**: mrok (śmiertelny dla Strażniczki),
+  woda, kwiaty spowalniające Kostuchę, ruchome kolce. Zaimplementowane są lawa
+  (`fire_zone.gd`), święte światło (`light_zone.gd`) i chmury
+- ⬜ **Bossowie** — OQ-06 nadal odłożone, decyzja niepodjęta
+- ⬜ **Dokumentacja poziomów** — `docs/LEVEL_DESIGN/` zawiera tylko `heaven_01.md`
+  na 14 istniejących poziomów
+- ⬜ **Publikacja** (Faza 5.4) i **port iOS** (Faza 6) — nierozpoczęte
+
+**Zamknięte:**
 - ✅ ~~Przenieść zmiany z drugiego laptopa~~ — scalone 2026-07-14 (branche
   017–020: czaszki + serduszka, tileset Mossy, odbijanie postaci, przeszkody
   Tier 1)
-- ⬜ Dalsze poziomy stref (Ziemia 07+, Niebo/Piekło 05+; bossowie na końcach ramion)
-- ⬜ Sklep (ulepszenia: szybkość / wyskok / 10s nietykalności) — wymaga decyzji,
-  czym się płaci, skoro monety są teraz wymogiem ukończenia (np. suma zebranych)
-- ⬜ Baza zagadek — patrz `docs/PUZZLES.md` (zagadki H01–H04/D01–D04 zaszyte w scenach)
-- ⬜ Synchronizacja blokady panelu zagadki po sieci (timeout tylko lokalny)
 - ✅ ~~Ekran ustawień~~ — zrobiony w `021-tutorials-settings` (dźwięk/muzyka/język,
   dostępny z menu i z pauzy)
 
 ---
 
-> **WAŻNE:** Żadna implementacja nie jest uruchamiana dopóki nie zostaną zamknięte kwestie blokujące (🔴) z OPEN_QUESTIONS.md  
-> Ten dokument będzie aktualizowany po każdej sesji planowania.
+> **WAŻNE:** Sekcje „Faza 0–6" niżej to **pierwotny plan z fazy planowania**. Bieżący
+> stan opisuje część „STATUS PROJEKTU" na górze — checkboxy niżej zostały odhaczone
+> na podstawie przeglądu kodu (`[~]` = zrobione inaczej niż planowano albo świadomie
+> odrzucone).  
+> Ten dokument jest aktualizowany po każdej sesji.
 
 ---
 
@@ -123,18 +186,22 @@
 - [x] **OQ-04** — Śmierć: freeze + reset poziomu, bez limitu żyć
 - [x] **OQ-09** — Zapis: system Pair ID
 - [x] **OQ-11** — Kamera per gracz (~50% mapy)
-- [x] OQ-03, 05, 06, 07, 08, 10, 12, 13, 14, 15 — patrz OPEN_QUESTIONS.md
+- [x] OQ-05, 07, 08, 10, 12, 13, 14, 15 — patrz OPEN_QUESTIONS.md
+- [~] **OQ-03** — lista przeszkód: baza zatwierdzona, status „🔄 W toku"
+  (mrok, woda, kwiaty, kolce wciąż bez implementacji)
+- [~] **OQ-06** — bossowie: status „🔄 Odłożone", decyzji nadal nie ma
 
 ### 0.2 Deliverables
-- [x] `OPEN_QUESTIONS.md` — wszystkie kwestie zamknięte
+- [~] `OPEN_QUESTIONS.md` — zamknięte wszystkie poza OQ-03 i OQ-06 (patrz wyżej)
 - [x] Decyzje tech zapisane w GDD i OQ
-- [ ] Szkic mapy poziomów (drzewo) — do zrobienia
-- [ ] Baza zagadek (`docs/PUZZLES.md`) — do zrobienia
+- [x] Szkic mapy poziomów — odręczny szkic przeniesiony do `LEVEL_GRAPH` (42 węzły)
+  i ekranu `LevelSelect` w branchu `015-worldmap-polish`
+- [x] Baza zagadek (`docs/PUZZLES.md`) — 11 zagadek spisanych; same panele wycofane z gry
 
 ---
 
 ## Faza 1 — Prototyp Proof of Concept
-**Status: 🔄 W TOKU** (PR #1 otwarty)
+**Status: ✅ ZAKOŃCZONA** — poza testami na fizycznych urządzeniach (1.4)
 
 ### 1.1 Setup projektu
 - [x] Instalacja Godot 4.6.2
@@ -143,64 +210,68 @@
 - [x] Struktura katalogów projektu
 - [x] GUT v9.6.0 (testy jednostkowe)
 - [x] Scena `MainMenu.tscn` + testy
-- [ ] **Merge PR #1** do `master`
+- [x] Kod scalony do `master` (praca idzie branchami `NNN-nazwa` scalanymi merge commitem)
 
 ### 1.2 Mechanika podstawowa (jeden gracz, jeden poziom testowy)
-- [ ] Gracz może się poruszać (lewo/prawo)
-- [ ] Gracz może skakać
-- [ ] Kolizje z podłogą i ścianami
-- [ ] Prosta kamera śledząca gracza
-- [ ] Sterowanie dotykowe (wirtualny D-pad)
+- [x] Gracz może się poruszać (lewo/prawo) — `scripts/characters/player.gd`
+- [x] Gracz może skakać (`jump_velocity`, coyote-free, tylko z podłoża)
+- [x] Kolizje z podłogą i ścianami (`CharacterBody2D` + warstwy kolizji)
+- [x] Prosta kamera śledząca gracza (`Camera2D` w scenie postaci, limity do `level_size`)
+- [x] Sterowanie dotykowe (`TouchControls.tscn` + `TouchControlsP2.tscn`)
 
 ### 1.3 Mechanika 2 graczy (offline)
-- [ ] Implementacja połączenia WiFi Direct / Bluetooth
-- [ ] Synchronizacja pozycji obu graczy w czasie rzeczywistym
-- [ ] Test latencji — cel: < 100ms
-- [ ] Gracz 1 widzi Gracza 2 na swoim ekranie i odwrotnie
+- [x] Implementacja połączenia — ENet (7777) + auto-discovery UDP (7778), `NetworkManager`
+- [x] Synchronizacja pozycji obu graczy w czasie rzeczywistym (RPC)
+- [ ] Test latencji — cel: < 100ms (niezmierzony)
+- [x] Gracz 1 widzi Gracza 2 na swoim ekranie i odwrotnie (`Lobby.tscn` + gra w sieci)
 
 ### 1.4 Testowanie kluczowe
 - [ ] Test na 2 fizycznych telefonach Android
 - [ ] Test w trybie lotniczym (WiFi/komórkowe OFF)
 
 **Milestone:** Dwóch graczy chodzi po platformie w tym samym czasie offline ✅
+(zweryfikowane lokalnie/dwie instancje; nie na dwóch telefonach)
 
 ---
 
 ## Faza 2 — Core Gameplay
-**Cel:** Kompletna mechanika postaci i jeden grywalny poziom (1–2 miesiące)
+**Status: ✅ W praktyce zamknięta** — otwarte zostają tylko przeszkody, których
+nie ma jeszcze w kodzie (mrok, woda) i wycofane zagadki
 
 ### 2.1 Postać — Kostucha
-- [ ] Sprite placeholder (możemy użyć prostej ikony na start)
-- [ ] Odporność na ogień/lawę
-- [ ] Interakcja z "Mroczną Strefą"
-- [ ] Animacja chodzenia, skakania, stania
+- [x] Sprite (proceduralny `AnimatedSprite2D`, do podmiany na rysunki użytkownika)
+- [x] Odporność na ogień/lawę (`fire_zone.gd` zabija tylko Strażniczkę)
+- [ ] Interakcja z „Mroczną Strefą" — brak implementacji mroku
+- [x] Animacja chodzenia, skakania, stania (`idle` / `walk` / `jump`)
 
 ### 2.2 Postać — Strażniczka Życia
-- [ ] Sprite placeholder
-- [ ] Chodzenie po chmurach
-- [ ] Odporność na wodę
-- [ ] Animacja chodzenia, skakania, stania
+- [x] Sprite (`Guardian.tscn`)
+- [x] Chodzenie po chmurach (warstwy kolizji; chmury w Ziemi i Niebie)
+- [ ] Odporność na wodę — brak wody w grze
+- [x] Animacja chodzenia, skakania, stania
 
 ### 2.3 Środowisko — Poziom Testowy (Ziemia)
-- [ ] Tileset: platformy, podłoga, tło
-- [ ] Elementy ognia (śmiertelne dla Strażniczki)
-- [ ] Chmury (dostępne tylko dla Strażniczki)
-- [ ] Klucz do zebrania per postać
-- [ ] Drzwi wymagające obu kluczy
-- [ ] Checkpoint (punkt zapisu postępu)
-- [ ] Cel (koniec poziomu)
+- [x] Tileset: platformy, podłoga, tło (Mossy + malowalny `earth_terrain.tres` z `027`)
+- [x] Elementy ognia (śmiertelne dla Strażniczki) — `FireZone`
+- [x] Chmury (dostępne tylko dla Strażniczki)
+- [~] Klucz do zebrania per postać — **zastąpione monetami** (czaszki/serca), kluczy nie ma
+- [x] Drzwi wymagające współpracy — dźwignia/płyta jednej postaci otwiera bramę drugiej
+- [~] Checkpoint — **odrzucone decyzją OQ-04** (reset zawsze od początku poziomu)
+- [x] Cel (koniec poziomu) — `ExitPortal` per postać
 
 ### 2.4 System monet
-- [ ] Czaszki rozlokowane na poziomie (dla Kostuchy)
-- [ ] Aureole rozlokowane na poziomie (dla Strażniczki)
-- [ ] Licznik monet na HUD
+- [x] Czaszki rozlokowane na poziomie (`Skull.tscn`, dla Kostuchy)
+- [x] Serca rozlokowane na poziomie (`Heart.tscn`, dla Strażniczki — nazwa „aureole"
+  z pierwotnego planu, w kodzie to serduszka)
+- [x] Licznik monet na HUD (`CoinHud`), portal zablokowany do skompletowania setu
 
 ### 2.5 Zagadka (jeden typ)
-- [ ] Wyświetlenie pytania w grze
-- [ ] Klawiatura wirtualna do wpisania odpowiedzi
-- [ ] Walidacja odpowiedzi → otwiera drzwi / usuwa blokadę
+- [x] Wyświetlenie pytania w grze (`PuzzlePanel`, 4 opcje + limit czasu)
+- [~] Klawiatura wirtualna — niepotrzebna, wybrano wariant A/B/C/D
+- [x] Walidacja odpowiedzi → otwiera drzwi (server-authoritative przez `DoorTrigger`)
+- ⚠️ **Wycofane z poziomów 2026-07-12** — kod i testy zostają, żadna scena nie używa panelu
 
-**Milestone:** Jeden kompletny poziom — od startu do mety, z kluczami i jedną zagadką ✅
+**Milestone:** Jeden kompletny poziom — od startu do mety ✅ (14 poziomów gotowych)
 
 ---
 
@@ -208,67 +279,85 @@
 **Cel:** Wszystkie poziomy, mapa świata, sklep (2–3 miesiące)
 
 ### 3.1 Mapa Świata
-- [ ] Ekran drzewa poziomów (Ziemia / Niebo / Piekło)
-- [ ] Wizualizacja odblokowanych i zablokowanych poziomów
-- [ ] Wybór kolejnego poziomu przez oboje graczy (decyzja wspólna)
+- [x] Ekran drzewa poziomów (`LevelSelect.tscn`) — 42 węzły na `bg1.png`, pan + pinch-zoom
+- [x] Wizualizacja odblokowanych i zablokowanych poziomów (kłódki, przyciemnione bąbelki)
+- [ ] Wybór kolejnego poziomu przez oboje graczy — `level_select.gd` nie ma żadnego RPC,
+  wybór jest lokalny
 
-### 3.2 Poziomy — Ziemia (5-7 sztuk)
-- [ ] Zaprojektowanie layoutów (na papierze najpierw)
-- [ ] Implementacja per poziom
-- [ ] Wzrastająca trudność
-- [ ] Mix zagadek: kooperacyjne + matematyczne + środowiskowe
+### 3.2 Poziomy — Ziemia (docelowo 11 węzłów w grafie)
+- [ ] Zaprojektowanie layoutów na papierze — brak dokumentów dla Ziemi
+- [x] Implementacja: **6 z 11** (Earth 01–06); brakuje 07–11
+- [ ] Wzrastająca trudność — niesprawdzone w playtestach
+- [~] Mix zagadek — zagadki wycofane; zostaje interlock kooperacyjny (dźwignia/płyta ↔ brama)
 
-### 3.3 Poziomy — Niebo (5 + boss)
-- [ ] Tileset: chmury, złote platformy, białe tła
-- [ ] Unikalne przeszkody Nieba (trudniejsze dla Kostuchy)
-- [ ] Zagadki słowne (filozoficzne)
-- [ ] Boss Nieba
+### 3.3 Poziomy — Niebo (16 węzłów w grafie)
+- [ ] Dedykowany tileset Nieba — brak; sceny używają assetów proceduralnych i `Mossy`
+- [x] Unikalne przeszkody Nieba — `LightZone` (święte światło zabija tylko Kostuchę)
+- [~] Zagadki słowne — treści w `PUZZLES.md`, ale panele wycofane ze scen
+- [ ] Boss Nieba — OQ-06 odłożone
+- [x] Implementacja: **4 z 16** (Heaven 01–04)
 
-### 3.4 Poziomy — Piekło (5 + boss)
-- [ ] Tileset: skały, lawa, ogień, ciemność
-- [ ] Unikalne przeszkody Piekła (trudniejsze dla Strażniczki)
-- [ ] Zagadki matematyczne
-- [ ] Boss Piekła
+### 3.4 Poziomy — Piekło (15 węzłów w grafie)
+- [ ] Dedykowany tileset Piekła — brak
+- [x] Unikalne przeszkody Piekła — lawa (`FireZone`, śmiertelna dla Strażniczki)
+- [~] Zagadki matematyczne — treści w `PUZZLES.md`, panele wycofane ze scen
+- [ ] Boss Piekła — OQ-06 odłożone
+- [x] Implementacja: **4 z 15** (Hell 01–04)
 
 ### 3.5 Sklep
+**Nierozpoczęty** — w repo nie ma ani sceny, ani skryptu sklepu.
 - [ ] Ekran sklepu (dostępny między poziomami)
 - [ ] Zakup szybkości (3 poziomy)
 - [ ] Zakup wyskoku (3 poziomy)
 - [ ] Zakup 3. zdolności (po podjęciu decyzji OQ-07)
 - [ ] Trwałe zapisanie zakupów
+- [ ] **Decyzja blokująca:** czym się płaci, skoro monety są wymogiem ukończenia poziomu
 
 ### 3.6 System zapisu i wczytywania
-- [ ] Zapis stanu gry lokalnie
-- [ ] Synchronizacja zapisu między urządzeniami przy połączeniu
-- [ ] Ekran wznowienia gry
+- [x] Zapis stanu gry lokalnie — `SaveManager`, `user://save_data.json` + Pair ID (UUID v4)
+- [ ] Synchronizacja zapisu między urządzeniami — ani `NetworkManager`, ani `Lobby`
+  nie wymieniają danych zapisu
+- [~] Ekran wznowienia gry — osobnego ekranu nie ma; postęp wczytuje się sam przy starcie
+  (`LevelManager._ready` → `SaveManager.load_progress`), a „Start" prowadzi wprost na mapę
 
-**Milestone:** Wszystkie strefy grywalne, sklep działa, save/load działa ✅
+**Milestone:** Wszystkie strefy grywalne ✅ (14 poziomów), sklep ⬜, save/load lokalnie ✅
 
 ---
 
 ## Faza 4 — Grafika i Audio (równolegle z Fazą 3)
 **Cel:** Finalna oprawa wizualna i dźwiękowa
 
+> **Pipeline assetów (ustalony w branchach 023–027):** użytkownik rysuje ręcznie
+> arkusz (skan / zdjęcie do `assets/sprites/*_src.png`), a skrypt w `game/tools/`
+> wycina z niego, czyści i normalizuje gotowe sprite'y (`slice_doors.gd`,
+> `slice_button.gd`, `slice_seesaw.gd`, `slice_terrain.gd`). Assety proceduralne
+> z `generate_assets.gd` są tymczasowe i wypierane kolejnymi rysunkami.
+
 ### 4.1 Grafika
-- [ ] Finalne sprite'y: Kostucha (chodzenie, skok, stanie, śmierć)
-- [ ] Finalne sprite'y: Strażniczka (chodzenie, skok, stanie, śmierć)
-- [ ] Tileset: Ziemia (finalna wersja)
+- [ ] Finalne sprite'y: Kostucha (chodzenie, skok, stanie, śmierć) — nadal proceduralne
+- [ ] Finalne sprite'y: Strażniczka — nadal proceduralne
+- [~] Tileset: Ziemia — `earth_terrain.tres` z ręcznego arkusza gotowy (`027`),
+  ale jeszcze nieużyty w żadnej scenie
 - [ ] Tileset: Niebo (finalna wersja)
 - [ ] Tileset: Piekło (finalna wersja)
-- [ ] Ikony HUD (czaszki, aureole, życia)
-- [ ] Ekran tytułowy
-- [ ] Ekran menu
-- [ ] Ekran mapy poziomów
+- [x] Ikony HUD — czaszki i serca z rysunków użytkownika (`assets/collectibles/`)
+- [x] Ekran tytułowy / menu (`MainMenu.tscn`)
+- [x] Ekran mapy poziomów (`LevelSelect.tscn` na `bg1.png` 3072×2048)
+- [x] Przeszkody z ręcznych rysunków: drzwi, dźwignia, przycisk płyty, huśtawka
 
 ### 4.2 Animacje
-- [ ] Animacje postaci (klatka po klatce w Aseprite)
-- [ ] Animacje środowiska (ogień, woda, chmury)
-- [ ] Efekty cząsteczkowe (śmierć, zbieranie monet)
+- [x] Animacje postaci — `idle` / `walk` / `jump` (klatki proceduralne, nie Aseprite);
+  brak animacji śmierci
+- [~] Animacje środowiska — animowane są przeszkody (brama drzwi na shaderze,
+  obrót dźwigni i huśtawki), nie ogień/woda/chmury
+- [ ] Efekty cząsteczkowe (śmierć, zbieranie monet) — w projekcie nie ma
+  ani jednego węzła `Particles2D`
 
 ### 4.3 Audio
-- [ ] Muzyka tła per strefa (Ziemia, Niebo, Piekło) — 3 tracki
-- [ ] SFX: skok, zbieranie monety, śmierć, otwieranie drzwi, zagadka rozwiązana
-- [ ] Opcja wyciszenia (settings)
+- [ ] Muzyka tła per strefa (Ziemia, Niebo, Piekło) — `assets/audio/music/` jest puste
+- [~] SFX: są 4 (dźwignia/płyta, brama, ukończenie poziomu, wybór w menu);
+  brakuje skoku, zbierania monety, śmierci, odbicia, kruszenia platform
+- [x] Opcja wyciszenia — `SettingsMenu` przełącza busy `SFX` i `Music`
 
 ---
 
@@ -281,12 +370,18 @@
 - [ ] Balans sklepu (czy ulepszenia są zbyt silne?)
 
 ### 5.2 UI / UX
-- [ ] Ekran ustawień (język, dźwięk, sterowanie)
-- [ ] Tutorial (poziom 0 / instrukcja)
-- [ ] Ekrany "Game Over", "Level Complete", "All Done!"
-- [ ] Animacje przejść między ekranami
+- [x] Ekran ustawień — `SettingsMenu.tscn` (język PL/EN, dźwięk, muzyka);
+  sterowania nie da się przemapować
+- [~] Tutorial — zamiast poziomu 0 są kontekstowe lekcje `TutorialManager`,
+  **wyłączone flagą `enabled = false`** od brancha `023`
+- [~] Ekrany — „Game Over" jako `DeathScreen.tscn`, „Level Complete" jako baner
+  3-sekundowy; ekranu „All Done!" po ostatnim poziomie nie ma
+- [ ] Animacje przejść między ekranami — zmiany scen to gołe `change_scene_to_file`;
+  tweeny są tylko wewnątrz ekranów (fade banera, pulsowanie bąbelka na mapie)
 
 ### 5.3 Testy
+- [x] Testy automatyczne — 133 testy GUT w 27 skryptach, wszystkie przechodzą
+  (`run_tests.ps1`, CI `.github/workflows/tests.yml`)
 - [ ] Testy na różnych urządzeniach Android (minimum 3 różne)
 - [ ] Testy na iOS (jeśli na tym etapie)
 - [ ] Test offline / tryb lotniczy (kilkugodzinna sesja)
@@ -328,24 +423,26 @@
 
 ---
 
-## Struktura Katalogów Projektu (docelowa)
+## Struktura Katalogów Projektu (stan faktyczny)
 
 ```
-C:\Apps\Life_Death\
+life-death\
 ├── docs\
-│   ├── GAME_DESIGN.md       ← Główny dokument projektu
-│   ├── OPEN_QUESTIONS.md    ← Kwestie do rozstrzygnięcia
-│   ├── ROADMAP.md           ← Ten plik
-│   ├── TECH_STACK.md        ← (do stworzenia po decyzji OQ-02)
-│   ├── LEVEL_DESIGN\        ← Szkice i opisy per poziom
-│   │   ├── earth_01.md
-│   │   ├── heaven_01.md
-│   │   └── hell_01.md
-│   └── PUZZLES.md           ← Baza zagadek
-├── game\                    ← (do stworzenia) Kod gry
-│   └── [projekt Unity/Godot/Flutter]
-└── assets\                  ← (do stworzenia) Grafika, audio
-    ├── sprites\
-    ├── tilesets\
-    └── audio\
+│   ├── GAME_DESIGN.md            ← Główny dokument projektu
+│   ├── OPEN_QUESTIONS.md         ← Kwestie do rozstrzygnięcia
+│   ├── ROADMAP.md                ← Ten plik
+│   ├── LEVEL_BUILDING.md         ← Instrukcja budowania poziomów w edytorze
+│   ├── PUZZLES.md                ← Baza zagadek (panele wycofane z gry)
+│   ├── terrain_tiles_reference.png
+│   └── LEVEL_DESIGN\
+│       └── heaven_01.md          ← jedyny opis poziomu (z 14 istniejących)
+├── art\                          ← Referencje i skany rysunków (poza projektem Godota)
+├── game\                         ← Projekt Godot 4.6
+│   ├── assets\  (audio, background, collectibles, gen, sprites, tilesets)
+│   ├── i18n\    (translations.csv → PL/EN)
+│   ├── scenes\  (characters, levels\earth|heaven|hell, obstacles, ui)
+│   ├── scripts\ (characters, levels, obstacles, systems, ui)
+│   ├── shaders\, tests\ (unit + integration), tools\ (slicery assetów)
+│   └── addons\gut\
+└── run_tests.ps1                 ← Headless GUT runner (CI: .github/workflows/tests.yml)
 ```
